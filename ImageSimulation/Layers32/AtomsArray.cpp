@@ -1,0 +1,26 @@
+// AtomsArray.cpp: implementation of the CAtomsArray class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#include "stdafx.h"
+#include "AtomsArray.h"
+
+#ifdef _DEBUG
+#undef THIS_FILE
+static char THIS_FILE[]=__FILE__;
+#define new DEBUG_NEW
+#endif
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+
+CAtomsArray::CAtomsArray()
+{
+	m_dZ=10;
+}
+
+CAtomsArray::~CAtomsArray()
+{
+
+}

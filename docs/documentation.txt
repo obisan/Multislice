@@ -1,0 +1,66 @@
+class Model
+	float 	a
+	float 	b
+	float 	c
+	float 	alpha
+	float 	beta
+	float 	gamma
+	Atom 	atom[]
+	virtual	read()
+	virtual read(const char*)
+	virtual	save()
+	
+	
+Atom
+	float 	x
+	float 	y
+	float 	z
+	ULONG	numberAtom
+	float	absorption
+	float	oxygenation
+	
+	
+class ModelCOO
+	virtual	read()
+	virtual read(const char*)
+	virtual	save()
+	
+	
+class ModelACE
+	virtual	read()
+	virtual read(const char*)
+	virtual	save()
+
+	
+class ModelFragmented
+	Model*				model
+	int					numberSlices
+	vector<Slice>		slices
+	
+class Slice
+	vector<Atom*>		composition
+	size_t				id
+	float				upperBound
+	float				lowerBound
+	size_t				size()
+	void				push_back()
+	void				pop_back()
+	operation[]
+	
+	
+class ModelPotencial
+	ModelFragmented		model
+	float	length
+	float	height
+	float	width
+	float	dx
+	float	dy
+	float	dz
+	
+	
+	
+class Potential
+	float	x
+	float	y
+	float	z
+	float	phi

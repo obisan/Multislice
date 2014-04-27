@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Calculation_parameters xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ModelFileName>D:\LEMOI\Multislice\Musli\new\oneAtomInCenter.coo</ModelFileName>
+	<!--Coordinate file-->
+	<PotType>PG_curve_DW_periodic</PotType>
+	<!-- These are the possible values of potential
+	<PotType>PG_DT_DW_periodic</PotType> 
+	<PotType>PG_DT_DW_cut</PotType>
+	<PotType>PG_DT_TV_periodic</PotType>
+	<PotType>PG_DT_TV_cut</PotType>
+	
+	<PotType>PG_curve_DW_periodic</PotType>
+	<PotType>PG_curve_DW_cut</PotType>
+	<PotType>PG_curve_DW_pullZ</PotType>
+	<PotType>PG_curve_TV_periodic</PotType>
+	<PotType>PG_curve_TV_cut</PotType>
+	<PotType>PG_curve_TV_pullZ</PotType>
+
+	<PotType>rs_DT_DW_cut</PotType>
+	<PotType>rs_DT_DW_periodic</PotType>
+	<PotType>rs_curve_DW_cut</PotType>
+	<PotType>rs_curve_DW_periodic</PotType>
+	<PotType>rec_DT_DW</PotType>
+	<PotType>rec_curve_DW</PotType>
+	 -->
+	<TVNumber>1</TVNumber>
+	<!--This number defines how many phonon configurations to calculate if TV potential is defined-->
+	<SliceType>Fixed</SliceType>
+	<!--Defines how to slice the model
+	<SliceType>Fixed</SliceType>
+	<SliceType>Layers</SliceType>
+	-->
+	<NSlices>30</NSlices>
+	<!--If <SliceType>Fixed</SliceType> than this number defines the number of slices to cut unit cell -->
+	<SaveSlices>false</SaveSlices>
+	<!--Defines if potentials should be saved. Ignored for PG potentials. -->
+	<atrad>5</atrad>
+	<!-- Defines the radius of atom for real space (rs and PG) potentials, otherwise ignored -->
+	<dela>0.001</dela>
+	<!-- Defines sampling interval for potential curve for "curve" potentials, otherwise ignored -->
+	<CrystalTilt>
+		<ArrayOfDouble>
+			<double>0</double>
+			<double>0</double>
+		</ArrayOfDouble>
+	</CrystalTilt>
+	<!--Defines crystal tilt to optical axis in mrad. Can be defined a list of pairs. -->
+	<IsCalcAll>true</IsCalcAll>
+	<!--Defines if the whole model should be calculated. If true <ThWaves> list is ignored -->
+	<IsSaveWaves>true</IsSaveWaves>
+	<!--Defines if the waves should be saved at each <ThWaves>.
+	 If <IsSaveWaves>true only the last wave will be saved -->
+	<IsSaveDiffractions>false</IsSaveDiffractions>
+	<!--Defines if diffractions should be saved at each <ThWaves>.
+	 If <IsSaveWaves>true only the last diffraction will be saved -->
+	<IncludeInWaveNames>
+		<IncludeModelName>true</IncludeModelName>
+		<IncludePotentialType>true</IncludePotentialType>
+		<IncludeHT>true</IncludeHT>
+		<IncludeCrystTilts>false</IncludeCrystTilts>
+		<IncludeIniWaveType>false</IncludeIniWaveType>
+		<IncludeBeamTilt>false</IncludeBeamTilt>
+		<IncludeBeamShift>false</IncludeBeamShift>
+		<IncludeConvAngle>false</IncludeConvAngle>
+		<IncludeConvAngleInner>false</IncludeConvAngleInner>
+		<IncludeDf>false</IncludeDf>
+		<IncludeCs>false</IncludeCs>
+	</IncludeInWaveNames>
+	<!--Defines the composition of output file names.
+	 If any lists present in the job the name of corresponding variable is included automatically -->
+	<ThWaves>
+		<double>6.14</double>
+		<double>7.6</double>
+		<double>47</double>
+	</ThWaves>
+	<!--List of thicknesses to save the wave -->
+	<N>1024</N>
+	<M>1024</M>
+	<!--The size of the matrix-->
+	<Nmult>1</Nmult>
+	<Mmult>1</Mmult>
+	<!--Multiplication of the unit cell. Valid only for rec_ potentials, otherwise ignored. -->
+	<E>
+		<double>300000</double>
+	</E>
+	<!--HT, can be a list -->
+	<IniWaveType>PlaneWave</IniWaveType>
+	<!--Type of initial wave. Possible values are:
+	<IniWaveType>PlaneWave</IniWaveType>
+	<IniWaveType>Converged</IniWaveType>
+	<IniWaveType>STEMshift</IniWaveType>
+	<IniWaveType>STEMtilt</IniWaveType>
+	<IniWaveType>Precalculated</IniWaveType>
+	In the latter case <IniWaveFileName> should point to initial wave.
+	For STEMshift images a picture dimensions are defined as BeamShift parameters
+	-->
+	<IniWaveFileName>last.wav</IniWaveFileName>
+	<!--File with initial wave -->
+	<BeamTilt>
+		<ArrayOfDouble>
+			<double>0</double>
+			<double>0</double>
+		</ArrayOfDouble>
+	</BeamTilt>
+	<!-- Defines tilts of the beam relative to the optical axis.
+	In mrad if <IniWaveType>Converged</IniWaveType>
+	In the units of reciprocal lattice if <IniWaveType>PlaneWave</IniWaveType>
+	Can be a list.
+	-->
+	<BeamShift>
+		<ArrayOfDouble>
+			<double>128</double>
+			<double>128</double>
+		</ArrayOfDouble>
+		<ArrayOfDouble>
+			<double>0.4</double>
+			<double>0.4</double>
+		</ArrayOfDouble>
+		<ArrayOfDouble>
+			<double>0.6</double>
+			<double>0.63094</double>
+		</ArrayOfDouble>
+	</BeamShift>
+	<!-- Defines shifts of the beam
+	relative to the center of the unit cell in portions of the cell.
+	For <IniWaveType>Converged</IniWaveType> and <IniWaveType>STEMshift</IniWaveType>,
+	otherwise ignored.
+	Can be a list for <IniWaveType>Converged</IniWaveType>.
+	For <IniWaveType>STEMshift</IniWaveType> should be a list of 3 pairs:
+	number of image points in the image N, M
+	starting point (upper left corner)
+	end point (lower right corner)
+	-->
+	<ConvAngles>
+		<ArrayOfDouble>
+			<double>0.5</double>
+			<double>0.0</double>
+		</ArrayOfDouble>
+	</ConvAngles>
+	<!-- Defines convergence of the beam in rec A. 
+	Two numbers stand for outer and inner radius for ring condencer apperture.
+	For <IniWaveType>Converged</IniWaveType> only, otherwise ignored.
+	Can be a list.
+	-->
+	<DetectorAngles>
+		<ArrayOfDouble>
+			<double>1</double>
+			<double>0.85</double>
+		</ArrayOfDouble>
+		<ArrayOfDouble>
+			<double>0.5</double>
+			<double>0.0</double>
+		</ArrayOfDouble>
+	</DetectorAngles>
+	<!-- Defines detector acceptance angles in rec A. 
+	Two numbers stand for outer and inner radius for ring detector.
+	For <IniWaveType>STEMshift</IniWaveType> only, otherwise ignored.
+	Can be a list.
+	-->
+	<Df>
+		<double>-580</double>
+	</Df>
+	<!-- Defines defocus for beam forming system in A. 
+	For <IniWaveType>Converged</IniWaveType> only, otherwise ignored.
+	Can be a list.
+	-->
+	<Cs>
+		<double>1.2</double>
+	</Cs>
+	<!-- Defines Cs for beam forming system in mm. 
+	For <IniWaveType>Converged</IniWaveType> only, otherwise ignored.
+	Can be a list.
+	-->
+	<UseAber>true</UseAber>
+	<!--Defines if Df and Cs should be applied when calculation the beam shape.
+	For <IniWaveType>Converged</IniWaveType> only, otherwise ignored.
+	-->
+	<NThreads>1</NThreads>
+	<!--Not used so far-->
+	<WorkingDirectoryName>D:\LEMOI\Multislice\Musli\new</WorkingDirectoryName>
+	<!--Defines the working directory-->
+	<IsContinue>false</IsContinue>
+	<!--Defines if this calculation will be followed by the other one.
+	If set to true makes the following:
+	- copyes the last calculated wave to the file with the name "last.wav" in the working directory;
+	- closes terminates the program after the end of calculation is reached and close console window.
+	Otherwise after the end of calculation console stays opened untill the user close it manually.
+	-->
+</Calculation_parameters>

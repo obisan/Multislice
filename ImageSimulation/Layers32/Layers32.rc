@@ -1,0 +1,1424 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+// Generated Help ID header file
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "resource.hm"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Русский (Россия) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\Layers32.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Layers32.ico"
+IDI_ICON1               ICON                    "res\\icon1.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDD_FORMULA6            BITMAP                  "bmp00020.bmp"
+BMP_FORMULA1            BITMAP                  "bitmap1.bmp"
+BMP_FORMULA2            BITMAP                  "bmp00001.bmp"
+BMP_A1                  BITMAP                  "bmp00005.bmp"
+BMP_a                   BITMAP                  "bmp00004.bmp"
+BMP_b                   BITMAP                  "bmp00007.bmp"
+BMP_c                   BITMAP                  "bmp00008.bmp"
+BMP_Y                   BITMAP                  "bmp00003.bmp"
+BMP_F                   BITMAP                  "bmp00002.bmp"
+BMP_A2                  BITMAP                  "bmp00006.bmp"
+BMP_FORMULA3            BITMAP                  "bmp00009.bmp"
+BMP_alfa                BITMAP                  "bmp00010.bmp"
+BMP_beta                BITMAP                  "bmp00011.bmp"
+BMP_n                   BITMAP                  "bmp00012.bmp"
+BMP_FORMULA4            BITMAP                  "bmp00013.bmp"
+BMP_alfa1               BITMAP                  "bmp00015.bmp"
+BMP_alfa2               BITMAP                  "bmp00016.bmp"
+BMP_beta1               BITMAP                  "bmp00017.bmp"
+BMP_beta2               BITMAP                  "bmp00018.bmp"
+BMP_d                   BITMAP                  "bmp00014.bmp"
+BMP_FORMULA5            BITMAP                  "bmp00019.bmp"
+BMP_FORMULA6            BITMAP                  "res\\bitmap1.bmp"
+BMP_FORMULA7            BITMAP                  "res\\bmp00001.bmp"
+BMP_A3                  BITMAP                  "res\\bmp_a3.bmp"
+BMP_FORMULA8            BITMAP                  "res\\bmp00002.bmp"
+BMP_alfa3               BITMAP                  "res\\bmp00003.bmp"
+IDB_APERTURA            BITMAP                  "res\\bmp00004.bmp"
+IDB_delta               BITMAP                  "res\\bmp00005.bmp"
+BMP_FORMULA9            BITMAP                  "res\\bmp_form.bmp"
+IDB_AMNGSTREN           BITMAP                  "res\\bmp00006.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 16
+BEGIN
+    BUTTON      ID_SAVE_SPECTR_SP
+    BUTTON      ID_SAVE_SPECTR_BMP
+    SEPARATOR
+    BUTTON      ID_COEFF_S
+    SEPARATOR
+    BUTTON      ID_PROCESSING
+    SEPARATOR
+    BUTTON      ID_SHOW_WIN
+    SEPARATOR
+    BUTTON      ID_CONSTANT
+    BUTTON      ID_WAVE
+    BUTTON      ID_CHESS
+    BUTTON      ID_RECT
+    BUTTON      ID_CIRCLE
+    BUTTON      ID_NOISE
+    BUTTON      ID_KLIN
+    BUTTON      ID_FRACTAL
+    BUTTON      ID_KVAZI
+    BUTTON      ID_OBOB
+    BUTTON      ID_ANIZOTROP
+    BUTTON      ID_EXAMPLE
+    BUTTON      ID_TURBO
+    BUTTON      ID_KVAZI2
+    BUTTON      ID_SP2TYPE
+    SEPARATOR
+    BUTTON      ID_ATOMS
+    SEPARATOR
+    BUTTON      ID_START
+    SEPARATOR
+    BUTTON      ID_CERNIC
+    BUTTON      ID_DEFOKUS
+    BUTTON      ID_ABER
+    SEPARATOR
+    BUTTON      ID_L2DB
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&Файл"
+    BEGIN
+        MENUITEM "Сохранить спектр в SP",       ID_SAVE_SPECTR_SP
+        MENUITEM "Сохранить спектр в BMP",      ID_SAVE_SPECTR_BMP
+        MENUITEM SEPARATOR
+        MENUITEM "В&ыход",                      ID_APP_EXIT
+    END
+    POPUP "&Вид"
+    BEGIN
+        MENUITEM "&Панель инструментов",        ID_VIEW_TOOLBAR
+        MENUITEM "&Статусная строка",           ID_VIEW_STATUS_BAR
+    END
+    POPUP "Моделирование"
+    BEGIN
+        MENUITEM "Константа",                   ID_CONSTANT
+        MENUITEM "Волна",                       ID_WAVE
+        MENUITEM "Шахматы",                     ID_CHESS
+        MENUITEM "Случайные квадраты",          ID_RECT
+        MENUITEM "Случайные круги",             ID_CIRCLE
+        MENUITEM "Белый шум",                   ID_NOISE
+        MENUITEM "Клин",                        ID_KLIN
+        MENUITEM SEPARATOR
+        MENUITEM "Фрактальное поле",            ID_FRACTAL
+        MENUITEM "Квазипериодический спектр",   ID_KVAZI
+        MENUITEM "Обобщенный спектр",           ID_OBOB
+        MENUITEM "Анизотропный спектр",         ID_ANIZOTROP
+        MENUITEM "По образцу",                  ID_EXAMPLE
+        MENUITEM "Турбулентный спектр",         ID_TURBO
+        MENUITEM "Квазипериодический спектр-2", ID_KVAZI2
+        MENUITEM "Спектральная плотность второго типа", ID_SP2TYPE
+    END
+    POPUP "Расчет"
+    BEGIN
+        MENUITEM "Установка схемы прохождения", ID_PROCESSING
+        MENUITEM "Начать расчет",               ID_START
+    END
+    POPUP "Визуализация"
+    BEGIN
+        MENUITEM "Метод визуализации: Цернике", ID_CERNIC
+        MENUITEM "Метод визуализации: дефокусировка", ID_DEFOKUS
+    END
+    POPUP "&Окна"
+    BEGIN
+        MENUITEM "&Каскадом",                   ID_WINDOW_CASCADE
+        MENUITEM "&Черепицей",                  ID_WINDOW_TILE_HORZ
+    END
+    POPUP "&?"
+    BEGIN
+        MENUITEM "Справка",                     ID_HELP_INDEX
+        MENUITEM "&О программе...",             ID_APP_ABOUT
+    END
+END
+
+IDR_LAYERSTYPE MENU
+BEGIN
+    POPUP "&Файл"
+    BEGIN
+        MENUITEM SEPARATOR
+        MENUITEM "В&ыход",                      ID_APP_EXIT
+    END
+    POPUP "&Вид"
+    BEGIN
+        MENUITEM "&Панель инструментов",        ID_VIEW_TOOLBAR
+        MENUITEM "&Статусная строка",           ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Окна"
+    BEGIN
+        MENUITEM "&Каскадом",                   ID_WINDOW_CASCADE
+        MENUITEM "&Черепицей",                  ID_WINDOW_TILE_HORZ
+    END
+    POPUP "&?"
+    BEGIN
+        MENUITEM "Справка",                     ID_HELP_INDEX
+        MENUITEM "&О программе...",             ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    VK_F1,          ID_HELP_INDEX,          VIRTKEY, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG 0, 0, 235, 53
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Layers32"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "Crazy Layers Version: 1.0 Nuclear winter",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2000",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_PATH DIALOGEX 46, 60, 347, 160
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Установка схемы прохождения"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_APERTURA,115,23,50,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_WAVE,115,56,50,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LAYERS,115,72,50,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_COUNT,115,88,50,12,ES_UPPERCASE
+    EDITTEXT        IDC_FORMULA,45,118,50,12,ES_UPPERCASE | ES_READONLY | NOT WS_VISIBLE
+    PUSHBUTTON      "Обновить",IDC_UP,115,120,50,14,BS_CENTER | BS_VCENTER
+    DEFPUSHBUTTON   "OK",IDOK,115,138,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,173,138,50,14
+    RTEXT           "Количество слоев",IDC_STATIC,34,89,72,10
+    RTEXT           "Размер апертуры (мм)",IDC_STATIC,28,23,78,10
+    RTEXT           "Длина волны (мкм)",IDC_STATIC,43,57,63,10
+    RTEXT           "Расстояние между слоями (мм)",IDC_STATIC,2,72,104,11
+    CONTROL         136,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,5,115,31,20
+    EDITTEXT        IDC_MODULAC,115,104,50,12,ES_UPPERCASE
+    RTEXT           "Глубина фазовой модуляции",IDC_STATIC,7,106,99,10
+    CONTROL         "КОС",IDC_KOS,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,115,5,50,14,0,HIDC_KOS
+    CONTROL         "ПЭМ",IDC_PAM,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,170,5,50,14
+    EDITTEXT        IDC_APERTURA_PAM,170,23,50,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_WAVE_PAM,170,56,51,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LAYERS_PAM,170,72,50,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_COUNT_PAM,170,88,50,12,ES_UPPERCASE
+    EDITTEXT        IDC_MODULAC_PAM,170,104,50,12,ES_UPPERCASE
+    LTEXT           "Размер апертуры",IDC_STATIC,225,23,60,10
+    LTEXT           "Расстояние между слоями",IDC_STATIC,225,72,88,11
+    LTEXT           "Количество слоев",IDC_STATIC,225,89,67,10
+    LTEXT           "Глубина фазовой модуляции",IDC_STATIC,225,106,99,10
+    EDITTEXT        IDC_NAPR_PAM,170,39,50,12,ES_AUTOHSCROLL
+    LTEXT           "Ускор. напряжение микроскопа (кВ)",IDC_STATIC,225,40,119,10
+    LTEXT           "Длина волны",IDC_STATIC,225,57,46,10
+    CONTROL         158,IDC_STATIC,"Static",SS_BITMAP,271,56,16,8
+    CONTROL         158,IDC_STATIC,"Static",SS_BITMAP,313,71,16,8
+    CONTROL         158,IDC_STATIC,"Static",SS_BITMAP,288,22,16,8
+END
+
+IDD_CONSTANTA DIALOGEX 0, 0, 152, 99
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Модель ""Константа"""
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,88,53,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,88,75,50,14
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,59,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,72,53,10
+    GROUPBOX        "Применить к...",IDC_STATIC,14,49,64,40
+    EDITTEXT        IDC_DEM,14,28,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,68,28,10,12
+    LTEXT           "Размер модели",IDC_STATIC,13,13,55,8
+END
+
+IDD_WAVE DIALOG 0, 0, 144, 164
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель ""Волна"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_AMP,10,19,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PERIOD,10,45,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DIRECT,10,71,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,10,96,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,127,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,140,53,10
+    DEFPUSHBUTTON   "OK",IDOK,83,121,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,83,143,50,14
+    GROUPBOX        "Применить к...",IDC_STATIC,10,117,64,40
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,64,96,10,12
+    LTEXT           "Размер модели",IDC_STATIC,10,85,55,8
+    LTEXT           "Амплитуда",IDC_STATIC,10,7,40,8
+    LTEXT           "Период волны (отсчеты)",IDC_STATIC,10,33,85,8
+    LTEXT           "Направление (градусы)",IDC_STATIC,10,60,81,8
+END
+
+IDD_CHESS DIALOGEX 0, 0, 159, 166
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Модель ""Шахматы"""
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_PERIOD,10,19,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DARK,10,45,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LIGHT,10,70,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,10,96,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,127,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,140,53,10
+    DEFPUSHBUTTON   "OK",IDOK,97,121,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,97,143,50,14
+    GROUPBOX        "Применить к...",IDC_STATIC,10,117,64,40
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,64,96,10,12
+    LTEXT           "Размер модели",IDC_STATIC,10,85,55,8
+    LTEXT           "Период",IDC_STATIC,10,8,27,8
+    LTEXT           "Интен. темной клетки",IDC_STATIC,10,34,78,8
+    LTEXT           "Интен. светлой клетки",IDC_STATIC,10,59,80,8
+END
+
+IDD_RECT DIALOG 0, 0, 151, 191
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель ""Случайные квадраты"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_DEMRECT,9,17,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_COUNTRECT,9,44,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_FON,9,71,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_RECT,9,98,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,9,124,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,155,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,168,53,10
+    DEFPUSHBUTTON   "OK",IDOK,91,149,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,91,171,50,14
+    GROUPBOX        "Применить к...",IDC_STATIC,9,145,64,40
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,63,124,10,12
+    LTEXT           "Размер модели",IDC_STATIC,9,113,55,8
+    LTEXT           "Размер квадрата",IDC_STATIC,9,5,61,8
+    LTEXT           "Количество квадратов",IDC_STATIC,9,32,80,8
+    LTEXT           "Интенс. фона",IDC_STATIC,9,59,48,8
+    LTEXT           "Интенс. квадрата",IDC_STATIC,9,86,62,8
+END
+
+IDD_CIRCLE DIALOGEX 0, 0, 162, 195
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Модель ""Случайные круги"""
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_DIAMETR,13,15,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_COUNT,13,42,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_INTEN_FON,13,69,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_INTEN_CIRCLE,13,96,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,13,122,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,153,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,166,53,10
+    CONTROL         "Тон",IDC_TON,"Button",BS_AUTORADIOBUTTON | WS_GROUP,96,105,29,10
+    CONTROL         "полуТон",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,96,117,44,10
+    DEFPUSHBUTTON   "OK",IDOK,92,147,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,92,169,50,14
+    GROUPBOX        "Применить к...",IDC_STATIC,13,143,64,40
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,67,122,10,12
+    LTEXT           "Размер модели",IDC_STATIC,13,111,55,8
+    LTEXT           "Диаметр круга",IDC_STATIC,13,3,53,8
+    LTEXT           "Количество кругов",IDC_STATIC,13,30,66,8
+    LTEXT           "Интенсивность фона",IDC_STATIC,13,57,75,8
+    LTEXT           "Интенсивность в круге",IDC_STATIC,13,84,81,8
+    GROUPBOX        "Формировать",IDC_STATIC,88,93,60,41
+END
+
+IDD_NOISE DIALOG 0, 0, 156, 143
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель ""Белый шум"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_MIN,14,21,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MAX,14,48,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,14,74,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,105,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,118,53,10
+    DEFPUSHBUTTON   "OK",IDOK,92,100,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,92,121,50,14
+    GROUPBOX        "Применить к...",IDC_STATIC,14,95,64,40
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,68,74,10,12
+    LTEXT           "Размер модели",IDC_STATIC,14,63,55,8
+    LTEXT           "Минимальная интенсивность",IDC_STATIC,14,9,104,8
+    LTEXT           "Максимальная интенсивность",IDC_STATIC,14,36,106,8
+END
+
+IDD_KLIN DIALOG 0, 0, 152, 143
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель ""Клин"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,89,98,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,89,120,50,14
+    EDITTEXT        IDC_DEM,12,73,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,104,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,117,53,10
+    GROUPBOX        "Применить к...",IDC_STATIC,12,94,64,40
+    LTEXT           "Размер модели",IDC_STATIC,12,62,55,8
+    LTEXT           "Направление клина (гр.)",IDC_STATIC,12,8,83,8
+    LTEXT           "Крутизна клина (0-1)",IDC_STATIC,12,35,70,8
+    EDITTEXT        IDC_DIRECT,12,20,48,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_KRUT,12,47,48,12,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,68,73,8,12
+END
+
+IDD_FRACTAL DIALOGEX 0, 0, 149, 129
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Модель ""Фрактальное поле"""
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_H,31,17,25,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_X,84,37,25,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_Y,110,37,25,12,ES_AUTOHSCROLL,0,HIDC_Y
+    EDITTEXT        IDC_DEM,11,60,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,65,60,10,12
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,91,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,104,53,10
+    DEFPUSHBUTTON   "OK",IDOK,88,85,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,88,107,50,14
+    LTEXT           "Размер модели",IDC_STATIC,11,49,55,8
+    GROUPBOX        "Применить к...",IDC_STATIC,11,81,64,40
+    LTEXT           "h=",IDC_STATIC,22,19,8,8
+    LTEXT           "Диапазон на выходе:",IDC_STATIC,11,38,72,8
+    CONTROL         110,IDC_STATIC,"Static",SS_BITMAP,75,6,54,26
+END
+
+IDD_AMPLIFIRE DIALOG 0, 0, 141, 48
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Сменить коэффициент усиления"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_POS,90,5,46,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Ok",IDOK,51,20,41,16,BS_CENTER | BS_VCENTER
+    SCROLLBAR       IDC_HSCROLLBAR,0,38,141,10,NOT WS_VISIBLE | WS_DISABLED | WS_GROUP
+    LTEXT           "Коэффициент усиления",IDC_STATIC,6,9,83,8
+    EDITTEXT        IDC_PREDEL,90,23,40,12,NOT WS_VISIBLE | WS_DISABLED
+END
+
+IDD_KVAZI DIALOG 0, 0, 243, 250
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель ""Квазипериодический спектр"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,181,204,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,181,228,50,14
+    CONTROL         111,IDC_STATIC,"Static",SS_BITMAP,33,7,177,57
+    EDITTEXT        IDC_X,27,203,23,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_Y,71,203,23,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,26,230,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,110,212,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,110,225,53,10
+    GROUPBOX        "Применить к...",IDC_STATIC,102,199,64,43
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,86,230,8,12
+    LTEXT           "Размер модели",IDC_STATIC,26,218,55,8
+    LTEXT           "Диапазон на выходе:",IDC_STATIC,27,190,72,8
+    EDITTEXT        IDC_A1,94,86,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_A1,147,86,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A1,198,86,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_A,94,101,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,86,88,8,8
+    RTEXT           "Вес :",IDC_STATIC,52,88,18,8
+    LTEXT           "=",IDC_STATIC,139,88,8,8
+    LTEXT           "=",IDC_STATIC,190,88,8,9
+    LTEXT           "=",IDC_STATIC,86,103,8,8
+    LTEXT           "=",IDC_STATIC,139,103,8,8
+    LTEXT           "=",IDC_STATIC,190,103,8,9
+    RTEXT           "Ширина :",IDC_STATIC,39,103,31,8
+    LTEXT           "=",IDC_STATIC,86,136,8,8
+    RTEXT           "Вес :",IDC_STATIC,52,137,18,8
+    LTEXT           "=",IDC_STATIC,139,136,8,8
+    LTEXT           "=",IDC_STATIC,190,136,8,9
+    LTEXT           "=",IDC_STATIC,86,151,8,8
+    LTEXT           "=",IDC_STATIC,139,151,8,8
+    LTEXT           "=",IDC_STATIC,190,150,8,9
+    RTEXT           "Ширина гало :",IDC_STATIC,20,152,50,8
+    LTEXT           "=",IDC_STATIC,86,167,8,8
+    LTEXT           "=",IDC_STATIC,139,167,8,8
+    LTEXT           "=",IDC_STATIC,190,166,8,9
+    RTEXT           "Положение гало :",IDC_STATIC,11,167,59,8
+    EDITTEXT        IDC_F_A,147,101,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A,198,101,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_A2,94,134,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_A2,147,134,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A2,198,134,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_B,94,149,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_B,147,149,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_B,198,149,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_C,94,165,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_C,147,165,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_C,198,165,31,12,ES_UPPERCASE
+    CONTROL         115,IDC_STATIC,"Static",SS_BITMAP,74,86,10,13
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,182,86,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,130,87,8,10
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,181,101,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,129,102,8,10
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,181,134,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,129,135,8,10
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,181,149,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,129,150,8,10
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,181,164,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,129,165,8,10
+    CONTROL         114,IDC_STATIC,"Static",SS_BITMAP,75,103,8,9
+    CONTROL         117,IDC_STATIC,"Static",SS_BITMAP,74,151,9,12
+    CONTROL         118,IDC_STATIC,"Static",SS_BITMAP,75,168,9,8
+    CONTROL         116,IDC_STATIC,"Static",SS_BITMAP,73,133,11,13
+    LTEXT           "<->",IDC_STATIC,56,205,10,8
+    GROUPBOX        "Компонента 1 (низкочастотная)",IDC_STATIC,5,75,232,43,BS_RIGHT
+    GROUPBOX        "Компонента 2 (высокочастотное гало)",IDC_STATIC,5,125,232,62,BS_RIGHT
+END
+
+IDD_OBOB DIALOG 0, 0, 259, 228
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель ""Обобщенный спектр"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_A1,100,54,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_A1,151,54,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A1,204,54,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_A,100,67,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_A,151,67,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A,204,67,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_A22,100,101,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_A22,151,101,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A22,204,101,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_AL,100,114,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_AL,151,114,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_AL,204,114,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_BE,100,127,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_BE,151,127,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_BE,204,127,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_N,100,140,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_F_N,151,140,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,92,56,8,8,NOT WS_GROUP
+    RTEXT           "Вес :",IDC_STATIC,10,56,63,8
+    LTEXT           "=",IDC_STATIC,143,56,8,8
+    LTEXT           "=",IDC_STATIC,194,55,8,9
+    LTEXT           "=",IDC_STATIC,92,69,8,8,NOT WS_GROUP
+    LTEXT           "=",IDC_STATIC,143,69,8,8
+    LTEXT           "=",IDC_STATIC,194,68,8,9
+    RTEXT           "Ширина :",IDC_STATIC,10,69,63,8
+    LTEXT           "=",IDC_STATIC,92,103,8,8,NOT WS_GROUP
+    RTEXT           "Вес :",IDC_STATIC,10,103,63,8
+    LTEXT           "=",IDC_STATIC,143,103,8,8
+    LTEXT           "=",IDC_STATIC,194,102,8,9
+    LTEXT           "=",IDC_STATIC,92,116,8,8,NOT WS_GROUP
+    LTEXT           "=",IDC_STATIC,143,116,8,8
+    LTEXT           "=",IDC_STATIC,194,115,8,9
+    RTEXT           "Ширина гало :",IDC_STATIC,10,116,63,8
+    LTEXT           "=",IDC_STATIC,92,129,8,8,NOT WS_GROUP
+    LTEXT           "=",IDC_STATIC,143,129,8,8
+    LTEXT           "=",IDC_STATIC,194,128,8,9
+    RTEXT           "Положение гало :",IDC_STATIC,10,129,63,8
+    LTEXT           "=",IDC_STATIC,92,142,8,8,NOT WS_GROUP
+    LTEXT           "=",IDC_STATIC,143,142,8,8
+    LTEXT           "=",IDC_STATIC,194,141,8,9
+    RTEXT           "Крутизна :",IDC_STATIC,10,142,63,8
+    EDITTEXT        IDC_Y_N,204,140,31,12,ES_UPPERCASE
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,133,55,8,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,133,69,8,10
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,185,53,8,11
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,185,69,8,11
+    CONTROL         114,IDC_STATIC,"Static",SS_BITMAP,80,69,8,9
+    CONTROL         115,IDC_STATIC,"Static",SS_BITMAP,78,53,10,13
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,132,102,8,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,132,115,8,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,132,128,8,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,132,140,8,10
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,185,99,8,11
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,185,113,8,11
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,184,128,8,11
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,184,139,8,11
+    CONTROL         116,IDC_STATIC,"Static",SS_BITMAP,77,99,11,13
+    DEFPUSHBUTTON   "OK",IDOK,185,178,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,185,203,50,14
+    EDITTEXT        IDC_X,24,178,23,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_Y,68,178,23,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM2,23,205,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,107,187,38,10
+    CONTROL         "...амлитуде",IDC_AT2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,107,200,53,10
+    GROUPBOX        "Применить к...",IDC_STATIC,99,174,64,43
+    CONTROL         "Spin1",IDC_SPIN2,"msctls_updown32",UDS_ARROWKEYS,83,205,8,12
+    LTEXT           "Размер модели",IDC_STATIC,23,193,55,8
+    LTEXT           "Диапазон на выходе:",IDC_STATIC,24,165,72,8
+    CONTROL         120,IDC_STATIC,"Static",SS_BITMAP,79,116,9,9
+    CONTROL         121,IDC_STATIC,"Static",SS_BITMAP,79,127,9,13
+    CONTROL         122,IDC_STATIC,"Static",SS_BITMAP,80,142,8,10
+    GROUPBOX        "Компонента 2 (высокочастотное кольцо-гало)",IDC_STATIC,9,89,240,69,BS_RIGHT
+    GROUPBOX        "Компонента 1 (низкочастотная)",IDC_STATIC,9,42,240,44,BS_RIGHT
+    CONTROL         119,IDC_STATIC,"Static",SS_BITMAP,8,7,240,26
+    LTEXT           "<->",IDC_STATIC,53,180,10,8
+END
+
+IDD_ANIZOTROP DIALOGEX 0, 0, 307, 209
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Модель ""Анизотропный спектр"""
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_A1,44,102,39,12,ES_UPPERCASE
+    EDITTEXT        IDC_c1,44,117,39,12,ES_UPPERCASE
+    EDITTEXT        IDC_b1,103,102,39,12,ES_UPPERCASE
+    EDITTEXT        IDC_d1,103,117,39,12,ES_UPPERCASE
+    EDITTEXT        IDC_al1,183,101,39,12,ES_UPPERCASE
+    EDITTEXT        IDC_al2,183,116,39,12,ES_UPPERCASE
+    EDITTEXT        IDC_be1,246,101,39,12,ES_UPPERCASE
+    EDITTEXT        IDC_be2,246,116,39,12,ES_UPPERCASE
+    EDITTEXT        IDC_X,11,162,23,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_Y,56,162,23,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,11,189,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,95,171,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,95,184,53,10
+    DEFPUSHBUTTON   "OK",IDOK,155,163,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,155,187,50,14
+    CONTROL         123,IDC_STATIC,"Static",SS_BITMAP,11,8,284,76
+    GROUPBOX        "Применить к...",IDC_STATIC,87,158,64,43
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,71,189,8,12
+    LTEXT           "Размер модели",IDC_STATIC,11,177,55,8
+    LTEXT           "Диапазон на выходе:",IDC_STATIC,11,149,72,8
+    LTEXT           "<->",IDC_STATIC,41,164,10,8
+    LTEXT           "=",IDC_STATIC,34,104,8,8
+    LTEXT           "=",IDC_STATIC,95,104,8,8
+    LTEXT           "=",IDC_STATIC,34,119,8,8
+    LTEXT           "=",IDC_STATIC,95,119,8,8
+    LTEXT           "=",IDC_STATIC,174,103,8,8
+    LTEXT           "=",IDC_STATIC,174,118,8,8
+    LTEXT           "=",IDC_STATIC,238,103,8,8
+    LTEXT           "=",IDC_STATIC,238,118,8,8
+    CONTROL         114,IDC_STATIC,"Static",SS_BITMAP,22,102,8,9
+    CONTROL         117,IDC_STATIC,"Static",SS_BITMAP,85,102,9,12
+    CONTROL         118,IDC_STATIC,"Static",SS_BITMAP,22,117,9,8
+    CONTROL         124,IDC_STATIC,"Static",SS_BITMAP,85,117,9,11
+    CONTROL         125,IDC_STATIC,"Static",SS_BITMAP,159,101,11,10
+    CONTROL         126,IDC_STATIC,"Static",SS_BITMAP,159,116,12,12
+    CONTROL         127,IDC_STATIC,"Static",SS_BITMAP,224,101,12,14
+    CONTROL         137,IDC_STATIC,"Static",SS_BITMAP,225,116,12,13
+    GROUPBOX        "",IDC_STATIC,155,90,140,45
+    GROUPBOX        "",IDC_STATIC,11,90,140,45
+END
+
+IDD_TURBO DIALOG 0, 0, 230, 216
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель""Турбулентный спектр"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC__A,46,53,35,12
+    EDITTEXT        IDC__Afi,107,53,35,12
+    EDITTEXT        IDC__Agam,173,53,35,12
+    EDITTEXT        IDC_alfa,46,70,35,12
+    EDITTEXT        IDC_afi,107,70,35,12
+    EDITTEXT        IDC_agam,173,70,35,12
+    EDITTEXT        IDC__B,46,86,35,12
+    EDITTEXT        IDC__Bfi,107,86,35,12
+    EDITTEXT        IDC__Bgam,173,86,35,12
+    EDITTEXT        IDC__gamma,46,102,35,12
+    EDITTEXT        IDC__gfi,107,102,35,12
+    EDITTEXT        IDC__ggam,173,102,35,12
+    EDITTEXT        IDC__W,46,118,35,12
+    EDITTEXT        IDC__Wfi,107,118,35,12
+    EDITTEXT        IDC__Wgam,173,118,35,12
+    LTEXT           "A=",IDC_STATIC,28,55,10,8
+    LTEXT           "B=",IDC_STATIC,26,88,11,8
+    LTEXT           "a=",IDC_STATIC,27,120,9,8
+    LTEXT           "=",IDC_STATIC,34,72,8,8
+    LTEXT           "=",IDC_STATIC,36,104,8,8
+    LTEXT           "=",IDC_STATIC,163,120,8,8
+    LTEXT           "=",IDC_STATIC,99,55,8,8
+    LTEXT           "=",IDC_STATIC,163,55,8,8
+    LTEXT           "=",IDC_STATIC,163,72,8,8
+    LTEXT           "=",IDC_STATIC,99,72,8,8
+    LTEXT           "=",IDC_STATIC,163,88,8,8
+    LTEXT           "=",IDC_STATIC,163,104,8,8
+    LTEXT           "=",IDC_STATIC,99,88,8,8
+    LTEXT           "=",IDC_STATIC,99,104,8,8
+    LTEXT           "=",IDC_STATIC,99,120,8,8
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,87,54,8,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,87,71,8,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,87,86,8,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,87,103,8,10
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,87,118,8,10
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,151,53,8,11
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,151,72,8,11
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,151,87,8,11
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,151,102,8,11
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,151,117,8,11
+    CONTROL         120,IDC_STATIC,"Static",SS_BITMAP,24,72,9,9
+    CONTROL         121,IDC_STATIC,"Static",SS_BITMAP,23,102,9,13
+    CONTROL         IDI_ICON1,IDC_STATIC,"Static",SS_BITMAP,14,7,75,29
+    GROUPBOX        "",IDC_STATIC,14,40,204,99
+    DEFPUSHBUTTON   "OK",IDOK,168,170,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,168,194,50,14
+    EDITTEXT        IDC_X,14,169,23,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_Y,58,169,23,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM3,13,196,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,97,178,38,10
+    CONTROL         "...амлитуде",IDC_AT3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,97,191,53,10
+    GROUPBOX        "Применить к...",IDC_STATIC,89,165,64,43
+    CONTROL         "Spin1",IDC_SPIN3,"msctls_updown32",UDS_ARROWKEYS,73,196,8,12
+    LTEXT           "Размер модели",IDC_STATIC,13,184,55,8
+    LTEXT           "Диапазон на выходе:",IDC_STATIC,14,156,72,8
+    LTEXT           "<->",IDC_STATIC,43,171,10,8
+END
+
+IDD_KVAZI2 DIALOG 0, 0, 235, 260
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель ""Квазипериодический спектр-2"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,166,216,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,166,240,50,14
+    EDITTEXT        IDC_X,19,215,23,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_Y,61,215,23,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,19,242,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,99,224,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,99,237,53,10
+    GROUPBOX        "Применить к...",IDC_STATIC,91,211,64,43
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,76,242,8,12
+    LTEXT           "Размер модели",IDC_STATIC,19,230,55,8
+    LTEXT           "Диапазон на выходе:",IDC_STATIC,19,202,72,8
+    LTEXT           "<->",IDC_STATIC,48,217,10,8
+    CONTROL         145,IDC_STATIC,"Static",SS_BITMAP,33,9,168,25
+    CONTROL         115,IDC_STATIC,"Static",SS_BITMAP,24,46,10,13
+    LTEXT           "=",IDC_STATIC,37,49,8,8
+    EDITTEXT        IDC_A1,47,47,40,12,ES_AUTOHSCROLL
+    CONTROL         125,IDC_STATIC,"Static",SS_BITMAP,24,64,11,10
+    LTEXT           "=",IDC_STATIC,37,64,8,8
+    EDITTEXT        IDC_alfa1,47,62,40,12,ES_AUTOHSCROLL
+    CONTROL         116,IDC_STATIC,"Static",SS_BITMAP,24,77,11,13
+    LTEXT           "=",IDC_STATIC,37,80,8,8
+    EDITTEXT        IDC_A2,47,78,40,12,ES_AUTOHSCROLL
+    CONTROL         149,IDC_STATIC,"Static",SS_BITMAP,24,95,10,9
+    LTEXT           "=",IDC_STATIC,37,95,8,8
+    EDITTEXT        IDC_A3,47,93,40,12,ES_AUTOHSCROLL
+    CONTROL         114,IDC_STATIC,"Static",SS_BITMAP,24,109,8,9
+    CONTROL         117,IDC_STATIC,"Static",SS_BITMAP,24,124,9,12
+    CONTROL         118,IDC_STATIC,"Static",SS_BITMAP,24,144,9,8
+    LTEXT           "=",IDC_STATIC,37,111,8,8
+    EDITTEXT        IDC_A,47,109,40,12,ES_AUTOHSCROLL
+    LTEXT           "=",IDC_STATIC,37,127,8,8
+    EDITTEXT        IDC_B,47,125,40,12,ES_AUTOHSCROLL
+    LTEXT           "=",IDC_STATIC,37,143,8,8
+    EDITTEXT        IDC_C,47,141,40,12,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,16,39,79,155
+    LTEXT           "=",IDC_STATIC,37,159,8,8
+    EDITTEXT        IDC_alfa2,47,157,40,12,ES_AUTOHSCROLL
+    LTEXT           "=",IDC_STATIC,37,175,8,8
+    EDITTEXT        IDC_beta,47,173,40,12,ES_AUTOHSCROLL
+    CONTROL         121,IDC_STATIC,"Static",SS_BITMAP,24,173,9,13
+    CONTROL         126,IDC_STATIC,"Static",SS_BITMAP,24,157,12,12
+    EDITTEXT        IDC_F_A1,129,47,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A1,180,47,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,49,8,8
+    LTEXT           "=",IDC_STATIC,172,49,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,47,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,47,8,10
+    EDITTEXT        IDC_F_alf1,129,62,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_alfa1,180,62,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,64,8,8
+    LTEXT           "=",IDC_STATIC,172,64,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,62,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,62,8,10
+    EDITTEXT        IDC_F_A2_,129,78,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A2_,180,78,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,80,8,8
+    LTEXT           "=",IDC_STATIC,172,80,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,78,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,78,8,10
+    EDITTEXT        IDC_F_A3,129,93,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A3,180,93,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,95,8,8
+    LTEXT           "=",IDC_STATIC,172,95,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,93,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,93,8,10
+    EDITTEXT        IDC_F_a_l,129,109,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_a_l,180,109,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,111,8,8
+    LTEXT           "=",IDC_STATIC,172,111,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,109,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,109,8,10
+    EDITTEXT        IDC_F_b_,129,125,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_b_,180,125,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,127,8,8
+    LTEXT           "=",IDC_STATIC,172,127,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,125,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,125,8,10
+    EDITTEXT        IDC_F_c_,129,141,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_c_,180,141,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,143,8,8
+    LTEXT           "=",IDC_STATIC,172,143,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,141,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,141,8,10
+    EDITTEXT        IDC_F_alfa2,129,157,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_alfa2,180,157,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,159,8,8
+    LTEXT           "=",IDC_STATIC,172,159,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,157,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,157,8,10
+    EDITTEXT        IDC_F_beta,129,173,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_beta,180,173,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,121,175,8,8
+    LTEXT           "=",IDC_STATIC,172,175,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,164,173,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,112,173,8,10
+    GROUPBOX        "",IDC_STATIC,106,39,113,154
+END
+
+IDD_SP_2_TYPE DIALOG 0, 0, 267, 266
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Модель ""Спектральная плотность 2-го типа"""
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,180,221,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,180,245,50,14
+    EDITTEXT        IDC_X,30,220,23,12,ES_RIGHT | ES_AUTOHSCROLL
+    EDITTEXT        IDC_Y,78,220,23,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DEM,30,249,48,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "...фазе",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,115,229,38,10
+    CONTROL         "...амлитуде",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,115,242,53,10
+    GROUPBOX        "Применить к...",IDC_STATIC,108,216,64,43
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,93,249,8,12
+    LTEXT           "Размер модели",IDC_STATIC,30,235,55,8
+    LTEXT           "Диапазон на выходе:",IDC_STATIC,30,207,72,8
+    LTEXT           "<->",IDC_STATIC,60,222,10,8
+    CONTROL         115,IDC_STATIC,"Static",SS_BITMAP,38,27,10,13
+    LTEXT           "=",IDC_STATIC,51,30,8,8
+    EDITTEXT        IDC_A1_,61,28,40,12,ES_AUTOHSCROLL
+    CONTROL         125,IDC_STATIC,"Static",SS_BITMAP,38,76,11,10
+    LTEXT           "=",IDC_STATIC,51,45,8,8
+    EDITTEXT        IDC_A2_,61,43,40,12,ES_AUTOHSCROLL
+    CONTROL         116,IDC_STATIC,"Static",SS_BITMAP,38,43,11,13
+    LTEXT           "=",IDC_STATIC,51,61,8,8
+    EDITTEXT        IDC_A3_,61,59,40,12,ES_AUTOHSCROLL
+    CONTROL         149,IDC_STATIC,"Static",SS_BITMAP,38,59,10,9
+    LTEXT           "=",IDC_STATIC,51,76,8,8
+    EDITTEXT        IDC_alfa1_,61,74,40,12,ES_AUTOHSCROLL
+    CONTROL         114,IDC_STATIC,"Static",SS_BITMAP,37,123,8,9
+    CONTROL         117,IDC_STATIC,"Static",SS_BITMAP,37,136,9,12
+    CONTROL         118,IDC_STATIC,"Static",SS_BITMAP,37,155,9,8
+    LTEXT           "=",IDC_STATIC,51,92,8,8
+    EDITTEXT        IDC_alfa2_,61,90,40,12,ES_AUTOHSCROLL
+    LTEXT           "=",IDC_STATIC,51,108,8,8
+    EDITTEXT        IDC_alfa3_,61,106,40,12,ES_AUTOHSCROLL
+    LTEXT           "=",IDC_STATIC,51,124,8,8
+    EDITTEXT        IDC_A,61,122,40,12,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,30,20,79,183
+    LTEXT           "=",IDC_STATIC,51,140,8,8
+    EDITTEXT        IDC_B_,61,138,40,12,ES_AUTOHSCROLL
+    LTEXT           "=",IDC_STATIC,51,156,8,8
+    EDITTEXT        IDC_C_,61,154,40,12,ES_AUTOHSCROLL
+    CONTROL         121,IDC_STATIC,"Static",SS_BITMAP,37,168,9,13
+    CONTROL         126,IDC_STATIC,"Static",SS_BITMAP,37,89,12,12
+    EDITTEXT        IDC_F_A1__,143,28,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A1__,194,28,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,30,8,8
+    LTEXT           "=",IDC_STATIC,186,30,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,28,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,28,8,10
+    EDITTEXT        IDC_F_A2__,143,43,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A2__,194,43,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,45,8,8
+    LTEXT           "=",IDC_STATIC,186,45,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,43,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,43,8,10
+    EDITTEXT        IDC_F_A3__,143,59,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_A3__,194,59,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,61,8,8
+    LTEXT           "=",IDC_STATIC,186,61,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,59,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,59,8,10
+    EDITTEXT        IDC_F_alfa1__,143,74,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_alfa1__,194,74,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,76,8,8
+    LTEXT           "=",IDC_STATIC,186,76,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,74,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,74,8,10
+    EDITTEXT        IDC_F_alfa2__,143,90,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_alfa2__,194,90,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,92,8,8
+    LTEXT           "=",IDC_STATIC,186,92,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,90,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,90,8,10
+    EDITTEXT        IDC_F_alfa3__,143,106,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_alfa3__,194,106,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,108,8,8
+    LTEXT           "=",IDC_STATIC,186,108,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,106,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,106,8,10
+    EDITTEXT        IDC_F_a__,143,122,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_a__,194,122,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,124,8,8
+    LTEXT           "=",IDC_STATIC,186,124,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,122,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,122,8,10
+    EDITTEXT        IDC_F_b__,143,138,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_b__,194,138,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,140,8,8
+    LTEXT           "=",IDC_STATIC,186,140,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,138,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,138,8,10
+    EDITTEXT        IDC_F_c__,143,154,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_c__,194,154,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,156,8,8
+    LTEXT           "=",IDC_STATIC,186,156,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,178,154,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,154,8,10
+    GROUPBOX        "",IDC_STATIC,120,20,113,183
+    CONTROL         151,IDC_STATIC,"Static",SS_BITMAP,13,3,240,18
+    CONTROL         152,IDC_STATIC,"Static",SS_BITMAP,37,106,12,12
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,37,185,8,11
+    LTEXT           "=",IDC_STATIC,51,172,8,8
+    EDITTEXT        IDC_beta_,61,170,40,12,ES_AUTOHSCROLL
+    LTEXT           "=",IDC_STATIC,50,187,8,8
+    EDITTEXT        IDC_gamma_,61,185,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_F_beta__,143,170,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_beta__,194,170,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,172,8,8
+    LTEXT           "=",IDC_STATIC,186,172,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,177,170,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,170,8,10
+    EDITTEXT        IDC_F_gamma_,143,185,31,12,ES_UPPERCASE
+    EDITTEXT        IDC_Y_gamma_,194,185,31,12,ES_UPPERCASE
+    LTEXT           "=",IDC_STATIC,135,187,8,8
+    LTEXT           "=",IDC_STATIC,186,187,8,9
+    CONTROL         113,IDC_STATIC,"Static",SS_BITMAP,177,185,8,11
+    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,126,185,8,10
+END
+
+IDD_DEFOKUS DIALOG 0, 0, 281, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Дефокусировка"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_D,71,46,50,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CCF,71,14,50,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CXP,71,30,50,12,ES_AUTOHSCROLL
+    CONTROL         "sin",IDC_SIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,176,20,22,11
+    CONTROL         "cos",IDC_COS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,176,36,26,11
+    DEFPUSHBUTTON   "OK",IDOK,216,10,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,216,28,50,14
+    LTEXT           "Схр",IDC_STATIC,35,34,14,8,NOT WS_GROUP
+    RTEXT           "Cs (мм)",IDC_STATIC,31,18,37,8,NOT WS_GROUP
+    GROUPBOX        "",IDC_STATIC,12,5,148,73
+    CONTROL         "",IDC_GRAF,"Static",SS_OWNERDRAW,12,86,258,150
+    GROUPBOX        "График",IDC_STATIC,167,5,42,73
+    CONTROL         155,IDC_STATIC,"Static",SS_BITMAP,51,34,16,8
+    CONTROL         156,IDC_STATIC,"Static",SS_BITMAP,60,49,6,7
+    RTEXT           "n",IDC_STATIC,13,49,8,8
+    EDITTEXT        IDC_N,25,46,20,12,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,49,46,8,12
+    PUSHBUTTON      "Обновить",IDC_REDRAW,170,53,36,14
+    SCROLLBAR       IDC_SCROLLBAR,12,240,258,11
+    EDITTEXT        IDC_AP_DIAF,71,61,50,12,ES_AUTOHSCROLL
+    RTEXT           "Ап. диафрагма:",IDC_STATIC,16,62,52,8
+    CONTROL         "<0",IDC_ZNAK_DEF,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,125,47,23,10
+    CONTROL         "авто",IDC_AUTO_DEFOC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,125,62,32,10
+END
+
+IDD_EXAMPLE DIALOG 0, 0, 139, 51
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Выбор образца для..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,81,9,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,81,31,50,14
+    CONTROL         "...фазы",IDC_FT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,15,39,10
+    CONTROL         "...амлитуды",IDC_AT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,28,53,10
+    GROUPBOX        "",IDC_STATIC,8,5,64,40
+END
+
+IDD_LATDLG_PROGRESS DIALOG 0, 0, 254, 27
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Progress1",IDC_PROGRESS1,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,7,240,14
+END
+
+IDD_LATDLG_DIALOG DIALOG 0, 0, 468, 193
+STYLE DS_SETFONT | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Моделирование элементарной ячейки"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,249,172,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,300,172,50,14
+    LTEXT           "IDC_GUIDE_ALL",IDC_GUIDE_ALL,66,7,56,8,NOT WS_VISIBLE
+    LTEXT           "1:1",IDC_STATIC_SCALE,94,29,28,8
+    COMBOBOX        IDC_COMBO_LAYERS,54,43,68,77,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "IDC_GUIDE_2",IDC_GUIDE_2,124,7,48,8,NOT WS_VISIBLE
+    PUSHBUTTON      "Добавить слой",IDC_ADD_LAYER,104,63,68,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Удалить слой",IDC_L2_DEL_LAYER,104,81,68,14,NOT WS_VISIBLE
+    LTEXT           "Расстояние до след. слоя [A]",IDC_L2_STATIC_Z,108,99,64,16,NOT WS_VISIBLE
+    EDITTEXT        IDC_L2_EDIT_Z,131,119,40,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    LTEXT           "IDC_GUIDE_3",IDC_GUIDE_3,206,7,48,8,NOT WS_VISIBLE
+    LTEXT           "Ширина [A]",IDC_L3_STATIC_X,182,71,39,8,NOT WS_VISIBLE
+    EDITTEXT        IDC_L3_X,227,69,24,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    LTEXT           "Высота [A]",IDC_L3_STATIC_Y,182,89,41,8,NOT WS_VISIBLE
+    EDITTEXT        IDC_L3_Y,227,87,24,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    LTEXT           "Разрешение [pixels/A]",IDC_L3_STATIC_DIM,182,102,44,17,NOT WS_VISIBLE
+    EDITTEXT        IDC_L3_DIMENSION,227,105,24,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    LTEXT           "Размер [A]",IDC_L3_STATIC_EXTRA_AREA,182,137,37,8,NOT WS_VISIBLE
+    EDITTEXT        IDC_L3_EXTRA_AREA,227,135,24,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    GROUPBOX        "Видимая область",IDC_L3_STATIC_VIEWAREA,179,125,75,27,NOT WS_VISIBLE
+    GROUPBOX        "Параметры ячейки",IDC_L3_STATIC_LATOPT,179,58,75,65,NOT WS_VISIBLE
+    LTEXT           "IDC_GUIDE_1",IDC_GUIDE_1,280,7,48,8,NOT WS_VISIBLE
+    COMBOBOX        IDC_COMBO_ATOMS,261,61,67,76,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_ATOM_X,288,79,40,14,ES_AUTOHSCROLL
+    LTEXT           "X [A]",IDC_L1_STATIC_X,266,81,14,8
+    LTEXT           "Y [A]",IDC_L1_STATIC_Y,266,99,14,8
+    EDITTEXT        IDC_EDIT_ATOM_Y,288,97,40,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Добавить атом",IDC_ADD_ATOM,264,117,64,14,BS_CENTER | BS_MULTILINE
+    CONTROL         "",IDC_STATIC_CELL,"Static",SS_OWNERDRAW | WS_TABSTOP,12,26,46,23
+    CONTROL         "Tab1",IDC_TAB,"SysTabControl32",TCS_TOOLTIPS,7,7,59,179
+    LTEXT           "IDC_GUIDE_4",IDC_GUIDE_4,343,7,48,8,NOT WS_VISIBLE
+    LTEXT           "Максимальное смещение атомов [A]",IDC_L4_STATIC_ATOMOFFS,319,63,70,18,NOT WS_VISIBLE
+    EDITTEXT        IDC_L4_ATOMOFFS,355,87,29,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    LTEXT           "Максимальное смещение ячейки [A]",IDC_L4_STATIC_CELLOFFS,319,107,71,19,NOT WS_VISIBLE
+    EDITTEXT        IDC_L4_CELLOFFS,355,131,29,12,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    EDITTEXT        IDC_ALL_EDIT_NUMLAYERS,200,174,40,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Количество ячеек",IDC_ALL_STATIC_NUMLAYERS,130,176,63,8
+    LTEXT           "IDC_GUIDE_5",IDC_GUIDE_5,413,7,48,8,NOT WS_VISIBLE
+    PUSHBUTTON      "Загрузить",IDC_L5_LOAD,403,63,58,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Сохранить",IDC_L5_SAVE,403,81,58,14,NOT WS_VISIBLE
+END
+
+IDD_ATOMS DIALOGEX 0, 0, 147, 73
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Моделирование атомных структур"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_DEM,46,16,50,14,ES_AUTOHSCROLL | ES_READONLY
+    DEFPUSHBUTTON   "OK",IDOK,46,35,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,46,53,50,14
+    CONTROL         "Spin1",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,101,16,10,12
+    LTEXT           "Размер модели (pixels)",-1,46,5,75,8
+END
+
+IDD_INFO DIALOGEX 0, 0, 240, 45
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CTEXT           "Static",IDC_STATIC1,7,7,226,31,SS_CENTERIMAGE,WS_EX_TRANSPARENT
+END
+
+IDD_NAME_L2DB DIALOG 0, 0, 187, 28
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Имя для изображения"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,130,7,50,14
+    EDITTEXT        IDC_NAME,7,7,116,14,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "Layers32 MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "Layers32"
+            VALUE "LegalCopyright", "Copyright (C) 2000"
+            VALUE "OriginalFilename", "Layers32.EXE"
+            VALUE "ProductName", "Layers32 Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 46
+    END
+
+    IDD_KLIN, DIALOG
+    BEGIN
+        HORZGUIDE, 98
+    END
+
+    IDD_ANIZOTROP, DIALOG
+    BEGIN
+    END
+
+    IDD_TURBO, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 202
+    END
+
+    IDD_KVAZI2, DIALOG
+    BEGIN
+    END
+
+    IDD_LATDLG_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 247
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 20
+    END
+
+    IDD_LATDLG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 461
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 186
+    END
+
+    IDD_ATOMS, DIALOG
+    BEGIN
+    END
+
+    IDD_INFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 233
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 38
+    END
+
+    IDD_NAME_L2DB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 21
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "Crazy Layers"
+    IDR_LAYERSTYPE          "\nLayers\nLayers"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "Crazy Layers"
+    AFX_IDS_IDLEMESSAGE     "Готов"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "Создать новую модель\nНовая модель"
+    ID_FILE_CLOSE           "Закрыть активный документ\nЗакрыть"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "О програме\nО программе"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
+    ID_WINDOW_CASCADE       "Окна каскадом\nОкна каскадом"
+    ID_WINDOW_TILE_HORZ     "Окна черпицей\nОкна черпицей"
+    ID_WINDOW_TILE_VERT     "Arrange windows as non-overlapping tiles\nTile Windows"
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR           "удалить выделение\nУдалить"
+    ID_EDIT_CLEAR_ALL       "Удалить все\nУдалить все"
+    ID_EDIT_COPY            "Скопировать выделение и поместить в  Clipboard\nКопировать"
+    ID_EDIT_CUT             "Вырезать выделение и поместить в  Clipboard\nВырезать"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Панель инструментов\nПанель инструментов"
+    ID_VIEW_STATUS_BAR      "Статусная строка\nСтатусная строка"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+    AFX_IDS_MDICHILD        "Activate this window"
+END
+
+STRINGTABLE
+BEGIN
+    ID_PROCESSING           "Установка схемы прохождения\nУстановка схемы прохождения"
+    ID_CONSTANT             "Модель ""Константа""\nМодель ""Константа"""
+    ID_BUTTON32773          "Плоская волна\nПлоская волна"
+    ID_WAVE                 "Модель ""Волна""\nМодель ""Волна"""
+    ID_CHESS                "Модель ""Шахматы""\nМодель ""Шахматы"""
+    ID_RECT                 "Модель ""Случайные квадраты""\nМодель ""Случайные квадраты"""
+    ID_CIRCLE               "Модель ""Случайные круги""\nМодель ""Случайные круги"""
+    ID_NOISE                "Модель ""Белый шум""\nМодель ""Белый шум"""
+    ID_KLIN                 "Модель ""Клин""\nМодель ""Клин"""
+    ID_BUTTON32780          "Модель ""Фрактальное поле""\nМодель ""Фрактальное поле"""
+    ID_FRACTAL              "Модель ""Фрактальное поле""\nМодель ""Фрактальное поле"""
+    ID_SAVE_SPECTR_SP       "Сохранить спектр в SP\nСохранить в SP"
+    ID_SAVE_SPECTR_BMP      "Сохранить изображение в BMP\nСохранить в BMP"
+END
+
+STRINGTABLE
+BEGIN
+    ID_COEFF_S              "Коэффициент усиления\nКоэффициент усиления"
+    ID_BUTTON32785          "Модель ""Квазипериодический спектр""\nМодель ""Квазипериодический спектр"""
+    ID_KVAZI                "Модель ""Квазипериодический спектр""\nМодель ""Квазипериодический спектр"""
+    ID_BUTTON32787          "Модель ""Обобщенный спектр""\\тМодель ""Обобщенный спектр"""
+    ID_OBOB                 "Модель ""Обобщенный спектр""\nМодель ""Обобщенный спектр"""
+    ID_BUTTON32789          "Модель ""Анизотропный спектр""\nМодель ""Анизотропный спектр"""
+    ID_ANIZOTROP            "Модель ""Анизотропный спектр""\nМодель ""Анизотропный спектр"""
+    ID_TURBO                "Модель""Турбулентный спектр""\nМодель""Турбулентный спектр"""
+    ID_BUTTON32792          "По образцу\nПо образцу"
+    ID_EXAMPLE              "Модель по образцу\nМодель по образцу"
+    IDS_TAB_TIP_1           "IDS_TAB_TIP_1"
+    ID_KVAZI2               "Модель ""Квазипериодический спектр-2""\nМодель ""Квазипериодический спектр-2"""
+    ID_BUTTON32796          "Модель ""Спектральная плотность 2-го типа""\nМодель ""Спектральная плотность 2-го типа"""
+    ID_SP2TYPE              "Спектральная плотность второго типа\nСпектральная плотность второго типа"
+    ID_CERNIC               "Метод визуализации: Цернике\nМетод визуализации: Цернике"
+    IDS_TAB_TIP_2           "IDS_TAB_TIP_2"
+END
+
+STRINGTABLE
+BEGIN
+    ID_DEFOKUS              "Метод визуализации: дефокусировка\nМетод визуализации: дефокусировка"
+    IDS_TAB_TIP_3           "IDS_TAB_TIP_3"
+    ID_START                "Начать расчет\nНачать расчет"
+    ID_BUTTON32803          "Использовать ""Абер"" для визуализации\nИспользовать ""Абер"" для визуализации"
+    ID_ABER                 "Использовать ""Абер"" для визуализации\nИспользовать ""Абер"" для визуализации"
+    IDS_TAB_TIP_4           "Добавление, удаление атомов."
+    IDS_TAB_TIP_5           "Добавление, удаление элементарных слоев. Установка расстояния между слоями."
+    ID_ATOMS                "Моделирование атомных структур\nМоделирование атомных структур"
+    ID_SHOW_WIN             "Показать/скрыть модель фазы и амплитуды\nПоказать/скрыть модель фазы и амплитуды"
+    IDS_TAB_TIP_6           "Экспортировать изображение в базу данных (только если программа запущена как плагин!)\nЭкспортировать изображение в базу данных (только если программа запущена как плагин!)"
+    IDS_TAB_TIP_7           "Установка вероятностных характеристик."
+    IDS_TAB_TIP_8           "Сохранение и воостановление атомных структур."
+END
+
+STRINGTABLE
+BEGIN
+    IDC_KOS                 "Когерентная оптическая система"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_COUNT               "Количество кругов (квадратов)"
+    IDC_FT                  "Применить изменения к модели фазы (если выбрано)"
+    IDC_AT                  "Применить изменения к модели амплитуды (если выбрано)"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_DEM                 "Изменение размера модели в пикселах. \nВозможные значения: 512х512, 1024х1024, 2048х2048, 4096х4096."
+    IDC_PERIOD              "Ширина клетки (у модели ""шахматы""), волны (у модели ""волна"")"
+    IDC_DARK                "Цвет темной клетки (от 0 до 255)"
+    IDC_LIGHT               "Цвет светлой клетки (от 0 до 255)"
+    IDC_TON                 "Если выбрано, то круги будут иметь резкие границы, иначе границы размытые"
+    IDC_INTEN_FON           "Интенсивность фона (от 0 до 255)"
+    IDC_INTEN_CIRCLE        "Интенсивность кругов (от 0 до 255)"
+    IDC_H                   "Частотная характеристика ???"
+    IDC_Y                   "Верхняя граница диапазона пропускания"
+    IDC_X                   "Нижняя граница диапазона пропускания"
+END
+
+#endif    // Русский (Россия) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\Layers32.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

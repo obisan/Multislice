@@ -1,0 +1,349 @@
+void RealizeLayerMethod()
+{
+	int i, j, k, Flag = 0;
+	double a, u, v, fi, ph;
+	double step = 222./ImageSize;
+	struct Complex z1, z2;
+	struct Complex coeff[ImageSize/2], temp[ImageSize];
+	char buf[10];
+	FARPROC M;
+	MSG msg;
+	
+	
+	unsigned char far*
+		TempImage = (unsigned char far*)GlobalAllocPtr(GHND, ImageSize*ImageSize);
+	
+	Amplif_W = 1.;
+	
+	for(i=0; i<ImageSize; i++)
+		for(j=0; j<ImageSize; j++) {
+			complex(1., 0., R[i][j]);
+			Image_R[i*ImageSize+j] = 1;
+		}
+		
+		a = (M_PI*LLayer*DZLayer*(-1))/(DLayer*DLayer);
+		
+		for(i=0; i<ImageSize; i++) {
+			if (i<(int)ImageSize/2) 
+				u = i*i;
+			else                    
+				u = (ImageSize-i)*(ImageSize-i);
+			for(j=0; j<ImageSize; j++) 
+			{
+				if(j<(int)ImageSize/2) 
+					v = j*j;
+				else                   
+					v = (ImageSize-j)*(ImageSize-j);
+				fi = a*(u+v);
+				cexp(fi, W[i][j]);
+				Image_W[j*ImageSize+i] = 255;
+			}
+		}
+		//------------------------------------------------------------------------
+		//  Подготовка окна отображения процесса
+		//------------------------------------------------------------------------
+		
+		M = MakeProcInstance((FARPROC)ProcessDlg, hInstance);
+		Process = CreateDialog(hInstance, "DIALOG_17", hWnd, (DLGPROC)M);
+		
+		//------------------------------------------------------------------------
+		//  Начало реализации "слоевого" метода
+		//------------------------------------------------------------------------
+		
+		for(k=0; k<PntLayer; k++) {
+			
+			if (ChildSpectr[0] != NULL) {
+				for(i=0; i<ImageSize; i++)
+					memcpy(TempComp[i], Spectr_Amp[i],
+					sizeof(struct Complex)*(int)ImageSize);
+			}
+			
+			while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) 
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+				if (msg.message == 1000 && msg.wParam == 1000)
+				if (MessageBox(0, "Хотите прервать процесс?", "Ошибка!",MB_YESNO|MB_DEFBUTTON2) == IDYES)  
+				Flag = 1;
+			}
+			
+			if (Flag) break;
+			
+			switch(AmpModel)
+			{
+			case 1:
+				for(i=0; i<ImageSize; i++)
+					memset(&Image_R[i*ImageSize], AmpConst, (int)ImageSize);
+				break;
+				
+			case 2:
+				Model_Wave(AmpPlane, Image_R);
+				break;
+				
+			case 3:
+				Model_Chess(AmpChess, Image_R);
+				break;
+				
+			case 4:
+				Model_RndRect(AmpRndRect, Image_R);
+				break;
+				
+			case 5:
+				Model_RndCirc(AmpRndCrc, Image_R);
+				break;
+				
+			case 6:
+				Model_WNoise(AmpWhtNoise, Image_R);
+				break;
+				
+			case 7:
+				Model_Wedge(AmpWedge, Image_R);
+				break;
+				
+			case 8:
+				if (Model_Spectr(TempComp, Image_R, AmpFractal.MinContrast,
+					AmpFractal.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 9:
+				if (Model_Spectr(TempComp, Image_R, AmpKvPeriod.MinContrast,
+					AmpKvPeriod.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 10:
+				if (Model_Spectr(TempComp, Image_R, AmpGalo.MinContrast,
+					AmpGalo.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 11:
+				if (Model_Spectr(TempComp, Image_R,	AmpAniz.MinContrast,
+					AmpAniz.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 12:
+				if (Model_Spectr(TempComp, Image_R, AmpExample.MinContrast,
+					AmpExample.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 13:
+				if (Model_Spectr(TempComp, Image_R, AmpSpec.MinContrast,
+					AmpSpec.MaxContrast) == FALSE) Flag = 1;
+				break;
+			}
+			
+			if (Flag) break;
+			
+			switch(PhaseModel)
+			{
+			case 1:
+				for(i=0; i<ImageSize; i++)
+					memset(&TempImage[i*ImageSize], PhaseConst, (int)ImageSize);
+				break;
+				
+			case 2:
+				Model_Wave(PhasePlane, TempImage);
+				break;
+				
+			case 3:
+				Model_Chess(PhaseChess, TempImage);
+				break;
+				
+			case 4:
+				Model_RndRect(PhaseRndRect, TempImage);
+				break;
+				
+			case 5:
+				Model_RndCirc(PhaseRndCrc, TempImage);
+				break;
+				
+			case 6:
+				Model_WNoise(PhaseWhtNoise, TempImage);
+				break;
+				
+			case 7:
+				Model_Wedge(PhaseWedge, TempImage);
+				break;
+				
+			case 8:
+				if (Model_Spectr(TempComp, TempImage, PhaseFractal.MinContrast,
+					PhaseFractal.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 9:
+				if (Model_Spectr(TempComp, TempImage, PhaseKvPeriod.MinContrast,
+					PhaseKvPeriod.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 10:
+				if (Model_Spectr(TempComp, TempImage, PhaseGalo.MinContrast,
+					PhaseGalo.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 11:
+				if (Model_Spectr(TempComp, TempImage, PhaseAniz.MinContrast,
+					PhaseAniz.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 12:
+				if (Model_Spectr(TempComp, TempImage, PhaseExample.MinContrast,
+					PhaseExample.MaxContrast) == FALSE)  Flag = 1;
+				break;
+				
+			case 13:
+				if (Model_Spectr(TempComp, TempImage, PhaseSpec.MinContrast,
+					PhaseSpec.MaxContrast) == FALSE) Flag = 1;
+				break;
+			}
+			
+			if (Flag) break;
+			
+			
+			ph = 2.*M_PI*DifPhaseModul/(double)ImageSize;
+
+			for(i=0; i<ImageSize; i++) 
+			{
+				for(j=0; j<ImageSize; j++)
+				{
+					fi = (TempImage[i*ImageSize+j])*ph;
+					z1.re =(float)(Image_R[i*ImageSize+j]*cos(fi)/(float)ImageSize);
+					z1.im = (float)(Image_R[i*ImageSize+j]*sin(fi)/(float)ImageSize);
+					z2 = R[i][j];
+					cmul(z1, z2, R[i][j]);
+					TempComp[i][j] = R[i][j];
+				}
+				
+				while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+					if (msg.message == 1000 && msg.wParam == 1000)
+						if (MessageBox(0, "Хотите прервать процесс?", "Ошибка!",
+							MB_YESNO|MB_DEFBUTTON2) == IDYES)  Flag = 1;
+				}
+				
+				if (Flag) break;
+			}
+			if (Flag) break;
+			Show_Image(TempComp, Image_R, 1., 0);
+			InvalidateRect(ChildTemp[0], NULL, TRUE);
+			UpdateWindow(ChildTemp[0]);
+			sprintf(buf, "Слой %d", k+1);  SetWindowText(ChildTemp[0], buf);
+			fft_coeff(coeff, (int)ImageSize, -1);
+			for(i=0; i<ImageSize; i++){
+				fft(TempComp[i], coeff, (int)ImageSize);
+				while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) 
+				{
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+					if (msg.message == 1000 && msg.wParam == 1000)
+						if (MessageBox(0, "Хотите прервать процесс?", "Ошибка!",
+							MB_YESNO|MB_DEFBUTTON2) == IDYES)  Flag = 1;
+				}
+				if (Flag) break;
+			}
+			
+			if (Flag) break;
+			for(i=0; i<ImageSize; i++) 
+			{
+				for(j=0; j<ImageSize; j++) temp[j] = TempComp[j][i];
+				fft(temp, coeff, (int)ImageSize);
+				for(j=0; j<ImageSize; j++) TempComp[j][i] = temp[j];
+				while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+					if (msg.message == 1000 && msg.wParam == 1000)
+						if (MessageBox(0, "Хотите прервать процесс?", "Ошибка!",
+							MB_YESNO|MB_DEFBUTTON2) == IDYES)  Flag = 1;
+				}
+				if (Flag) break;
+			}
+			if (Flag) break;
+			Show_Image(TempComp, Image_W, Amplif_W, 1);
+			InvalidateRect(ChildTemp[1], NULL, TRUE);
+			UpdateWindow(ChildTemp[1]);
+			sprintf(buf, "Спектр слоя %d", k+1);  SetWindowText(ChildTemp[1], buf);
+			sprintf(buf, "%d", k+1);
+			SetWindowText(GetDlgItem(Picture, ID_TEXT2), buf);
+			
+			// Умножение на частотную характеристику свободного пространства
+			if (k != PntLayer-1) {
+				for(i=0; i<ImageSize; i++) {
+					for(j=0; j<ImageSize; j++) {
+						cmul(TempComp[i][j], W[i][j], z1);
+						TempComp[i][j] = z1;
+						while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+							TranslateMessage(&msg);
+							DispatchMessage(&msg);
+							if (msg.message == 1000 && msg.wParam == 1000)
+								if (MessageBox(0, "Хотите прервать процесс?", "Ошибка!",
+									MB_YESNO|MB_DEFBUTTON2) == IDYES)  Flag = 1;
+						}
+						if (Flag) break;
+					}
+					
+					if (Flag) break;
+				}
+			}
+			else {
+				for(i=0; i<ImageSize; i++) {
+					for(j=0; j<ImageSize; j++) {
+						z2 = TempComp[i][j];
+						cmul(TempComp[i][j], W[i][j], z1);
+						TempComp[i][j] = z1;
+						W[i][j]        = z2;
+						while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+							TranslateMessage(&msg);
+							DispatchMessage(&msg);
+							if (msg.message == 1000 && msg.wParam == 1000)
+								if (MessageBox(0, "Хотите прервать процесс?", "Ошибка!",
+									MB_YESNO|MB_DEFBUTTON2) == IDYES)  Flag = 1;
+						}
+						if (Flag) break;
+					}
+					
+					if (Flag) break;
+				}
+			}
+			fft_coeff(coeff, (int)ImageSize, 1);
+			
+			for(i=0; i<ImageSize; i++) {
+				fft(TempComp[i], coeff, (int)ImageSize);
+				
+				while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+					if (msg.message == 1000 && msg.wParam == 1000)
+						if (MessageBox(0, "Хотите прервать процесс?", "Ошибка!",
+							MB_YESNO|MB_DEFBUTTON2) == IDYES)  Flag = 1;
+				}
+				
+				if (Flag) break;
+			}
+			
+			if (Flag) break;
+			for(i=0; i<ImageSize; i++) {
+				for(j=0; j<ImageSize; j++)  temp[j] = TempComp[j][i];
+				fft(temp, coeff, (int)ImageSize);
+				for(j=0; j<ImageSize; j++)  R[j][i] = temp[j];
+				
+				while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+					if (msg.message == 1000 && msg.wParam == 1000)
+						if (MessageBox(0, "Хотите прервать процесс?", "Ошибка!",
+							MB_YESNO|MB_DEFBUTTON2) == IDYES)  Flag = 1;
+				}
+				
+				if (Flag) break;
+			}
+			
+			if (Flag) break;
+			
+			UpdateWindow(ChildTemp[0]);
+			UpdateWindow(ChildTemp[1]);
+  }
+  
+  // Закрытие окна процесса
+  EnableWindow(hWnd, TRUE);
+  DestroyWindow(Process);
+  FreeProcInstance(M);
+}

@@ -1,0 +1,5 @@
+// Microsoft Developer Studio generated Help ID include file.
+// Used by Layers32.rc
+//
+#define HIDC_KOS                        0x80830436    // IDD_PATH
+#define HIDC_Y                          0x808b03fb    // IDD_FRACTAL
