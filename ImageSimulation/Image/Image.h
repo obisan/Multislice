@@ -60,20 +60,28 @@ namespace ImageSpace {
 		Image*		getImagePart();
 		Image*		getModule();
 
-		template<class T> static void copy(Image* image, fftw_complex* pfftw, int slide, copyDirection direction) {
+		template<class T> static void copyFFTtoImage(Image* image, fftw_complex* pfftw, int slide) {
 			size_t nChannels = image->nChannels;
 			size_t nx = image->width;
 			size_t ny = image->height;
 			for(size_t i = 0; i < ny; i++) {
 				T* pImage = image->getPointer<T>(slide, i);
 				for(size_t j = 0; j < nx; j++) {
-					if(direction == copyDirection::copyFFTtoImage) {
-						pImage[nChannels * j]		= pfftw[nx * i + j][0];
-						pImage[nChannels * j + 1]	= pfftw[nx * i + j][1];
-					} if(direction == copyDirection::copyImagetoFFT) {
-						pfftw[nx * i + j][0] = pImage[nChannels * j];
-						pfftw[nx * i + j][1] = pImage[nChannels * j + 1];
-					}
+					pImage[nChannels * j + 0]	= pfftw[nx * i + j][0];
+					pImage[nChannels * j + 1]	= pfftw[nx * i + j][1];
+				}
+			}
+		}
+
+		template<class T> static void copyImagetoFFT(Image* image, fftw_complex* pfftw, int slide) {
+			size_t nChannels = image->nChannels;
+			size_t nx = image->width;
+			size_t ny = image->height;
+			for(size_t i = 0; i < ny; i++) {
+				T* pImage = image->getPointer<T>(slide, i);
+				for(size_t j = 0; j < nx; j++) {
+					pfftw[nx * i + j][0] = pImage[nChannels * j + 0];
+					pfftw[nx * i + j][1] = pImage[nChannels * j + 1];
 				}
 			}
 		}

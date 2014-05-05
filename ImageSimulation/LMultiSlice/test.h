@@ -107,17 +107,11 @@ void test(const char* filename, const char* filenamesave, int numberSlices, size
 	delete modelPotential;
 	delete modelSimulated;
 	
-	//delete model;
-
-
+	delete model;
+	
 	/************************************************************************/
 	/************************************************************************/
 	/************************************************************************/
-
-		
-	//system("D:\\LEMOI\\Multislice\\improc-deploy\\improc-gui.exe -i D:\\LEMOI\\Multislice\\samples\\oneAtomInCenter_qt.txt");
-	//system("D:\\LEMOI\\Multislice\\Spectrum\\release\\Spectrum.exe  -i D:\\LEMOI\\Multislice\\samples\\oneAtomInCenter_qt.txt");
-	//system("D:\\LEMOI\\Multislice\\Spectrum\\release\\Spectrum.exe  -i D:\\LEMOI\\Multislice\\samples\\C_Si_Cu_Au_U_qt_TxPhi.txt");
 
 	std::cout	<< "test for %" << filename <<  "% finished successful." << std::endl 
 				<< "//----------------------------------------------------------------//" << std::endl 

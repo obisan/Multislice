@@ -93,7 +93,7 @@ namespace ImageSpace {
 		fftw_complex *pfftw_in = fftw_alloc_complex(image->width * image->height);
 		fftw_complex *pfftw_out = fftw_alloc_complex(image->width * image->height);
 
-		Image::copy<double>(image, pfftw_in, slide, copyDirection::copyImagetoFFT);
+		Image::copyImagetoFFT<double>(image, pfftw_in, slide);
 
 		fftw_plan fftw_ward;
 		fftw_ward = (direction == fft::forward) ? 
@@ -102,7 +102,7 @@ namespace ImageSpace {
 		fftw_execute(fftw_ward);
 		fftw_destroy_plan(fftw_ward);
 
-		Image::copy<double>(image, pfftw_out, slide, copyDirection::copyFFTtoImage);
+		Image::copyFFTtoImage<double>(image, pfftw_out, slide);
 
 		fftw_free(pfftw_in);
 		fftw_free(pfftw_out);
@@ -116,8 +116,9 @@ namespace ImageSpace {
 		for(size_t i = 0; i < ny; i++) {
 			p = image->getPointer<double>(slide, i);
 			for(size_t j = 0; j < nx; j++) {
-				p[nChannels * j + 0] /= (double) n;
-				p[nChannels * j + 1] /= (double) n;
+				for(size_t l = 0; l < nChannels; l++) {
+					p[nChannels * j + l] /= (double) n;
+				}
 			}
 		}
 	}

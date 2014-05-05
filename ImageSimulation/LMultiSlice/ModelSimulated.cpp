@@ -125,7 +125,7 @@ int ModelSimulated::imageCalculation(Image *result, Image *t, Image *TxPhi, Micr
 		
 		/// !!!!!!!!!!!!!!!!!!!!
 		Z = 10;
-		Image::copy<double>(result, pfftw_in, kz, copyDirection::copyFFTtoImage);
+		Image::copyFFTtoImage<double>(result, pfftw_in, kz);
 	}
 
 	fftw_free(pfftw_in);

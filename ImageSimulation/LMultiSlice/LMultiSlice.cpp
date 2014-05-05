@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "test.h"
 
-#define K 4
+#define K 1
 #define NX K*512
 #define NY K*512
 #define NUMBERSLICES 1
