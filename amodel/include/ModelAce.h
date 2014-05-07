@@ -12,7 +12,6 @@
 #define AMODEL_API __declspec(dllimport)
 #endif
 
-
 #include "Model.h"
 
 namespace AModel {

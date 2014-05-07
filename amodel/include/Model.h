@@ -15,8 +15,6 @@
 
 #include "BaseStructures.h"
 
-#include <map>
-
 namespace AModel {
 	
 	class AMODEL_API Model {
@@ -54,6 +52,7 @@ namespace AModel {
 		
 		int	writeAce(const char* filename);
 		int writeCoo(const char* filename);
+		int writeXyz(const char* filename);
 
 		void		crop(void);
 		
