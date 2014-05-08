@@ -278,7 +278,7 @@ namespace ImageSpace {
 		int nChannel = nChannels(mode);
 
 		void *oData = nullptr;
-
+				
 		switch(mode) {
 		case 0:
 			oData = (unsigned char*) malloc1D(nx * ny * nz * nChannel, sizeof(char), "Output data unsigned char");

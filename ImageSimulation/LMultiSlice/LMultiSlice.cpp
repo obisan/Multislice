@@ -20,7 +20,7 @@ int main() {
 	//test("..\\samples\\C_Si_Cu_Au_U.coo", "..\\samples\\C_Si_Cu_Au_U.txt", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
 	//test("..\\samples\\fourSameAtomsDifferentZ.coo", "..\\samples\\fourSameAtomsDifferentZ.txt", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
 	
-	test("..\\samples\\fourSameAtomsSameZ.coo", "..\\samples\\fourSameAtomsSameZ.txt", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
+	test("..\\samples\\fourSameAtomsSameZ.coo", "..\\samples\\fourSameAtomsSameZ", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
 	//test("..\\samples\\Si_one.coo", "..\\samples\\Si_one", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
 	//test("..\\samples\\Au_one.coo", "..\\samples\\Au_one.txt", NUMBERSLICES, NX, NY, DPA, RADIUC);
 	//test("..\\samples\\Empty.coo", "..\\samples\\Empty.txt", NUMBERSLICES, NX, NY, DPA, RADIUC);
