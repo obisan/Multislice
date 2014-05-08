@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Calculation_parameters xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<ModelFileName>D:\LEMOI\Multislice\Musli\new\oneAtomInCenter.coo</ModelFileName>
+	<ModelFileName>D:\github\Multislice\Musli\new\dump_0.coo</ModelFileName>
 	<!--Coordinate file-->
 	<PotType>PG_curve_DW_periodic</PotType>
 	<!-- These are the possible values of potential
@@ -177,7 +177,7 @@
 	-->
 	<NThreads>1</NThreads>
 	<!--Not used so far-->
-	<WorkingDirectoryName>D:\LEMOI\Multislice\Musli\new</WorkingDirectoryName>
+	<WorkingDirectoryName>D:\github\Multislice\Musli\new</WorkingDirectoryName>
 	<!--Defines the working directory-->
 	<IsContinue>false</IsContinue>
 	<!--Defines if this calculation will be followed by the other one.

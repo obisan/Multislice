@@ -172,7 +172,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 		return -1;
 	}
 
-	AModel::Model *model = new AModel::ModelCoo();
+	AModel::Model *model = getModelType(command.fileNameInput);
 	if( model->read(command.fileNameInput) == -1 ) {
 		std::cout << "Can not read file " << command.fileNameInput << "!!!" << std::endl;
 		system("Pause");
@@ -212,25 +212,14 @@ int Dispatcher::Run(const char* fileNameXML) {
 	modelSimulated->imageCalculation(res, t, TxPhi, microscope);
 
 	res->saveMRC(command.fileNameOutput, model);
-
-	char filenamesaveV[64];
-	strcpy(filenamesaveV, command.fileNameOutput); strcat(filenamesaveV, "_V");
-	v->saveMRC(filenamesaveV, model);
-
-	char filenamesaveT[64];
-	strcpy(filenamesaveT, command.fileNameOutput); strcat(filenamesaveT, "_T");
-	t->saveMRC(filenamesaveT, model);
-
-	char filenamesaveTxPhi[64];
-	strcpy(filenamesaveTxPhi, command.fileNameOutput); strcat(filenamesaveTxPhi, "_TxPhi");
-	TxPhi->saveMRC(filenamesaveTxPhi, model);
+	v->saveMRC((std::string(command.fileNameOutput) + "_V").c_str(), model);
+	t->saveMRC((std::string(command.fileNameOutput) + "_T").c_str(), model);
+	TxPhi->saveMRC((std::string(command.fileNameOutput) + "_TxPhi").c_str(), model);
 
 	Image *Zernike = new Image(t);
 	Image::zernike(Zernike, transformationStatus::notTransformed);
 
-	char filenamesaveZernike[64];
-	strcpy(filenamesaveZernike, command.fileNameOutput); strcat(filenamesaveZernike, "_Zernike");
-	Zernike->saveMRC(filenamesaveZernike, model);
+	Zernike->saveMRC((std::string(command.fileNameOutput) + "_Zernike").c_str(), model);
 
 	delete Zernike;
 
