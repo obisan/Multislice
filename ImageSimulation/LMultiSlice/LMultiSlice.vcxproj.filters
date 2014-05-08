@@ -60,6 +60,9 @@
     <ClCompile Include="fparams.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="Dispatcher.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "Dispatcher.h"
 #include "test.h"
 
 #define K 1
@@ -16,11 +17,17 @@
 #define DEFOCUS -70 // nm
 #define KEV 200
 
-int main() {
+int main(int argc, int *argv[]) {
+	Dispatcher *task = new Dispatcher();
+
+	task->Run("../samples/template.xml");
+
+	delete task;
+
 	//test("..\\samples\\C_Si_Cu_Au_U.coo", "..\\samples\\C_Si_Cu_Au_U.txt", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
 	//test("..\\samples\\fourSameAtomsDifferentZ.coo", "..\\samples\\fourSameAtomsDifferentZ.txt", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
 	
-	test("..\\samples\\fourSameAtomsSameZ.coo", "..\\samples\\fourSameAtomsSameZ", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
+	//test("..\\samples\\fourSameAtomsSameZ.coo", "..\\samples\\fourSameAtomsSameZ", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
 	//test("..\\samples\\Si_one.coo", "..\\samples\\Si_one", NUMBERSLICES, NX, NY, DPA, RADIUC, KEV, CS, APERTURE, DEFOCUS);
 	//test("..\\samples\\Au_one.coo", "..\\samples\\Au_one.txt", NUMBERSLICES, NX, NY, DPA, RADIUC);
 	//test("..\\samples\\Empty.coo", "..\\samples\\Empty.txt", NUMBERSLICES, NX, NY, DPA, RADIUC);

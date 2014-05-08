@@ -178,6 +178,7 @@
     <ClInclude Include="test.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Dispatcher.cpp" />
     <ClCompile Include="fparams.cpp" />
     <ClCompile Include="LMultiSlice.cpp" />
     <ClCompile Include="Microscope.cpp" />

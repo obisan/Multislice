@@ -23,6 +23,11 @@
 #include <iterator>
 #include <complex>
 
+#include <assert.h>
+#include <io.h>
+#include <iomanip>
+
+
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
 
 #include <AModel.h>
@@ -33,7 +38,10 @@
 
 #include <fftw3.h>
 
+#include "../pugixml-1.2/src/pugixml.hpp"
+
 #include "../Image/Image.h"
 #include "../Image/MRC.h"
 
 using namespace ImageSpace;
+using namespace pugi;

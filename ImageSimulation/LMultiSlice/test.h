@@ -1,8 +1,6 @@
 #ifndef _TEST_H_
 #define _TEST_H_
 
-#define FILENAMESAVE(filenamesave, postfix) std::string(filenamesave).insert(strlen(filenamesave) - 4, postfix).c_str()
-
 #include <iostream>
 #include <string>
 #include <assert.h>
@@ -34,88 +32,7 @@ void test(const char* filename, const char* filenamesave, int numberSlices, size
 		std::cout << "File with name%" << filename << "% exist." << std::endl;
 	}
 
-	AModel::Model *model = new AModel::ModelCoo();
-	if( model->read(filename) == -1 ) {
-		std::cout << "Can not read file " << filename << "!!!" << std::endl;
-		system("Pause");
-		return;
-	} else {
-		std::cout << "Read file %" << filename << "% successful." << std::endl;
-	} 
-
-	std::sort(model->getTableCell(), model->getTableCell() + model->getNumberAtoms());
 	
-	/************************************************************************/
-	/* Fragmentation														*/
-	/************************************************************************/
-	ModelFragmented *modelFragmented = new ModelFragmented(model, numberSlices);
-	modelFragmented->dividing();
-	
-	/************************************************************************/
-	/* Calculating map potentials											*/
-	/************************************************************************/
-	ModelPotential *modelPotential = new ModelPotential(modelFragmented, nx, ny, dpa, radiuc);
-
-	std::cout << std::endl;
-	std::cout << "Image size = " << nx << "x" << ny << std::endl;
-	std::cout << "Number slides = " << numberSlices << std::endl;
-	std::cout << "dpa = " << dpa << std::endl;
-	
-	Image *res		= new Image(nx, ny, numberSlices, sizeof(double), 2);
-	Image *v		= new Image(nx, ny, numberSlices, sizeof(double), 2);
-	Image *t		= new Image(nx, ny, numberSlices, sizeof(double), 2);
-	Image *TxPhi	= new Image(nx, ny, numberSlices, sizeof(double), 2);
-	
-	Microscope *microscope = new Microscope(keV, Cs, aperture, defocus);
-
-	modelPotential->calculatePotentialGrid(res, v);
-
-	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, nx, ny, dpa);
-	modelSimulated->imageCalculation(res, t, TxPhi, microscope);
-
-	res->saveMRC(filenamesave, model);
-	
-	char filenamesaveV[64];
-	strcpy(filenamesaveV, filenamesave); strcat(filenamesaveV, "_V");
-	v->saveMRC(filenamesaveV, model);
-
-	char filenamesaveT[64];
-	strcpy(filenamesaveT, filenamesave); strcat(filenamesaveT, "_T");
-	t->saveMRC(filenamesaveT, model);
-
-	char filenamesaveTxPhi[64];
-	strcpy(filenamesaveTxPhi, filenamesave); strcat(filenamesaveTxPhi, "_TxPhi");
-	TxPhi->saveMRC(filenamesaveTxPhi, model);
-	 	
-	Image *Zernike = new Image(t);
-	Image::zernike(Zernike, transformationStatus::notTransformed);
-
-	char filenamesaveZernike[64];
-	strcpy(filenamesaveZernike, filenamesave); strcat(filenamesaveZernike, "_Zernike");
-	Zernike->saveMRC(filenamesaveZernike, model);
-	
-	delete Zernike;
-
-	delete microscope;
-
-	delete res;
-	delete v;
-	delete t;
-	delete TxPhi;
-
-	delete modelFragmented;
-	delete modelPotential;
-	delete modelSimulated;
-	
-	delete model;
-	
-	/************************************************************************/
-	/************************************************************************/
-	/************************************************************************/
-
-	std::cout	<< "test for %" << filename <<  "% finished successful." << std::endl 
-				<< "//----------------------------------------------------------------//" << std::endl 
-				<< std::endl;
 }
 
 #endif
