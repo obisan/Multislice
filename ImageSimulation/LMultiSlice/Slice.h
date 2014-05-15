@@ -8,7 +8,7 @@ public:
 	~Slice(void);
 
 	AModel::Cortege operator[](size_t i);
-
+	
 	size_t	getId();
 	float	getUpperBound();
 	float	getTheUppestBound();

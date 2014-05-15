@@ -200,19 +200,17 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "dpa = " << command.dpa << std::endl;
 
 	Image *res		= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
-	Image *v		= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
 	Image *t		= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
 	Image *TxPhi	= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
 
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
 
-	modelPotential->calculatePotentialGrid(res, v);
+	modelPotential->calculatePotentialGrid(res);
 
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
 	modelSimulated->imageCalculation(res, t, TxPhi, microscope);
 
 	res->saveMRC(command.fileNameOutput, model);
-	v->saveMRC((std::string(command.fileNameOutput) + "_V").c_str(), model);
 	t->saveMRC((std::string(command.fileNameOutput) + "_T").c_str(), model);
 	TxPhi->saveMRC((std::string(command.fileNameOutput) + "_TxPhi").c_str(), model);
 
@@ -226,7 +224,6 @@ int Dispatcher::Run(const char* fileNameXML) {
 	delete microscope;
 
 	delete res;
-	delete v;
 	delete t;
 	delete TxPhi;
 

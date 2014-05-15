@@ -1,3 +1,3 @@
 #pragma once
 
-extern double FParams[];
+//extern double FParams[];

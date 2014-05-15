@@ -102,12 +102,8 @@ int ModelSimulated::imageCalculation(Image *result, Image *t, Image *TxPhi, Micr
 				std::complex<double> w2(pfftw_out[iy * nx + jx][0], pfftw_out[iy * nx + jx][1]);
 				pTxPhi[nChannels * jx + 0] = w1.real();
 				pTxPhi[nChannels * jx + 1] = w1.imag();
-				//pTxPhi[nChannels * jx + 0] = w2.real();
-				//pTxPhi[nChannels * jx + 1] = w2.imag();
 				pfftw_out[iy * nx + jx][0] = (w1 * w2).real();
 				pfftw_out[iy * nx + jx][1] = (w1 * w2).imag();
-				//pTxPhi[nChannels * jx + 0] = pfftw_out[iy * nx + jx][0];
-				//pTxPhi[nChannels * jx + 1] = pfftw_out[iy * nx + jx][1];
 			}
 		}
 
