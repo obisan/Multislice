@@ -19,6 +19,12 @@
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
 
+#include <cuda_runtime_api.h>
+#include <cuda_runtime.h>
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 #include <fftw3.h>
 
 #include <AModel.h>
