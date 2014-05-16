@@ -1,6 +1,12 @@
 #pragma once
 
-__global__ void calculateProjectedPotentialGPU(int numberAtom, double r, float *val);
+__global__ void calculateProjectedPotentialSlide(int *atomId, float (*xyz)[3], unsigned int nAtoms, 
+											   double a, double b, double c, 
+											   double dx, double dy, double dz, 
+											   double *image, unsigned int nChannels, 
+											   unsigned int nx, unsigned int ny,
+											   double dk);
+__device__ double	calculateProjectedPotential(int numberAtom, double r);
 __device__ double	bessk0( double x );
 __device__ double	bessi0( double x );
 

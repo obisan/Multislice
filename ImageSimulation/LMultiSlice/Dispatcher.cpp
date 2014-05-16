@@ -206,20 +206,21 @@ int Dispatcher::Run(const char* fileNameXML) {
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
 
 	modelPotential->calculatePotentialGrid(res);
+	res->saveMRC(command.fileNameOutput, model);
 
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
-	modelSimulated->imageCalculation(res, t, TxPhi, microscope);
+	//modelSimulated->imageCalculation(res, t, TxPhi, microscope);
 
-	res->saveMRC(command.fileNameOutput, model);
-	t->saveMRC((std::string(command.fileNameOutput) + "_T").c_str(), model);
-	TxPhi->saveMRC((std::string(command.fileNameOutput) + "_TxPhi").c_str(), model);
+	
+	//t->saveMRC((std::string(command.fileNameOutput) + "_T").c_str(), model);
+	//TxPhi->saveMRC((std::string(command.fileNameOutput) + "_TxPhi").c_str(), model);
 
-	Image *Zernike = new Image(t);
-	Image::zernike(Zernike, transformationStatus::notTransformed);
-
-	Zernike->saveMRC((std::string(command.fileNameOutput) + "_Zernike").c_str(), model);
-
-	delete Zernike;
+// 	Image *Zernike = new Image(t);
+// 	Image::zernike(Zernike, transformationStatus::notTransformed);
+// 
+// 	Zernike->saveMRC((std::string(command.fileNameOutput) + "_Zernike").c_str(), model);
+// 
+// 	delete Zernike;
 
 	delete microscope;
 

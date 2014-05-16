@@ -14,10 +14,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	Dispatcher *task = new Dispatcher();
-
 	task->Run(fileNameXML);
-
 	delete task;
-
 	return 0;
 }

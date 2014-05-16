@@ -1,7 +1,34 @@
 #include "stdafx.h"
 #include "kernel.cuh"
 
-__global__ void calculateProjectedPotentialGPU(int numberAtom, double r, float *val) {
+__global__ void calculateProjectedPotentialSlide(int *atomId, float (*xyz)[3], unsigned int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nChannels, unsigned int nx, unsigned int ny, double dk) {
+	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
+	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
+
+	for(int l = 0; l < nAtoms; l++) {
+		double dX = fabs(xyz[l][0] * a - (ix * dx));
+		double dY = fabs(xyz[l][1] * b - (iy * dy));
+		double dZ = fabs(xyz[l][2] * c - (0 * dz));
+
+		if(dZ >= dz) continue;
+  
+		if( dX >= a / 2.0 ) dX = dX - a;
+		if( dY >= b / 2.0 ) dY = dY - b;
+
+		double dR = sqrt(dX * dX + dY * dY) * dk;
+
+		int m = atomId[l] - 1;
+
+		if( dR < 1.0e-10 ) dR = 1.0e-10;
+
+		image[ nChannels * (gridDim.x * blockDim.x * iy + ix) + 0 ] += calculateProjectedPotential(m, dR);
+		image[ nChannels * (gridDim.x * blockDim.x * iy + ix) + 1 ] = 0;
+	}
+
+	__syncthreads();
+}
+
+__device__ double calculateProjectedPotential(int numberAtom, double r) {
 	double sumf = 0, sums = 0;
  	double dR1 = 6.2831853071796 * r; // 2 * PI * r
  	for(int k = 0; k < 3; k++) {
@@ -17,7 +44,7 @@ __global__ void calculateProjectedPotentialGPU(int numberAtom, double r, float *
  		
  	sums *= 150.36539697148; // 2 * PI * PI * a0 * e
  	
-	*val = (sumf + sums);
+	return (sumf + sums);
 }
 
 __device__ double	bessk0( double x ) {

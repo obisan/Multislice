@@ -50,38 +50,12 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 			xyz[i][2] = (*currentSlice)[i].element.xsCoordinate.z;
 		}
 
- 		for(size_t iy = 0; iy < ny; iy++) {
-  			double *pResult = result->getPointer<double>(0, iy);
-  			for(size_t jx = 0; jx < nx; jx++) {
-				for(size_t l = 0; l < nAtoms; l++) {
-					double dX = fabs(xyz[l][0] * a - (jx * dx));
-  					double dY = fabs(xyz[l][1] * b - (iy * dy));
-  					double dZ = fabs(xyz[l][2] * c - (0 * dz));
-  					
-  					if(dZ >= dz) continue;
-  
-  					if( dX >= a / 2.0 ) dX = dX - a;
-  					if( dY >= b / 2.0 ) dY = dY - b;
-  					
-  					double dR = sqrt(dX * dX + dY * dY) * dk;
-  					int m = atomId[l] - 1;
-  					double calculateProjectedAtomicPotential;
-  
-  					if( dR < 1.0e-10 ) dR = 1.0e-10;
-  
-  					//pResult[nChannels * jx + 0] += calculateProjectedPotential(m, dR);
-					//calculateProjectedPotential(m, dR, val);
-					calculateProjectedPotentialGPU<<<1, 1>>> (m, dR, val);
-					cudaThreadSynchronize();
-					
-					float hval;
-					memcpy(&hval, val, sizeof(float));
+		const size_t MAX_THREADS = 16;
+		dim3 threads(MAX_THREADS, MAX_THREADS, 1);										//размер квардатика
+		dim3 grid(result->width / MAX_THREADS, result->height / MAX_THREADS, 1);		//сколько квадратиков нужно чтобы покрыть все изображение
 
-					pResult[nChannels * jx + 0] += hval;
-  					pResult[nChannels * jx + 1] = 0;
-				} // atom
-  			} // x
-  		} // y
+		calculateProjectedPotentialSlide<<<grid, threads>>>(atomId, xyz, nAtoms, a, b, c, dx, dy, dz, (double*) (result->imageData), nChannels, nx, ny, dk);
+		cudaThreadSynchronize();
 
 	} // z
 

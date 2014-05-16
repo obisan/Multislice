@@ -5,8 +5,8 @@
 		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
 	</io>
 	<image>
-		<nx>512</nx>
-		<ny>512</ny>
+		<nx>4096</nx>
+		<ny>4096</ny>
 		<dpa>10.0</dpa>		<!--- dots per angstrem --->
 	</image>
 	<slicing>
