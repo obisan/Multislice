@@ -47,6 +47,23 @@ __device__ double calculateProjectedPotential(int numberAtom, double r) {
 	return (sumf + sums);
 }
 
+__device__ double calculatePotential(int numberAtom, double r) {
+ 		double sumf = 0, sums = 0;
+ 		double dR1 = 6.2831853071796 * r; // 2 * PI * r
+ 		for(int k = 0; k < 3; k++) {
+ 			int Offs = (numberAtom) * 12 + k * 2;
+ 			sumf += FParamsDevice[Offs + 0] / r * exp(- dR1 * sqrt(FParamsDevice[Offs + 1]));
+ 		}				
+ 		sumf *= 150.365396971475; // 4 * PI * PI *a0 * e
+ 		
+ 		for(int k = 0; k < 3; k++) {
+ 			int Offs = (numberAtom) * 12 + k * 2;
+ 			sums += FParamsDevice[Offs + 6] * pow(FParamsDevice[Offs + 7], -3.0 / 2.0) * exp(-(6.2831853071796 * r * r) / FParamsDevice[Offs + 7]);
+ 		}
+ 		sums *= 266.5157269050303; // 2 * PI * PI * a0 * e
+ 		return (sumf + sums);
+ 	}
+
 __device__ double	bessk0( double x ) {
 	double ax, x2, sum;
 	double k0a[] = { -0.57721566, 0.42278420, 0.23069756,

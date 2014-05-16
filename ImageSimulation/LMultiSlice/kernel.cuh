@@ -7,6 +7,7 @@ __global__ void calculateProjectedPotentialSlide(int *atomId, float (*xyz)[3], u
 											   unsigned int nx, unsigned int ny,
 											   double dk);
 __device__ double	calculateProjectedPotential(int numberAtom, double r);
+__device__ double	calculatePotential(int numberAtom, double r);
 __device__ double	bessk0( double x );
 __device__ double	bessi0( double x );
 
