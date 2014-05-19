@@ -204,16 +204,18 @@ int Dispatcher::Run(const char* fileNameXML) {
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
 
 	modelPotential->calculatePotentialGrid(res);
-	
+
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
-	modelSimulated->imageCalculation(res, microscope);
+	//modelSimulated->imageCalculation(res, microscope);
 
 	res->saveMRC(command.fileNameOutput, model);
 
 	delete microscope;
 
+	delete microscope;
+
 	delete res;
-	
+
 	delete modelFragmented;
 	delete modelPotential;
 	delete modelSimulated;

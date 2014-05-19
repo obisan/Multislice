@@ -24,7 +24,6 @@ __global__ void calculateProjectedPotential(int *sliceId, int *atomId, float (*x
 		image[ nChannels * ((gridDim.x * blockDim.x) * (gridDim.y * blockDim.y) * iz + (gridDim.x * blockDim.x) * iy + ix) + 0 ] += calculateProjectedPotential(m, dR);
 		image[ nChannels * ((gridDim.x * blockDim.x) * (gridDim.y * blockDim.y) * iz + (gridDim.x * blockDim.x) * iy + ix) + 1 ] = 0;
 	}
-
 	__syncthreads();
 }
 
