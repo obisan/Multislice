@@ -206,7 +206,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	modelPotential->calculatePotentialGrid(res);
 
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
-	//modelSimulated->imageCalculation(res, microscope);
+	modelSimulated->imageCalculation(res, microscope);
 
 	res->saveMRC(command.fileNameOutput, model);
 
