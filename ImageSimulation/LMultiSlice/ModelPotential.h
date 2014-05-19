@@ -7,8 +7,6 @@
 
 #define M_PI	3.14159265358979323846
 
-//#define __CUDACC__
-
 class ModelPotential {
 public:
 	ModelPotential(void);

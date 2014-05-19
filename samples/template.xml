@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <action>
 	<io>
-		<fileNameInput>../samples/fourSameAtomsSameZ.coo</fileNameInput>
-		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
+		<fileNameInput>../samples/dump.xyz</fileNameInput>
+		<fileNameOutput>../samples/dump</fileNameOutput>
 	</io>
 	<image>
 		<nx>512</nx>
@@ -11,7 +11,7 @@
 	</image>
 	<slicing>
 		<radiuc>50.0</radiuc>
-		<numberslices>1</numberslices>
+		<numberslices>10</numberslices>
 	</slicing>
 	<microscope>
 		<aperture>10.37</aperture>

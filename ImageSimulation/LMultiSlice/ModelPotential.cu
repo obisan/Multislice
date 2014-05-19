@@ -31,33 +31,30 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	const double dy = b / this->ny;
 	const double dz = c / numberSlices;
 	
-
-	int *atomId;
-	float (*xyz)[3];
-	float *val;
-
-	cudaMallocManaged(&atomId, nAtoms * sizeof(int));
-	cudaMallocManaged(&xyz, nAtoms * 3 * sizeof(float));
-	cudaMallocManaged(&val, sizeof(float));
+	int *atomCount = modelFragmented->atomCount;
+	int *atomId = modelFragmented->atomId;
+	float (*xyz)[3] = modelFragmented->xyz;
 	
-	for(size_t kz = 0; kz < nz; kz++) {
-		
-		Slice *currentSlice = modelFragmented->getSliceByZ((kz + 1) * dz);
-		for(size_t i = 0; i < currentSlice->size(); i++) {
-			atomId[i] = modelFragmented->getModelSource()->getNumberByName((*currentSlice)[i].element.Atom);
-			xyz[i][0] = (*currentSlice)[i].element.xsCoordinate.x;
-			xyz[i][1] = (*currentSlice)[i].element.xsCoordinate.y;
-			xyz[i][2] = (*currentSlice)[i].element.xsCoordinate.z;
-		}
+	const size_t MAX_THREADS = 32;
+	dim3 threads(MAX_THREADS, MAX_THREADS, 1);														//размер квардатика
+	dim3 grid(result->width / MAX_THREADS, result->height / MAX_THREADS, result->thickness );		//сколько квадратиков нужно чтобы покрыть все изображение
 
-		const size_t MAX_THREADS = 16;
-		dim3 threads(MAX_THREADS, MAX_THREADS, 1);										//размер квардатика
-		dim3 grid(result->width / MAX_THREADS, result->height / MAX_THREADS, 1);		//сколько квадратиков нужно чтобы покрыть все изображение
+	cudaEvent_t start,stop;
+	float time = 0.0f;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	cudaEventRecord(start,0);
+	calculateProjectedPotential<<<grid, threads>>>(atomCount, atomId, xyz, nAtoms, a, b, c, dx, dy, dz, (double*) (result->imageData), nChannels, nx, ny, numberSlices, dk);
+	//cudaThreadSynchronize();
+	cudaEventRecord(stop,0);
+	cudaEventSynchronize(stop);
+	cudaEventElapsedTime(&time, start, stop);
+	
+	std::cout << "Kernel time: " << time << "ms." << std::endl;
 
-		calculateProjectedPotentialSlide<<<grid, threads>>>(atomId, xyz, nAtoms, a, b, c, dx, dy, dz, (double*) (result->imageData), nChannels, nx, ny, dk);
-		cudaThreadSynchronize();
-
-	} // z
+	atomCount = nullptr;
+	atomId = nullptr;
+	xyz = nullptr;
 
 	return 0;
 }

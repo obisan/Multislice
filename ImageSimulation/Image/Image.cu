@@ -32,11 +32,11 @@ namespace ImageSpace {
 	}
 
 	Image::Image(size_t nx, size_t ny, size_t nz, size_t depth, size_t nChannels) {
-		this->width			= (int)nx;
-		this->height		= (int)ny;
-		this->thickness		= (int)nz;
-		this->depth			= (int)depth;
-		this->nChannels		= (int)nChannels;
+		this->width			= nx;
+		this->height		= ny;
+		this->thickness		= nz;
+		this->depth			= depth;
+		this->nChannels		= nChannels;
 		this->nSize			= this->width * this->height * this->thickness * this->depth * this->nChannels;
 		this->widthStep		= this->width;
 

@@ -12,11 +12,13 @@ public:
 
 	int					dividing();
 
-	AModel::Model*		getModelSource();
-	int					getNumberSlices();
-	std::vector<Slice>&	getSlices();
-	Slice*				getSliceByZ(double Z);
+ 	AModel::Model*		getModelSource();
+ 	int					getNumberSlices();
 
+	int		*atomCount;
+	int		*atomId;
+	float	(*xyz)[3];
+	
 private:
 	AModel::Model*		modelSource;
 	int					numberSlices;
