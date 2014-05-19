@@ -35,14 +35,14 @@ namespace ImageSpace {
 		Image(const Image* image);
 		~Image();
 
-		size_t					nSize;			// sizeof(IplImage)
-		size_t					nChannels;		// Число каналов
-		size_t		            depth;			// Глубина в битах
-		size_t			        width;			// Ширина
-		size_t				    height;			// Высота
-		size_t					thickness;		// Толщина
-		char*					imageData;		// Данные изображения
-		int						widthStep;		// Число байт в одной строке изображения
+		int                 nSize;			// sizeof(IplImage)
+		int                 nChannels;		// Число каналов
+		int                 depth;			// Глубина в битах
+		int                 width;			// Ширина
+		int                 height;			// Высота
+		int					thickness;		// Толщина
+		char*				imageData;		// Данные изображения
+		int                 widthStep;		// Число байт в одной строке изображения
 
 		template<class T> T* getPointer(size_t slide, size_t line) {
 			return (T*) (this->imageData + nChannels * width * height * sizeof(T) * slide + nChannels * widthStep * sizeof(T) * line);

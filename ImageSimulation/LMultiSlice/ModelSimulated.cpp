@@ -19,7 +19,7 @@ ModelSimulated::ModelSimulated(ModelPotential* modelPotential, ModelFragmented *
 	this->dpa = dpa;
 }
 
-int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
+int ModelSimulated::imageCalculation(Image *result, Image *t, Image *TxPhi, Microscope *microscope) {
 	const double keV = microscope->getKeV();
 	const int nChannels = result->nChannels;
 	
@@ -33,12 +33,13 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	for(size_t kz = 0; kz < nz; kz++) {	
 		for(size_t iy = 0; iy < ny; iy++) {
 			double *pResult	= result->getPointer<double>(kz, iy);
+			double *pT		= t->getPointer<double>(kz, iy);
 			for(size_t jx = 0; jx < nx; jx++) {
 				////////////////////////////////////////////////////////////////////////////////////////////////////////
 				/// T(x, y) = exp(sigma * p(x, y))
 				////////////////////////////////////////////////////////////////////////////////////////////////////////
-				double fi_re = cos(microscope->getSigma() * pResult[nChannels * jx] / 1000.0); // k - eV
-				double fi_im = sin(microscope->getSigma() * pResult[nChannels * jx] / 1000.0);
+				double fi_re = pT[nChannels * jx + 0] = cos(microscope->getSigma() * pResult[nChannels * jx] / 1000.0); // k - eV
+				double fi_im = pT[nChannels * jx + 1] = sin(microscope->getSigma() * pResult[nChannels * jx] / 1000.0);
 				
 				std::complex<double> fi(fi_re, fi_im);
 				std::complex<double> fi2(pfftw_in[nx * iy + jx][0], pfftw_in[nx * iy + jx][1]);
@@ -46,8 +47,8 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////
 				/// [ T(x, y) * phi(x, y) ]
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-				pfftw_in[nx * iy + jx][0] = (fi * fi2).real();
-				pfftw_in[nx * iy + jx][1] = (fi * fi2).imag();
+				pfftw_in[nx * iy + jx][0]	= (fi * fi2).real();
+				pfftw_in[nx * iy + jx][1]	= (fi * fi2).imag();
 			}
 		}
 		
@@ -89,6 +90,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		double Z = 0;
 		
 		for(size_t iy = 0; iy < ny; iy++) {
+			double *pTxPhi	= TxPhi->getPointer<double>(kz, iy);
 			for(size_t jx = 0; jx < nx; jx++) {
 				///////////////////////////////////////////////////////////////////////////////////
 				double u1 = fabs(ny / 2.0 - iy) / dImgSize;
@@ -98,6 +100,8 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 				double Es = microscope->Es(k);
 				std::complex<double> w1(Es * cos(alpha), Es * sin(alpha));
 				std::complex<double> w2(pfftw_out[iy * nx + jx][0], pfftw_out[iy * nx + jx][1]);
+				pTxPhi[nChannels * jx + 0] = w1.real();
+				pTxPhi[nChannels * jx + 1] = w1.imag();
 				pfftw_out[iy * nx + jx][0] = (w1 * w2).real();
 				pfftw_out[iy * nx + jx][1] = (w1 * w2).imag();
 			}
