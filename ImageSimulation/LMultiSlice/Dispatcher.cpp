@@ -212,8 +212,6 @@ int Dispatcher::Run(const char* fileNameXML) {
 
 	delete microscope;
 
-	delete microscope;
-
 	delete res;
 
 	delete modelFragmented;
