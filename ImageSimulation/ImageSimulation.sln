@@ -29,7 +29,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Image", "Image\Image.vcxpro
 		{89A1E353-E2DC-495C-B403-742BE206ACED} = {89A1E353-E2DC-495C-B403-742BE206ACED}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pugixml_vs2010", "..\pugixml-1.2\scripts\pugixml_vs2010.vcxproj", "{89A1E353-E2DC-495C-B403-742BE206ACED}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pugixml_vs2012", "..\pugixml-1.2\scripts\pugixml_vs2010.vcxproj", "{89A1E353-E2DC-495C-B403-742BE206ACED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -223,8 +223,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
