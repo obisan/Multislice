@@ -15,7 +15,8 @@ Dispatcher::~Dispatcher(void) {
 bool Dispatcher::CheckFileExist(const char *fname) {
 	_finddata_t data;
 	intptr_t nFind = _findfirst(fname,&data);
-	if (nFind != -1) {
+	if (nFind != -1)
+	{
 		// Если этого не сделать, то произойдет утечка ресурсов
 		_findclose(nFind);
 		return true;
@@ -198,20 +199,35 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Number slides = " << command.numberSlices << std::endl;
 	std::cout << "dpa = " << command.dpa << std::endl;
 
-	Image *res = new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
-		
-	modelPotential->calculatePotentialGrid(res);
-	
-	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
+	Image *res		= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
+	Image *t		= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
+	Image *TxPhi	= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
+
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
-	modelSimulated->imageCalculation(res, microscope);
+
+	modelPotential->calculatePotentialGrid(res);
+	res->saveMRC(command.fileNameOutput, model);
+
+	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
+	//modelSimulated->imageCalculation(res, t, TxPhi, microscope);
+
+	
+	//t->saveMRC((std::string(command.fileNameOutput) + "_T").c_str(), model);
+	//TxPhi->saveMRC((std::string(command.fileNameOutput) + "_TxPhi").c_str(), model);
+
+// 	Image *Zernike = new Image(t);
+// 	Image::zernike(Zernike, transformationStatus::notTransformed);
+// 
+// 	Zernike->saveMRC((std::string(command.fileNameOutput) + "_Zernike").c_str(), model);
+// 
+// 	delete Zernike;
 
 	delete microscope;
 
-	res->saveMRC(command.fileNameOutput, model);
-
 	delete res;
-	
+	delete t;
+	delete TxPhi;
+
 	delete modelFragmented;
 	delete modelPotential;
 	delete modelSimulated;
