@@ -15,7 +15,7 @@ public:
  	AModel::Model*		getModelSource();
  	int					getNumberSlices();
 
-	int		*atomCount;
+	int		*atomCountInSlice;
 	int		*atomId;
 	float	(*xyz)[3];
 	
