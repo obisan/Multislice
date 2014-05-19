@@ -31,7 +31,6 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	const double dy = b / this->ny;
 	const double dz = c / numberSlices;
 	
-<<<<<<< HEAD
 	int *atomCountInSlice = modelFragmented->atomCountInSlice;
 	int *atomId = modelFragmented->atomId;
 	float (*xyz)[3] = modelFragmented->xyz;
@@ -64,35 +63,6 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	atomCountInSlice = nullptr;
 	atomId = nullptr;
 	xyz = nullptr;
-=======
-
-	int *atomId;
-	float (*xyz)[3];
-	float *val;
-
-	cudaMallocManaged(&atomId, nAtoms * sizeof(int));
-	cudaMallocManaged(&xyz, nAtoms * 3 * sizeof(float));
-	cudaMallocManaged(&val, sizeof(float));
-	
-	for(size_t kz = 0; kz < nz; kz++) {
-		
-		Slice *currentSlice = modelFragmented->getSliceByZ((kz + 1) * dz);
-		for(size_t i = 0; i < currentSlice->size(); i++) {
-			atomId[i] = modelFragmented->getModelSource()->getNumberByName((*currentSlice)[i].element.Atom);
-			xyz[i][0] = (*currentSlice)[i].element.xsCoordinate.x;
-			xyz[i][1] = (*currentSlice)[i].element.xsCoordinate.y;
-			xyz[i][2] = (*currentSlice)[i].element.xsCoordinate.z;
-		}
-
-		const size_t MAX_THREADS = 16;
-		dim3 threads(MAX_THREADS, MAX_THREADS, 1);										//размер квардатика
-		dim3 grid(result->width / MAX_THREADS, result->height / MAX_THREADS, 1);		//сколько квадратиков нужно чтобы покрыть все изображение
-
-		calculateProjectedPotentialSlide<<<grid, threads>>>(atomId, xyz, nAtoms, a, b, c, dx, dy, dz, (double*) (result->imageData), nChannels, nx, ny, dk);
-		cudaThreadSynchronize();
-
-	} // z
->>>>>>> parent of d306cea... all slides of model calculate on GPU
 
 	return 0;
 }

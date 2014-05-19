@@ -6,50 +6,23 @@ __global__ void calculateProjectedPotential(int *sliceId, int *atomId, float (*x
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
 	const int iz = blockDim.z * blockIdx.z + threadIdx.z;
 	
-	for(int l = 0; l < nAtoms; l++) {
-		if(sliceId[l] == iz) {
-			double dX = fabs(xyz[l][0] * a - (ix * dx));
-			double dY = fabs(xyz[l][1] * b - (iy * dy));
-  
-			if( dX >= a / 2.0 ) dX = dX - a;
-			if( dY >= b / 2.0 ) dY = dY - b;
+	const int offset = sliceId[iz];
 
-			double dR = sqrt(dX * dX + dY * dY) * dk;
-
-			int m = atomId[l] - 1;
-
-			if( dR < 1.0e-10 ) dR = 1.0e-10;
-			
-			image[ nChannels * ((gridDim.x * blockDim.x) * (gridDim.y * blockDim.y) * iz + (gridDim.x * blockDim.x) * iy + ix) + 0 ] += calculateProjectedPotential(m, dR);
-			image[ nChannels * ((gridDim.x * blockDim.x) * (gridDim.y * blockDim.y) * iz + (gridDim.x * blockDim.x) * iy + ix) + 1 ] = 0;
-		}
-	}
-
-	__syncthreads();
-}
-
-__global__ void calculateProjectedPotentialSlide(int *atomId, float (*xyz)[3], unsigned int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nChannels, unsigned int nx, unsigned int ny, double dk) {
-	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
-	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
-
-	for(int l = 0; l < nAtoms; l++) {
-		double dX = fabs(xyz[l][0] * a - (ix * dx));
-		double dY = fabs(xyz[l][1] * b - (iy * dy));
-		double dZ = fabs(xyz[l][2] * c - (0 * dz));
-
-		if(dZ >= dz) continue;
+	for(int l = offset; l < nAtoms - offset; l++) {
+		double dX = fabs(xyz[offset + l][0] * a - (ix * dx));
+		double dY = fabs(xyz[offset + l][1] * b - (iy * dy));
   
 		if( dX >= a / 2.0 ) dX = dX - a;
 		if( dY >= b / 2.0 ) dY = dY - b;
 
 		double dR = sqrt(dX * dX + dY * dY) * dk;
 
-		int m = atomId[l] - 1;
+		int m = atomId[offset + l];
 
 		if( dR < 1.0e-10 ) dR = 1.0e-10;
-
-		image[ nChannels * (gridDim.x * blockDim.x * iy + ix) + 0 ] += calculateProjectedPotential(m, dR);
-		image[ nChannels * (gridDim.x * blockDim.x * iy + ix) + 1 ] = 0;
+			
+		image[ nChannels * ((gridDim.x * blockDim.x) * (gridDim.y * blockDim.y) * iz + (gridDim.x * blockDim.x) * iy + ix) + 0 ] += calculateProjectedPotential(m, dR);
+		image[ nChannels * ((gridDim.x * blockDim.x) * (gridDim.y * blockDim.y) * iz + (gridDim.x * blockDim.x) * iy + ix) + 1 ] = 0;
 	}
 
 	__syncthreads();

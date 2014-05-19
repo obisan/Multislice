@@ -1,10 +1,10 @@
 #pragma once
 
-__global__ void calculateProjectedPotentialSlide(int *atomId, float (*xyz)[3], unsigned int nAtoms, 
+__global__ void calculateProjectedPotential(int *atomCountInSlice, int *atomId, float (*xyz)[3], unsigned int nAtoms, 
 											   double a, double b, double c, 
 											   double dx, double dy, double dz, 
 											   double *image, unsigned int nChannels, 
-											   unsigned int nx, unsigned int ny,
+											   unsigned int nx, unsigned int ny, unsigned int nz,
 											   double dk);
 __device__ double	calculateProjectedPotential(int numberAtom, double r);
 __device__ double	calculatePotential(int numberAtom, double r);
