@@ -4,9 +4,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -17,9 +14,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="ModelSimulated.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelPotential.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="ModelFragmented.h">
@@ -34,6 +28,12 @@
     <ClInclude Include="Dispatcher.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="ModelPotential.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="kernel.cuh">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -45,16 +45,10 @@
     <ClCompile Include="ModelSimulated.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="ModelPotential.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ModelFragmented.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Microscope.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="LMultiSlice.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="fparams.cpp">
@@ -68,5 +62,16 @@
     <Filter Include="src">
       <UniqueIdentifier>{fd6190c1-34dd-4611-beed-abc63fb95bf3}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="LMultiSlice.cpp">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="ModelPotential.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="kernel.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

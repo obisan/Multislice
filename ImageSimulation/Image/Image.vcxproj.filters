@@ -37,9 +37,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="Image.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -47,6 +44,9 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="memalloc.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cu">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>

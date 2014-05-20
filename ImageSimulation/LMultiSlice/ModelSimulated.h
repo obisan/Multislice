@@ -9,7 +9,7 @@ public:
 	ModelSimulated(void);
 	~ModelSimulated(void);
 	ModelSimulated(ModelPotential* modelPotential, ModelFragmented *modelFragmented, size_t nx, size_t ny, double dpa);
-	int imageCalculation(Image *result, Image *t, Image *TxPhi, Microscope *microscope);
+	int imageCalculation(Image *result, Microscope *microscope);
 private:
 	ModelPotential		*modelPotential;
 	ModelFragmented		*modelFragmented;

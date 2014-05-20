@@ -39,6 +39,12 @@
 
 #include <fftw3.h>
 
+#include <cuda_runtime_api.h>
+#include <cuda_runtime.h>
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+
 #include "../pugixml-1.2/src/pugixml.hpp"
 
 #include "../Image/Image.h"

@@ -16,7 +16,7 @@ Slice::~Slice(void) {
 }
 
 AModel::Cortege Slice::operator[](size_t i) {
-	return *composition[i];
+	return *(composition[i]);
 }
 
 std::vector<AModel::Cortege*>::iterator Slice::begin() {

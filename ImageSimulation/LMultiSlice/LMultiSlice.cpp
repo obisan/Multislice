@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "Dispatcher.h"
-#include "test.h"
 
 int main(int argc, char *argv[]) {
 	char fileNameXML[256];
@@ -15,10 +14,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	Dispatcher *task = new Dispatcher();
-
 	task->Run(fileNameXML);
-
 	delete task;
-
 	return 0;
 }

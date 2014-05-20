@@ -199,40 +199,28 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Number slides = " << command.numberSlices << std::endl;
 	std::cout << "dpa = " << command.dpa << std::endl;
 
-	Image *res		= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
-	Image *v		= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
-	Image *t		= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
-	Image *TxPhi	= new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
-
+	Image *res = new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
+	
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
 
+<<<<<<< HEAD
 	clock_t start, end;
 	start = clock();
 	modelPotential->calculatePotentialGrid(res, v);
 	end = clock();
 	std::cout << std::endl << "Time execution: " << ((end - start) / 1000000.0F) << "ms." << std::endl;
+=======
+	modelPotential->calculatePotentialGrid(res);
+>>>>>>> origin/GPU-way
 
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
-	modelSimulated->imageCalculation(res, t, TxPhi, microscope);
+	modelSimulated->imageCalculation(res, microscope);
 
 	res->saveMRC(command.fileNameOutput, model);
-	v->saveMRC((std::string(command.fileNameOutput) + "_V").c_str(), model);
-	t->saveMRC((std::string(command.fileNameOutput) + "_T").c_str(), model);
-	TxPhi->saveMRC((std::string(command.fileNameOutput) + "_TxPhi").c_str(), model);
-
-	Image *Zernike = new Image(t);
-	Image::zernike(Zernike, transformationStatus::notTransformed);
-
-	Zernike->saveMRC((std::string(command.fileNameOutput) + "_Zernike").c_str(), model);
-
-	delete Zernike;
 
 	delete microscope;
 
 	delete res;
-	delete v;
-	delete t;
-	delete TxPhi;
 
 	delete modelFragmented;
 	delete modelPotential;

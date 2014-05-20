@@ -40,7 +40,7 @@ namespace ImageSpace {
 		this->nSize			= this->width * this->height * this->thickness * this->depth * this->nChannels;
 		this->widthStep		= this->width;
 
-		this->imageData = new char [ this->nSize ];
+		cudaMallocManaged(&(this->imageData), this->nSize);
 		memset(this->imageData, 0, this->nSize);
 	}
 
@@ -57,13 +57,13 @@ namespace ImageSpace {
 		this->nSize			= this->width * this->height * this->thickness * this->depth * this->nChannels;
 		this->widthStep		= this->width;
 
-		this->imageData = new char [ this->nSize ];
+		cudaMallocManaged(&(this->imageData), this->nSize);
 		memcpy(this->imageData, image->imageData, image->nSize);
 	}
 
 	Image::~Image() {
-		if(imageData != nullptr) {
-			delete[] imageData;
+		if(this->imageData != nullptr) {
+			cudaFree(this->imageData);
 			imageData = nullptr;
 		}
 	}
