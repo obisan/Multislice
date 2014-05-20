@@ -206,7 +206,11 @@ int Dispatcher::Run(const char* fileNameXML) {
 
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
 
+	clock_t start, end;
+	start = clock();
 	modelPotential->calculatePotentialGrid(res, v);
+	end = clock();
+	std::cout << std::endl << "Time execution: " << ((end - start) / 1000000.0F) << "ms." << std::endl;
 
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
 	modelSimulated->imageCalculation(res, t, TxPhi, microscope);

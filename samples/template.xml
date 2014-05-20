@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <action>
 	<io>
-		<fileNameInput>../samples/fourSameAtomsSameZ.coo</fileNameInput>
-		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
+		<fileNameInput>../samples/dump.xyz</fileNameInput>
+		<fileNameOutput>../samples/dump</fileNameOutput>
 	</io>
 	<image>
 		<nx>512</nx>

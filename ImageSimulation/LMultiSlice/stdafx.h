@@ -23,10 +23,11 @@
 #include <iterator>
 #include <complex>
 
+#include<time.h> 
+
 #include <assert.h>
 #include <io.h>
 #include <iomanip>
-
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
 
