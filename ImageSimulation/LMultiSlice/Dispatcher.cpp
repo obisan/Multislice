@@ -165,7 +165,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 		std::cerr << "File with name %" << fileNameXML << "% doesn't exist." << std::endl;
 		return -1;
 	} else {
-		std::cout << "File with name%" << fileNameXML << "% exist." << std::endl;
+		std::cout << "File with name %" << fileNameXML << "% exist." << std::endl;
 	}
 	
 	if( parseCommand(fileNameXML, command) == -1) {

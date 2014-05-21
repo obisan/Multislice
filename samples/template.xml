@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <action>
 	<io>
-		<fileNameInput>../samples/fourSameAtomsSameZ.coo</fileNameInput>
-		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
+		<fileNameInput>../samples/model.ace</fileNameInput>
+		<fileNameOutput>../samples/model</fileNameOutput>
 	</io>
 	<image>
-		<nx>512</nx>
-		<ny>512</ny>
+		<nx>64</nx>
+		<ny>64</ny>
 		<dpa>10.0</dpa>		<!--- dots per angstrem --->
 	</image>
 	<slicing>
