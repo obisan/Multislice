@@ -181,8 +181,6 @@ int Dispatcher::Run(const char* fileNameXML) {
 		std::cout << "Read file %" << command.fileNameInput << "% successful." << std::endl;
 	} 
 
-	std::sort(model->getTableCell(), model->getTableCell() + model->getNumberAtoms());
-
 	/************************************************************************/
 	/* Fragmentation														*/
 	/************************************************************************/

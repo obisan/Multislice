@@ -1,35 +1,37 @@
 #include "stdafx.h"
 #include "kernel.cuh"
 
-__global__ void calculateProjectedPotential(int *sliceId, int *atomId, float (*xyz)[3], unsigned int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nChannels, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk) {
+__global__ void calculateProjectedPotential(int *atomId, float (*xyz)[3], unsigned int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nChannels, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk) {
 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
 	const int iz = blockDim.z * blockIdx.z + threadIdx.z;
+	const int lineSize = (gridDim.x * blockDim.x);
+	const int slideSize = (gridDim.x * blockDim.x) * (gridDim.y * blockDim.y);
 	
-	const int offset = sliceId[iz];
+	int l;
+	for(l = 0; l < nAtoms; l++) {
+		double dX = fabs(xyz[l][0] * a - (ix * dx));
+		double dY = fabs(xyz[l][1] * b - (iy * dy));
+		double dZ = fabs(xyz[l][2] * b - (iz * dz));
+		int m = atomId[l];
 
-	for(int l = offset; l < nAtoms - offset; l++) {
-		double dX = fabs(xyz[offset + l][0] * a - (ix * dx));
-		double dY = fabs(xyz[offset + l][1] * b - (iy * dy));
-		double dZ = fabs(xyz[offset + l][2] * c - (iz * dz));
+		dX = ( dX >= a / 2.0 ) ? dX - a : dX;
+		dY = ( dY >= b / 2.0 ) ? dY - b : dY;
+	
+		double dR = sqrt(dX * dX + dY * dY);
+		
+		if(dZ > dz) continue;
+		if(dR > r) continue;
 
-		//if(dZ > dz) continue;
-  
-		if( dX >= a / 2.0 ) dX = dX - a;
-		if( dY >= b / 2.0 ) dY = dY - b;
-
-		double dR = sqrt(dX * dX + dY * dY) * dk;
-		//if(dR > r) continue;
-
-		int m = atomId[offset + l];
-
-		if( dR < 1.0e-10 ) dR = 1.0e-10;
-			
-		image[ nChannels * ((gridDim.x * blockDim.x) * (gridDim.y * blockDim.y) * iz + (gridDim.x * blockDim.x) * iy + ix) + 0 ] += calculateProjectedPotential(m, dR);
-		image[ nChannels * ((gridDim.x * blockDim.x) * (gridDim.y * blockDim.y) * iz + (gridDim.x * blockDim.x) * iy + ix) + 1 ] = 0;
+		dR *= dk;
+		dR = ( dR < 1.0e-10 ) ? 1.0e-10 : dR;
+				
+		image[ nChannels * (slideSize * iz + lineSize * iy + ix) + 0 ] += calculateProjectedPotential(m, dR);
+		image[ nChannels * (slideSize * iz + lineSize * iy + ix) + 1 ] = 0;
 	}
-	__syncthreads();
+	
 }
+
 
 __device__ double calculateProjectedPotential(int numberAtom, double r) {
 	double sumf = 0, sums = 0;
@@ -49,23 +51,6 @@ __device__ double calculateProjectedPotential(int numberAtom, double r) {
  	
 	return (sumf + sums);
 }
-
-__device__ double calculatePotential(int numberAtom, double r) {
- 		double sumf = 0, sums = 0;
- 		double dR1 = 6.2831853071796 * r; // 2 * PI * r
- 		for(int k = 0; k < 3; k++) {
- 			int Offs = (numberAtom) * 12 + k * 2;
- 			sumf += FParamsDevice[Offs + 0] / r * exp(- dR1 * sqrt(FParamsDevice[Offs + 1]));
- 		}				
- 		sumf *= 150.365396971475; // 4 * PI * PI *a0 * e
- 		
- 		for(int k = 0; k < 3; k++) {
- 			int Offs = (numberAtom) * 12 + k * 2;
- 			sums += FParamsDevice[Offs + 6] * pow(FParamsDevice[Offs + 7], -3.0 / 2.0) * exp(-(6.2831853071796 * r * r) / FParamsDevice[Offs + 7]);
- 		}
- 		sums *= 266.5157269050303; // 2 * PI * PI * a0 * e
- 		return (sumf + sums);
- 	}
 
 __device__ double	bessk0( double x ) {
 	double ax, x2, sum;

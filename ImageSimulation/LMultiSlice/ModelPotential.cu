@@ -31,36 +31,49 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	const double dy = b / this->ny;
 	const double dz = c / numberSlices;
 	
-	int *atomCountInSlice = modelFragmented->atomCountInSlice;
-	int *atomId = modelFragmented->atomId;
-	float (*xyz)[3] = modelFragmented->xyz;
+	int		*atomId		= modelFragmented->atomId;
+	float	(*xyz)[3]	= modelFragmented->xyz;
 	
-	const size_t MAX_THREADS = 32;
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	int deviceCount = 0;
+	cudaGetDeviceCount(&deviceCount);
+	printf("\nDetected %d CUDA accelerators:\n", deviceCount);
+	int dev;
+	for (dev=0; dev < deviceCount; dev++) {
+		cudaDeviceProp deviceProp;
+		cudaGetDeviceProperties(&deviceProp, dev);
+		printf("  [%d]: '%s'  Clock: %.1f GHz  Mem: %dMB  Rev: %d.%d\n", 
+			   dev, deviceProp.name, 
+			   deviceProp.clockRate / 1000000.0f, deviceProp.totalGlobalMem / (1024*1024),
+			   deviceProp.major, deviceProp.minor);
+	  }
+
+	int cudadev = 0;
+	printf("  Single-threaded single-GPU test run.\n");
+	printf("  Opening CUDA device %d...\n\n", cudadev);
+	cudaSetDevice(cudadev);
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	const size_t MAX_THREADS = 16;
 	dim3 threads(MAX_THREADS, MAX_THREADS, 1);														//размер квардатика
 	dim3 grid(result->width / MAX_THREADS, result->height / MAX_THREADS, result->thickness );		//сколько квадратиков нужно чтобы покрыть все изображение
 
-	cudaError_t err = cudaSuccess;
+	CUERR
+
 	cudaEvent_t start,stop;
 	float time = 0.0f;
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 	cudaEventRecord(start,0);
-	calculateProjectedPotential<<<grid, threads>>>(atomCountInSlice, atomId, xyz, nAtoms, a, b, c, dx, dy, dz, (double*) (result->imageData), nChannels, nx, ny, numberSlices, radius, dk);
+	calculateProjectedPotential<<<grid, threads>>>(atomId, xyz, nAtoms, a, b, c, dx, dy, dz, (double*) (result->imageData), nChannels, nx, ny, numberSlices, radius, dk);
 	cudaEventRecord(stop,0);
 	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&time, start, stop);
-	
-	err = cudaGetLastError();
-
-    if (err != cudaSuccess) {
-        fprintf(stderr, "Failed to launch kernel (error code %s)!\n", cudaGetErrorString(err));
-		system("pause");
-        exit(EXIT_FAILURE);
-    }
+		
+	CUERR
 	
 	std::cout << std::endl << "Kernel time: " << time << "ms." << std::endl << std::endl;
 
-	atomCountInSlice = nullptr;
 	atomId = nullptr;
 	xyz = nullptr;
 

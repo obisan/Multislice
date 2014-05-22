@@ -7,6 +7,12 @@
 
 #define M_PI	3.14159265358979323846
 
+#define CUERR { cudaError_t err; \
+	if ((err = cudaGetLastError()) != cudaSuccess) { \
+	printf("CUDA error: %s, line %d\n", cudaGetErrorString(err), __LINE__); \
+	system("pause"); \
+	return -1; }}
+
 class ModelPotential {
 public:
 	ModelPotential(void);

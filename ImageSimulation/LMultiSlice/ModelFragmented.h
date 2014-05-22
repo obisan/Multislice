@@ -16,7 +16,6 @@ public:
 
 	int					getNumberSlices();
 	
-	int					*atomCountInSlice;
 	int					*atomId;
 	float				(*xyz)[3];
 	
