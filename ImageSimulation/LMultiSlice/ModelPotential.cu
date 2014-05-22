@@ -45,7 +45,7 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 	cudaEventRecord(start,0);
-	calculateProjectedPotential<<<grid, threads>>>(atomCountInSlice, atomId, xyz, nAtoms, a, b, c, dx, dy, dz, (double*) (result->imageData), nChannels, nx, ny, numberSlices, dk);
+	calculateProjectedPotential<<<grid, threads>>>(atomCountInSlice, atomId, xyz, nAtoms, a, b, c, dx, dy, dz, (double*) (result->imageData), nChannels, nx, ny, numberSlices, radius, dk);
 	cudaEventRecord(stop,0);
 	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&time, start, stop);
