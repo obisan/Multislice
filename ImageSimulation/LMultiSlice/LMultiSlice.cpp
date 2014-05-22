@@ -16,5 +16,6 @@ int main(int argc, char *argv[]) {
 	Dispatcher *task = new Dispatcher();
 	task->Run(fileNameXML);
 	delete task;
+	system("pause");
 	return 0;
 }

@@ -13,13 +13,13 @@ __global__ void calculateProjectedPotential(int *sliceId, int *atomId, float (*x
 		double dY = fabs(xyz[offset + l][1] * b - (iy * dy));
 		double dZ = fabs(xyz[offset + l][2] * c - (iz * dz));
 
-		if(dZ > dz) continue;
+		//if(dZ > dz) continue;
   
 		if( dX >= a / 2.0 ) dX = dX - a;
 		if( dY >= b / 2.0 ) dY = dY - b;
 
 		double dR = sqrt(dX * dX + dY * dY) * dk;
-		if(dR > r) continue;
+		//if(dR > r) continue;
 
 		int m = atomId[offset + l];
 

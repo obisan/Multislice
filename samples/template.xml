@@ -1,16 +1,17 @@
 <?xml version="1.0" ?>
 <action>
 	<io>
-		<fileNameInput>../samples/model.ace</fileNameInput>
-		<fileNameOutput>../samples/model</fileNameOutput>
+		<!--<fileNameInput>D:\LEMOI\Work\model\model.ace</fileNameInput> -->
+		<fileNameInput>../samples/dump.xyz</fileNameInput> 
+		<fileNameOutput>../samples/dump</fileNameOutput>
 	</io>
 	<image>
-		<nx>64</nx>
-		<ny>64</ny>
+		<nx>4096</nx>
+		<ny>4096</ny>
 		<dpa>10.0</dpa>		<!--- dots per angstrem --->
 	</image>
 	<slicing>
-		<radiuc>50.0</radiuc>
+		<radiuc>20.0</radiuc>
 		<numberslices>1</numberslices>
 	</slicing>
 	<microscope>
