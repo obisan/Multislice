@@ -1,13 +1,19 @@
 <?xml version="1.0" ?>
 <action>
 	<io>
-		<!--<fileNameInput>D:\LEMOI\Work\model\model.ace</fileNameInput> -->
+		<!--
+		<fileNameInput>D:\LEMOI\Work\model\model.ace</fileNameInput> 
+		<fileNameOutput>../samples/model</fileNameOutput>
+		
 		<fileNameInput>../samples/dump.xyz</fileNameInput> 
 		<fileNameOutput>../samples/dump</fileNameOutput>
+		-->
+		<fileNameInput>../samples/fourSameAtomsSameZ.coo</fileNameInput> 
+		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
 	</io>
 	<image>
-		<nx>4096</nx>
-		<ny>4096</ny>
+		<nx>1024</nx>
+		<ny>1024</ny>
 		<dpa>10.0</dpa>		<!--- dots per angstrem --->
 	</image>
 	<slicing>

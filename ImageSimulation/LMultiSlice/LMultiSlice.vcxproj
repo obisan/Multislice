@@ -175,7 +175,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="fparams.h" />
     <ClInclude Include="kernel.cuh" />
     <ClInclude Include="Microscope.h" />
-    <ClInclude Include="ModelFragmented.h" />
     <ClInclude Include="ModelSimulated.h" />
     <ClInclude Include="Slice.h" />
     <ClInclude Include="stdafx.h" />
@@ -188,7 +187,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="LMultiSlice.cpp" />
     <ClCompile Include="Microscope.cpp" />
-    <ClCompile Include="ModelFragmented.cpp" />
     <ClCompile Include="ModelSimulated.cpp" />
     <ClCompile Include="Slice.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -16,9 +16,6 @@
     <ClInclude Include="ModelSimulated.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="ModelFragmented.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="Microscope.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -43,9 +40,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="ModelSimulated.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelFragmented.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Microscope.cpp">

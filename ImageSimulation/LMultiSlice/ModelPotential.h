@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stdafx.h"
-#include "ModelFragmented.h"
 #include "fparams.h"
 #include "Microscope.h"
 
@@ -16,7 +15,7 @@
 class ModelPotential {
 public:
 	ModelPotential(void);
-	ModelPotential(ModelFragmented* modelFragmented, size_t nx, size_t ny, double dpa, double radius);
+	ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double dpa, double radius);
 	~ModelPotential(void);
 
 	int		calculatePotentialGrid(Image *result);
@@ -27,7 +26,7 @@ public:
 	size_t	getNz();
 	
 private:
-	ModelFragmented		*modelFragmented;
+	AModel::Model		*model;
 	size_t				nx;
 	size_t				ny;
 	size_t				nz;

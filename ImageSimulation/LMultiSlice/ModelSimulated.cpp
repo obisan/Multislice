@@ -6,16 +6,14 @@ ModelSimulated::ModelSimulated(void) {
 }
 
 ModelSimulated::~ModelSimulated(void) {
-	if(this->modelFragmented != nullptr) this->modelFragmented = nullptr;
 	if(this->modelPotential != nullptr) this->modelPotential = nullptr;
 }
 
-ModelSimulated::ModelSimulated(ModelPotential* modelPotential, ModelFragmented *modelFragmented, size_t nx, size_t ny, double dpa) {
-	this->modelFragmented = modelFragmented;
+ModelSimulated::ModelSimulated(ModelPotential* modelPotential, size_t nx, size_t ny, size_t nz, double dpa) {
 	this->modelPotential = modelPotential;
 	this->nx = nx;
 	this->ny = ny;
-	this->nz = modelFragmented->getNumberSlices();
+	this->nz = nz;
 	this->dpa = dpa;
 }
 

@@ -1,54 +1,72 @@
 #include "stdafx.h"
 #include "kernel.cuh"
 
-__global__ void calculateProjectedPotential(int *atomId, float (*xyz)[3], unsigned int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nChannels, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk) {
+__global__ void calculateProjectedPotential(int *atomsinpixel, int *atomId, float *atomR, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nChannels, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk) {
 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
 	const int iz = blockDim.z * blockIdx.z + threadIdx.z;
 	const int lineSize = (gridDim.x * blockDim.x);
 	const int slideSize = (gridDim.x * blockDim.x) * (gridDim.y * blockDim.y);
-	
-	int l;
-	for(l = 0; l < nAtoms; l++) {
-		double dX = fabs(xyz[l][0] * a - (ix * dx));
-		double dY = fabs(xyz[l][1] * b - (iy * dy));
-		double dZ = fabs(xyz[l][2] * b - (iz * dz));
-		int m = atomId[l];
 
-		dX = ( dX >= a / 2.0 ) ? dX - a : dX;
-		dY = ( dY >= b / 2.0 ) ? dY - b : dY;
+	for(int l = 0; l < atomsinpixel[lineSize * iy + ix]; l++) 
+ 		image[ nChannels * (slideSize * iz + lineSize * iy + ix) + 0 ] += calculateProjectedPotential(atomId[50 * lineSize * iy + 50 * ix + l], atomR[50 * lineSize * iy + 50 * ix + l]);
+ 	image[ nChannels * (slideSize * iz + lineSize * iy + ix) + 1 ] = 0;
 	
-		double dR = sqrt(dX * dX + dY * dY);
-		
-		if(dZ > dz) continue;
-		if(dR > r) continue;
-
-		dR *= dk;
-		dR = ( dR < 1.0e-10 ) ? 1.0e-10 : dR;
-				
-		image[ nChannels * (slideSize * iz + lineSize * iy + ix) + 0 ] += calculateProjectedPotential(m, dR);
-		image[ nChannels * (slideSize * iz + lineSize * iy + ix) + 1 ] = 0;
-	}
+// 	int1 atom[1024];
+// 	float1 atomdist[1024];
 	
+// 	int k = 0;
+// 	for(int l = 0; l < nAtoms && k < 1024; l++) {
+// 		double dX = fabs(xyz[l][0] * a - (ix * dx));
+// 		double dY = fabs(xyz[l][1] * b - (iy * dy));
+// 		
+// 		dX = ( dX >= a / 2.0 ) ? dX - a : dX;
+// 		dY = ( dY >= b / 2.0 ) ? dY - b : dY;
+// 
+// 		double dR = sqrt(dX * dX + dY * dY);
+// 		
+// 		if(dR > r) continue;
+// 
+// 		atom[k].x = atomId[l];
+// 		atomdist[k].x = ( dR < 1.0e-10 ) ? 1.0e-10 : dR;
+// 		
+// 		k++;
+// 	}
+// 
+// 	__syncthreads();
+// 
+// 	for(int l = 0; l < k; l++) 
+// 		image[ nChannels * (slideSize * iz + lineSize * iy + ix) + 0 ] += calculateProjectedPotential(atom[l].x, atomdist[l].x);
+// 	image[ nChannels * (slideSize * iz + lineSize * iy + ix) + 1 ] = 0;
 }
 
 
 __device__ double calculateProjectedPotential(int numberAtom, double r) {
 	double sumf = 0, sums = 0;
  	double dR1 = 6.2831853071796 * r; // 2 * PI * r
+
+// 	sumf += FParamsDevice[((numberAtom) * 12 + 0 * 2) + 0] * bessk0(dR1 * sqrt(FParamsDevice[((numberAtom) * 12 + 0 * 2) + 1]));
+// 	sumf += FParamsDevice[((numberAtom) * 12 + 1 * 2) + 0] * bessk0(dR1 * sqrt(FParamsDevice[((numberAtom) * 12 + 1 * 2) + 1]));
+// 	sumf += FParamsDevice[((numberAtom) * 12 + 2 * 2) + 0] * bessk0(dR1 * sqrt(FParamsDevice[((numberAtom) * 12 + 2 * 2) + 1]));
+
  	for(int k = 0; k < 3; k++) {
  		int Offs = (numberAtom) * 12 + k * 2;
- 		sumf += FParamsDevice[Offs + 0] * bessk0(dR1 * sqrt(FParamsDevice[Offs + 1]));
+ 		sumf += FParamsDevice[Offs + 0] * bessk0(dR1 * sqrt(FParamsDevice[Offs + 1]));  
  	}
+	sumf *= 300.73079394295; // 4 * PI * PI *a0 * e
+
  				
- 	sumf *= 300.73079394295; // 4 * PI * PI *a0 * e
+// 	sums += (FParamsDevice[((numberAtom) * 12 + 0 * 2) + 6] / FParamsDevice[((numberAtom) * 12 + 0 * 2) + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[((numberAtom) * 12 + 0 * 2) + 7]);
+// 	sums += (FParamsDevice[((numberAtom) * 12 + 1 * 2) + 6] / FParamsDevice[((numberAtom) * 12 + 1 * 2) + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[((numberAtom) * 12 + 1 * 2) + 7]);
+// 	sums += (FParamsDevice[((numberAtom) * 12 + 2 * 2) + 6] / FParamsDevice[((numberAtom) * 12 + 2 * 2) + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[((numberAtom) * 12 + 2 * 2) + 7]);
+	
  	for(int k = 0; k < 3; k++) {
  		int Offs = (numberAtom) * 12 + k * 2;
  		sums += (FParamsDevice[Offs + 6] / FParamsDevice[Offs + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[Offs + 7]);
  	}
- 		
- 	sums *= 150.36539697148; // 2 * PI * PI * a0 * e
- 	
+	sums *= 150.36539697148; // 2 * PI * PI * a0 * e
+
+
 	return (sumf + sums);
 }
 
