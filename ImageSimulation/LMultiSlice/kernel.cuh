@@ -1,23 +1,11 @@
 #pragma once
 
-__global__ void calculateProjectedPotential(int *atomCountInSlice, int *atomId, float (*xyz)[3], unsigned int nAtoms, 
-											   double a, double b, double c, 
-											   double dx, double dy, double dz, 
-											   double *image, unsigned int nChannels, 
-											   unsigned int nx, unsigned int ny, unsigned int nz,
-											   double dk);
-__global__ void calculateProjectedPotentialSlide(int *atomId, float (*xyz)[3], unsigned int nAtoms, 
-											   double a, double b, double c, 
-											   double dx, double dy, double dz, 
-											   double *image, unsigned int nChannels, 
-											   unsigned int nx, unsigned int ny,
-											   double dk);
+__global__ void calculateProjectedPotential(int *atomsinpixel, int *atomId, float *atomR, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nChannels, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk);
 __device__ double	calculateProjectedPotential(int numberAtom, double r);
-__device__ double	calculatePotential(int numberAtom, double r);
 __device__ double	bessk0( double x );
 __device__ double	bessi0( double x );
 
-__device__ double FParamsDevice[] = {
+__constant__ double FParamsDevice[] = {
 // Z=  1,  chisq=    0.170190
   3.55221981e-002,2.25354459e-001,2.62782423e-002,2.25354636e-001,
   3.52695173e-002,2.25355749e-001,6.77755867e-002,4.38850114e+000,

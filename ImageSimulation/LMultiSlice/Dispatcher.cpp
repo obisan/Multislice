@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Dispatcher.h"
-#include "ModelFragmented.h"
 #include "ModelPotential.h"
 #include "ModelSimulated.h"
 
@@ -165,7 +164,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 		std::cerr << "File with name %" << fileNameXML << "% doesn't exist." << std::endl;
 		return -1;
 	} else {
-		std::cout << "File with name%" << fileNameXML << "% exist." << std::endl;
+		std::cout << "File with name %" << fileNameXML << "% exist." << std::endl;
 	}
 	
 	if( parseCommand(fileNameXML, command) == -1) {
@@ -181,18 +180,10 @@ int Dispatcher::Run(const char* fileNameXML) {
 		std::cout << "Read file %" << command.fileNameInput << "% successful." << std::endl;
 	} 
 
-	std::sort(model->getTableCell(), model->getTableCell() + model->getNumberAtoms());
-
-	/************************************************************************/
-	/* Fragmentation														*/
-	/************************************************************************/
-	ModelFragmented *modelFragmented = new ModelFragmented(model, command.numberSlices);
-	modelFragmented->dividing();
-
 	/************************************************************************/
 	/* Calculating map potentials											*/
 	/************************************************************************/
-	ModelPotential *modelPotential = new ModelPotential(modelFragmented, command.nx, command.ny, command.dpa, command.radiuc);
+	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
 
 	std::cout << std::endl;
 	std::cout << "Image size = " << command.nx << "x" << command.ny << std::endl;
@@ -205,7 +196,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 
 	modelPotential->calculatePotentialGrid(res);
 
-	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, modelFragmented, command.nx, command.ny, command.dpa);
+	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, command.nx, command.ny, command.numberSlices, command.dpa);
 	modelSimulated->imageCalculation(res, microscope);
 
 	res->saveMRC(command.fileNameOutput, model);
@@ -214,7 +205,6 @@ int Dispatcher::Run(const char* fileNameXML) {
 
 	delete res;
 
-	delete modelFragmented;
 	delete modelPotential;
 	delete modelSimulated;
 

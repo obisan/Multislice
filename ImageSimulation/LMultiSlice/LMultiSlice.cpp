@@ -7,6 +7,7 @@
 int main(int argc, char *argv[]) {
 	char fileNameXML[256];
 	if(argc == 1) {
+		std::cout << "Input name XML file: " << std::endl;
 		std::cin >> fileNameXML;
 	}
 	if(argc > 1) {
@@ -16,5 +17,6 @@ int main(int argc, char *argv[]) {
 	Dispatcher *task = new Dispatcher();
 	task->Run(fileNameXML);
 	delete task;
+	system("pause");
 	return 0;
 }

@@ -10,6 +10,7 @@
 
 docs/
 samples/
+<<<<<<< HEAD
 
 #################
 ## data
@@ -19,6 +20,8 @@ samples/
 *.dll
 *.lib
 *.exe
+=======
+>>>>>>> origin/Direct-Summation
 
 #################
 ## Eclipse

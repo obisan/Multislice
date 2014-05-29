@@ -154,6 +154,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -161,7 +162,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Image.lib;pugixml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Image.lib;pugixml.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
@@ -175,7 +176,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="fparams.h" />
     <ClInclude Include="kernel.cuh" />
     <ClInclude Include="Microscope.h" />
-    <ClInclude Include="ModelFragmented.h" />
     <ClInclude Include="ModelSimulated.h" />
     <ClInclude Include="Slice.h" />
     <ClInclude Include="stdafx.h" />
@@ -188,7 +188,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="LMultiSlice.cpp" />
     <ClCompile Include="Microscope.cpp" />
-    <ClCompile Include="ModelFragmented.cpp" />
     <ClCompile Include="ModelSimulated.cpp" />
     <ClCompile Include="Slice.cpp" />
     <ClCompile Include="stdafx.cpp">
