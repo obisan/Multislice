@@ -2,14 +2,15 @@
 <action>
 	<io>
 		<!--
+		<fileNameInput>../samples/dump.xyz</fileNameInput> 
+		<fileNameOutput>../samples/dump</fileNameOutput>
+		
+		<fileNameInput>../samples/fourSameAtomsSameZ.coo</fileNameInput> 
+		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
+		-->
 		<fileNameInput>D:\LEMOI\Work\model\model.ace</fileNameInput> 
 		<fileNameOutput>../samples/model</fileNameOutput>
 		
-		<fileNameInput>../samples/dump.xyz</fileNameInput> 
-		<fileNameOutput>../samples/dump</fileNameOutput>
-		-->
-		<fileNameInput>../samples/fourSameAtomsSameZ.coo</fileNameInput> 
-		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
 	</io>
 	<image>
 		<nx>1024</nx>

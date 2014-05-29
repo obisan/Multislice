@@ -76,9 +76,14 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	cudaEventCreate(&stop);
 	cudaEventRecord(start,0);
 	
+
+	const int g_nNumberOfThreads = 8;
+	omp_set_num_threads(g_nNumberOfThreads);
+
 	AModel::Cortege *pAtoms = model->getTableCell();
 	for(size_t kz = 0; kz * dz < c; kz++) {
 
+		#pragma omp parallel
 		for(size_t ky = 0; ky * dy < b; ky++) {
 			for(size_t kx = 0; kx * dx < a; kx++) {
 
@@ -100,8 +105,10 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 						atomR	[50 * nx * ky + 50 * kx + batomsinpixel] = ( dR < 1.0e-10 ) ? 1.0e-10 : dR;
 						atomsinpixel[nx * ky + kx] = ++batomsinpixel;
 					}
-				}		
+				}
 			}
+
+			std::cout << ky << std::endl;
 		}
 
 		

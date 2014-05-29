@@ -38,6 +38,8 @@
 
 #include <fftw3.h>
 
+#include <omp.h>
+
 #include <cuda_runtime_api.h>
 #include <cuda_runtime.h>
 

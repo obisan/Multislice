@@ -5,6 +5,10 @@
 *.mrc
 *.lib
 *.exp
+*.coo
+*.ace
+
+docs/
 
 #################
 ## Eclipse
