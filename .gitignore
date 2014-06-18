@@ -10,7 +10,12 @@
 
 docs/
 samples/
-<<<<<<< HEAD
+
+
+x86.debug.common.dll/
+x64.debug.common.dll/
+x86.release.common.dll/
+x64.release.common.dll/
 
 #################
 ## data
@@ -20,8 +25,6 @@ samples/
 *.dll
 *.lib
 *.exe
-=======
->>>>>>> origin/Direct-Summation
 
 #################
 ## Eclipse
@@ -74,12 +77,6 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
-
-x86.debug.common.dll/
-x64.debug.common.dll/
-x86.release.common.dll/
-x64.release.common.dll/
-
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

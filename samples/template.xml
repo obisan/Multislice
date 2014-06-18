@@ -1,25 +1,22 @@
 <?xml version="1.0" ?>
 <action>
 	<io>
-<<<<<<< HEAD
+		<!--
 		<fileNameInput>../samples/dump.xyz</fileNameInput>
 		<fileNameOutput>../samples/dump</fileNameOutput>
-=======
-		<!--
+		
 		<fileNameInput>../samples/dump.xyz</fileNameInput> 
 		<fileNameOutput>../samples/dump</fileNameOutput>
 		
-		<fileNameInput>../samples/fourSameAtomsSameZ.coo</fileNameInput> 
-		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
-		-->
 		<fileNameInput>D:\LEMOI\Work\model\model.ace</fileNameInput> 
 		<fileNameOutput>../samples/model</fileNameOutput>
-		
->>>>>>> origin/Direct-Summation
+		-->
+		<fileNameInput>../samples/fourSameAtomsSameZ.coo</fileNameInput> 
+		<fileNameOutput>../samples/fourSameAtomsSameZ</fileNameOutput>
 	</io>
 	<image>
-		<nx>1024</nx>
-		<ny>1024</ny>
+		<nx>2048</nx>
+		<ny>2048</ny>
 		<dpa>10.0</dpa>		<!--- dots per angstrem --->
 	</image>
 	<slicing>

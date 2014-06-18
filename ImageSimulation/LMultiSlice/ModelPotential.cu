@@ -107,11 +107,8 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 					}
 				}
 			}
-
-			std::cout << ky << std::endl;
 		}
 
-		
 		calculateProjectedPotential<<<grid, threads>>>(atomsinpixel, atomId, atomR, a, b, c, dx, dy, dz, /*(double*) (result->imageData)*/ result->getPointer<double>(kz, 0), nChannels, nx, ny, nz, radius, dk);
 		cudaThreadSynchronize();
 	}

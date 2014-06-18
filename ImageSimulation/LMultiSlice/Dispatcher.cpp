@@ -161,10 +161,10 @@ int Dispatcher::parseCommand(const char* fileNameXML, Command& command) {
 
 int Dispatcher::Run(const char* fileNameXML) {
 	if(!CheckFileExist(fileNameXML)) {
-		std::cerr << "File with name %" << fileNameXML << "% doesn't exist." << std::endl;
+		std::cerr << "XML File with name %" << fileNameXML << "% doesn't exist." << std::endl;
 		return -1;
 	} else {
-		std::cout << "File with name %" << fileNameXML << "% exist." << std::endl;
+		std::cout << "XML File with name %" << fileNameXML << "% exist." << std::endl;
 	}
 	
 	if( parseCommand(fileNameXML, command) == -1) {
@@ -174,14 +174,13 @@ int Dispatcher::Run(const char* fileNameXML) {
 	AModel::Model *model = getModelType(command.fileNameInput);
 	if( model->read(command.fileNameInput) == -1 ) {
 		std::cout << "Can not read file " << command.fileNameInput << "!!!" << std::endl;
-		system("Pause");
 		return -1;
 	} else {
-		std::cout << "Read file %" << command.fileNameInput << "% successful." << std::endl;
+		std::cout << "Read file model %" << command.fileNameInput << "% successful." << std::endl;
 	} 
 
 	/************************************************************************/
-	/* Calculating map potentials											*/
+	/* Calculating map potentials	*****************************************/
 	/************************************************************************/
 	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
 
@@ -214,9 +213,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	/************************************************************************/
 	/************************************************************************/
 
-	std::cout	<< "test for %" << fileNameXML <<  "% finished successful." << std::endl 
-		<< "//----------------------------------------------------------------//" << std::endl 
-		<< std::endl;
+	std::cout	<< "Calculation for %" << fileNameXML <<  "% finished successful." << std::endl << std::endl;
 
 	return 0;
 }
