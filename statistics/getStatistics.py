@@ -8,7 +8,8 @@ programExe = 'LMultiSlice.exe'
 configpath = r'D:\github\Multislice\statistics\config' + '\\' 
 
 architecture = [ "x64", "x86" ]
-Fe = [ "Fe_4_", "Fe_443_", "Fe_146825_", "Fe_659196_", "Fe_1093978_", "Fe_4373275_", "Fe_23128504_" ]
+#Fe = [ "Fe_4_", "Fe_443_", "Fe_146825_", "Fe_659196_", "Fe_1093978_", "Fe_4373275_", "Fe_23128504_" ]
+Fe = [ "Fe_4_", "Fe_443_", "Fe_146825_", "Fe_659196_", "Fe_1093978_", "Fe_4373275_" ]
 pixels = [ "32x32", "64x64", "128x128", "256x256", "512x512", "1024x1024", "2048x2048", "4096x4096" ]
 
 expantion = ".xml"
