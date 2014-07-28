@@ -40,23 +40,6 @@ __global__ void calculateProjectedPotential(int1 *atomId, float3 *atomXYZ, unsig
 
 }
 
-__global__ void createPhaseObject(double *potential, fftw_complex* pfftw, unsigned int nx, unsigned int ny, double sigma) {
-	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
-	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
-	const int LINESIZE = (gridDim.x * blockDim.x);
-
-	/// T(x, y) = exp(sigma * p(x, y))
-	double fi_re = cos(sigma * potential[ LINESIZE * iy + ix ] / 1000.0); // k - eV
-	double fi_im = sin(sigma * potential[ LINESIZE * iy + ix ] / 1000.0);
-
-	cusp::complex<double> fi(fi_re, fi_im);
-	cusp::complex<double> fi2(pfftw[LINESIZE * iy + ix][0], pfftw[LINESIZE * iy + ix][1]);
-
-	/// [ T(x, y) * phi(x, y) ]
-	pfftw[LINESIZE * iy + ix][0] = (fi * fi2).real();
-	pfftw[LINESIZE * iy + ix][1] = (fi * fi2).imag();
-}
-
 __device__ double calculateProjectedPotential(int numberAtom, double r) {
 	double sumf = 0, sums = 0;
  	double dR1 = 6.2831853071796 * r; // 2 * PI * r

@@ -52,12 +52,6 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 			}
 		}
 		
-// 		const unsigned int MAX_THREADS = 16;
-// 		dim3 threads(MAX_THREADS, MAX_THREADS, 1);							// размер квадрата
-// 		dim3 grid( (int) nx / MAX_THREADS, (int) ny / MAX_THREADS, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
-// 
-// 		createPhaseObject<<<grid, threads>>>(potential, pfftw_in, nx, ny, microscope->getSigma());
-
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 		///// PHI(k) = FT [ phi(x, y) ]
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
