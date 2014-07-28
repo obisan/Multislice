@@ -1,10 +1,17 @@
 #pragma once
 
 __global__ void calculateProjectedPotential(int1 *atomId, float3 *atomXYZ, unsigned int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk);
+__global__ void phaseObject(double *potential, fftw_complex* pfftw, unsigned int nx, unsigned int ny, double sigma);
+__global__ void	normalize(fftw_complex *pfftw, unsigned int n);
+__global__ void rearrangement(fftw_complex *pfftw);
+__global__ void objectLens(fftw_complex *pfftw, double lambda, double Cs, double aperture, double defocus, double imageSizeAngstrems);
 
-__device__ double	calculateProjectedPotential(int numberAtom, double r);
+__device__ double	calculateProjectedPotential(int numberAtom, double r); 
 __device__ double	bessk0( double x );
 __device__ double	bessi0( double x );
+__device__ void		swap(double& a, double& b);
+__device__ double	getAlpha(double k, double lambda, double Cs, double defocus);
+__device__ double	getEs(double k, double lambda, double Cs, double aperture, double defocus);
 
 __constant__ double FParamsDevice[] = {
 // Z=  1,  chisq=    0.170190

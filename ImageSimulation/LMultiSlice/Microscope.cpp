@@ -21,7 +21,7 @@ double Microscope::Es(double k) {
 }
 
 double Microscope::alpha(double k) {
-	return M_PI * lambda * k * k * (0.5 * Cs * lambda * lambda * k * k - defocus * 10);;
+	return M_PI * lambda * k * k * (0.5 * Cs * lambda * lambda * k * k - defocus * 10);
 }
 
 double Microscope::getKeV() {

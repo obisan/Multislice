@@ -40,6 +40,64 @@ __global__ void calculateProjectedPotential(int1 *atomId, float3 *atomXYZ, unsig
 
 }
 
+__global__ void phaseObject(double *potential, fftw_complex* pfftw, unsigned int nx, unsigned int ny, double sigma) {
+	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
+	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
+	const int LINESIZE = gridDim.x * blockDim.x;
+
+	/// T(x, y) = exp(sigma * p(x, y))
+	double fi_re = cos(sigma * potential[ LINESIZE * iy + ix ] / 1000.0); // k - eV
+	double fi_im = sin(sigma * potential[ LINESIZE * iy + ix ] / 1000.0);
+
+	cusp::complex<double> fi(fi_re, fi_im);
+	cusp::complex<double> fi2(pfftw[LINESIZE * iy + ix][0], pfftw[LINESIZE * iy + ix][1]);
+
+	/// [ T(x, y) * phi(x, y) ]
+	pfftw[LINESIZE * iy + ix][0] = (fi * fi2).real();
+	pfftw[LINESIZE * iy + ix][1] = (fi * fi2).imag();
+}
+
+__global__ void	normalize(fftw_complex *pfftw, unsigned int n) {
+	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
+
+	if(ix < n * n) {
+		pfftw[ix][0] = pfftw[ix][0] / n;
+		pfftw[ix][1] = pfftw[ix][1] / n;
+	}
+}
+
+__global__ void	rearrangement(fftw_complex *pfftw) {
+	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
+	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
+	const int LINESIZE2 = gridDim.x * blockDim.x;
+	const int LINESIZE = 2 * LINESIZE2;
+
+	// 4 - 2
+	swap(pfftw[iy * LINESIZE + ix][0], pfftw[(iy + LINESIZE2) * LINESIZE + LINESIZE2 + ix][0]);
+	swap(pfftw[iy * LINESIZE + ix][1], pfftw[(iy + LINESIZE2) * LINESIZE + LINESIZE2 + ix][1]);
+
+	// 1 - 3
+	swap(pfftw[((LINESIZE2 - 1 - iy) + LINESIZE2) * LINESIZE + ix][0], pfftw[(LINESIZE2 - 1 - iy) * LINESIZE + LINESIZE2 + ix][0]);
+	swap(pfftw[((LINESIZE2 - 1 - iy) + LINESIZE2) * LINESIZE + ix][1], pfftw[(LINESIZE2 - 1 - iy) * LINESIZE + LINESIZE2 + ix][1]);
+}	
+
+__global__ void objectLens(fftw_complex *pfftw, double lambda, double Cs, double aperture, double defocus, double imageSizeAngstrems) {
+	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
+	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
+	const int LINESIZE = gridDim.x * blockDim.x;
+
+	double u1 = fabs(LINESIZE / 2.0 - iy) / imageSizeAngstrems;
+	double u2 = fabs(LINESIZE / 2.0 - ix) / imageSizeAngstrems;
+	double k = u1 * u1 + u2 * u2;
+	double alpha = getAlpha(k, lambda, Cs, defocus);
+	double Es =  getEs(k, lambda, Cs, aperture, defocus);
+	cusp::complex<double> w1(Es * cos(alpha), Es * sin(alpha));
+	cusp::complex<double> w2(pfftw[iy * LINESIZE + ix][0], pfftw[iy * LINESIZE + ix][1]);
+	pfftw[iy * LINESIZE + ix][0] = (w1 * w2).real();
+	pfftw[iy * LINESIZE + ix][1] = (w1 * w2).imag();
+
+}
+
 __device__ double calculateProjectedPotential(int numberAtom, double r) {
 	double sumf = 0, sums = 0;
  	double dR1 = 6.2831853071796 * r; // 2 * PI * r
@@ -104,4 +162,18 @@ __device__ double	bessi0( double x ) {
 		sum = exp( ax ) * sum / sqrt( ax );
 	}
 	return( sum );
+}
+
+__device__ void		swap(double& a, double& b) {
+		double buffer = a;
+		a = b;
+		b = buffer;
+}
+
+__device__ double	getAlpha(double k, double lambda, double Cs, double defocus) {
+	return M_PI * lambda * k * k * (0.5 * Cs * lambda * lambda * k * k - defocus * 10);
+}
+
+__device__ double	getEs(double k, double lambda, double Cs, double aperture, double defocus) {
+	return exp(- pow(M_PI * aperture / (lambda * 1000), 2) * pow(Cs * pow(lambda, 3) * k * k * k + defocus * lambda * k, 2));
 }

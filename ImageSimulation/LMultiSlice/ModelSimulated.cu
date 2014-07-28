@@ -19,9 +19,6 @@ ModelSimulated::ModelSimulated(ModelPotential* modelPotential, size_t nx, size_t
 }
 
 int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
-	const double keV = microscope->getKeV();
-	double *potential = modelPotential->potential;
-	
 	fftw_complex *pfftw_in  = nullptr; 
  	fftw_complex *pfftw_out = nullptr; 
  	cudaMallocManaged(&(pfftw_in),  nx * ny * sizeof(fftw_complex));
@@ -32,26 +29,19 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		pfftw_in[i][1] = 0.0;
 	}
 	
+	double *potential = modelPotential->potential;
 	for(size_t kz = 0; kz < nz; kz++) {	
-		for(size_t iy = 0; iy < ny; iy++) {
-			for(size_t jx = 0; jx < nx; jx++) {
-				////////////////////////////////////////////////////////////////////////////////////////////////////////
-				/// T(x, y) = exp(sigma * p(x, y))
-				////////////////////////////////////////////////////////////////////////////////////////////////////////
-				double fi_re = cos(microscope->getSigma() * potential[ nx * ny * kz + nx * iy + jx ] / 1000.0); // k - eV
-				double fi_im = sin(microscope->getSigma() * potential[ nx * ny * kz + nx * iy + jx ] / 1000.0);
-				
-				std::complex<double> fi(fi_re, fi_im);
-				std::complex<double> fi2(pfftw_in[nx * iy + jx][0], pfftw_in[nx * iy + jx][1]);
-
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-				/// [ T(x, y) * phi(x, y) ]
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-				pfftw_in[nx * iy + jx][0]	= (fi * fi2).real();
-				pfftw_in[nx * iy + jx][1]	= (fi * fi2).imag();
-			}
-		}
 		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// T(x, y) = exp(sigma * p(x, y))
+		////////////////////////////////////////////////////////////////////////////////////////////////////////		
+		const unsigned int MAX_THREADS_PHASE_OBJECT = 16;
+		dim3 threads_phase(MAX_THREADS_PHASE_OBJECT, MAX_THREADS_PHASE_OBJECT, 1);							// размер квадрата
+		dim3 grid_phase( (int) nx / MAX_THREADS_PHASE_OBJECT, (int) ny / MAX_THREADS_PHASE_OBJECT, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
+
+		phaseObject<<<grid_phase, threads_phase>>>(potential, pfftw_in, nx, ny, microscope->getSigma());
+		cudaThreadSynchronize();
+
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 		///// PHI(k) = FT [ phi(x, y) ]
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,50 +49,41 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		fftw_execute(fftw_forward);
 		fftw_destroy_plan(fftw_forward);
 
-		for(size_t i = 0; i < nx * ny; i++) {
-			pfftw_out[i][0] /= (double) nx;
-			pfftw_out[i][1] /= (double) nx;
-		}
+		const unsigned int MAX_THREADS_NORMALIZE = 1024;
+		dim3 threads_normalize(MAX_THREADS_NORMALIZE, 1, 1);
+		dim3 grid_normalize( (int) nx * ny / MAX_THREADS_NORMALIZE, 1, 1 );
+
+		normalize<<<grid_normalize, threads_normalize>>>(pfftw_out, nx);
+		cudaThreadSynchronize();
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////
 		/// Rearrangement 
 		///	4 3  to 2 1 
 		/// 1 2     3 4
 		/////////////////////////////////////////////////////////////////////////////////////////////////
-		const size_t nx2 = nx / 2;
-		const size_t ny2 = ny / 2;
-		for(size_t iy = 0; iy < ny2; iy++) {
-			for(size_t jx = 0; jx < nx2; jx++) {
-				// 4 - 2
-				swap<double>(pfftw_out[iy * nx + jx][0], pfftw_out[(iy + ny2) * nx + nx2 + jx][0]);
-				swap<double>(pfftw_out[iy * nx + jx][1], pfftw_out[(iy + ny2) * nx + nx2 + jx][1]);
+		const unsigned int MAX_THREADS_REARRANGEMENT = 16;
+		dim3 threads_rearrangement(MAX_THREADS_REARRANGEMENT, MAX_THREADS_REARRANGEMENT, 1);									// размер квадрата
+		dim3 grid_rearrangement( (int) nx / 2 / MAX_THREADS_REARRANGEMENT, (int) ny / 2 / MAX_THREADS_REARRANGEMENT, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
 
-				// 1 - 3
-				swap<double>(pfftw_out[((ny2 - 1 - iy) + ny2) * nx + jx][0], pfftw_out[(ny2 - 1 - iy) * nx + nx2 + jx][0]);
-				swap<double>(pfftw_out[((ny2 - 1 - iy) + ny2) * nx + jx][1], pfftw_out[(ny2 - 1 - iy) * nx + nx2 + jx][1]);
-			}
-		}
+		rearrangement<<<grid_rearrangement, threads_rearrangement>>>(pfftw_out);
+		cudaThreadSynchronize();
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// H(k) * PHI(k)
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		const double dImgSize = nx / dpa; // размер всего изображения в ангстремах
+		const double imageSizeAngstrems = nx / dpa; // размер всего изображения в ангстремах
+		const double lambda = microscope->getLambda();
+		const double Cs = microscope->getCs();
+		const double aperture = microscope->getAperture();
+		const double defocus = microscope->getDefocus();
 		//double Z = 0;
-		
-		for(size_t iy = 0; iy < ny; iy++) {
-			for(size_t jx = 0; jx < nx; jx++) {
-				///////////////////////////////////////////////////////////////////////////////////
-				double u1 = fabs(ny / 2.0 - iy) / dImgSize;
-				double u2 = fabs(nx / 2.0 - jx) / dImgSize;
-				double k = u1 * u1 + u2 * u2;
-				double alpha = microscope->alpha(k);
-				double Es = microscope->Es(k);
-				std::complex<double> w1(Es * cos(alpha), Es * sin(alpha));
-				std::complex<double> w2(pfftw_out[iy * nx + jx][0], pfftw_out[iy * nx + jx][1]);
-				pfftw_out[iy * nx + jx][0] = (w1 * w2).real();
-				pfftw_out[iy * nx + jx][1] = (w1 * w2).imag();
-			}
-		}
+
+		const unsigned int MAX_THREADS_OBJECT_LENS = 16;
+		dim3 threads_object_lens(MAX_THREADS_OBJECT_LENS, MAX_THREADS_OBJECT_LENS, 1);							// размер квадрата
+		dim3 grid_object_lens( (int) nx / MAX_THREADS_OBJECT_LENS, (int) ny / MAX_THREADS_OBJECT_LENS, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
+
+		objectLens<<<grid_object_lens, threads_object_lens>>>(pfftw_out, lambda, Cs, aperture, defocus, imageSizeAngstrems);
+		cudaThreadSynchronize();
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// phi(x, y) = FT^(-1) { PHI(k) }
@@ -111,11 +92,9 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		fftw_execute(fftw_backward);
 		fftw_destroy_plan(fftw_backward);
 		
-		for(size_t i = 0; i < nx * ny; i++) {
-			pfftw_in[i][0] /= (double) nx;
-			pfftw_in[i][1] /= (double) nx;
-		}
-		
+		normalize<<<grid_normalize, threads_normalize>>>(pfftw_in, nx);
+		cudaThreadSynchronize();
+
 		/// !!!!!!!!!!!!!!!!!!!!
 		//Z = 10;
 	}
