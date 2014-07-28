@@ -23,7 +23,7 @@
 #include <iterator>
 #include <complex>
 
-#include<time.h> 
+#include <time.h> 
 
 #include <assert.h>
 #include <io.h>
@@ -37,15 +37,21 @@
 #include <ModelAce.h>
 #include <ModelCoo.h>
 
-#include <fftw3.h>
+#define CUFFTW
 
-#include <omp.h>
+#ifdef CUFFTW
+	#include <cufftw.h>
+#else
+	#include <fftw3.h>
+#endif
 
 #include <cuda_runtime_api.h>
 #include <cuda_runtime.h>
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
+
+#include <cuComplex.h>
 
 #include "../pugixml-1.2/src/pugixml.hpp"
 
@@ -54,3 +60,11 @@
 
 using namespace ImageSpace;
 using namespace pugi;
+
+#define M_PI	3.14159265358979323846
+
+#define CUERR { cudaError_t err; \
+	if ((err = cudaGetLastError()) != cudaSuccess) { \
+	printf("CUDA error: %s, line %d\n", cudaGetErrorString(err), __LINE__); \
+	system("pause"); \
+	return -1; }}

@@ -1,6 +1,7 @@
 #pragma once
 
-__global__ void calculateProjectedPotential(int *atomsinpixel, int *atomId, float *atomR, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nChannels, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk);
+__global__ void calculateProjectedPotential(int1 *atomId, float3 *atomXYZ, unsigned int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk);
+__global__ void createPhaseObject(double *potential, fftw_complex* pfftw, unsigned int nx, unsigned int ny, double sigma);
 __device__ double	calculateProjectedPotential(int numberAtom, double r);
 __device__ double	bessk0( double x );
 __device__ double	bessi0( double x );

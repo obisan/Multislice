@@ -161,10 +161,10 @@ int Dispatcher::parseCommand(const char* fileNameXML, Command& command) {
 
 int Dispatcher::Run(const char* fileNameXML) {
 	if(!CheckFileExist(fileNameXML)) {
-		std::cerr << "XML File with name %" << fileNameXML << "% doesn't exist." << std::endl;
+		std::cerr << "XML File with name [" << fileNameXML << "] doesn't exist." << std::endl;
 		return -1;
 	} else {
-		std::cout << "XML File with name %" << fileNameXML << "% exist." << std::endl;
+		std::cout << "XML File with name [" << fileNameXML << "] exist." << std::endl;
 	}
 	
 	if( parseCommand(fileNameXML, command) == -1) {
@@ -176,44 +176,44 @@ int Dispatcher::Run(const char* fileNameXML) {
 		std::cout << "Can not read file " << command.fileNameInput << "!!!" << std::endl;
 		return -1;
 	} else {
-		std::cout << "Read file model %" << command.fileNameInput << "% successful." << std::endl;
+		std::cout << "Read file model [" << command.fileNameInput << "] successful." << std::endl;
 	} 
 
 	/************************************************************************/
 	/* Calculating map potentials	*****************************************/
 	/************************************************************************/
-	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
-
 	std::cout << std::endl;
 	std::cout << "Image size = " << command.nx << "x" << command.ny << std::endl;
 	std::cout << "Number slides = " << command.numberSlices << std::endl;
 	std::cout << "dpa = " << command.dpa << std::endl;
 
-	Image *res = new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
+	Image *result = new Image(command.nx, command.ny, 1, sizeof(double), 2);
 	
-	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
-
-	modelPotential->calculatePotentialGrid(res);
-
+	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
+	modelPotential->calculatePotentialGrid();
+	
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, command.nx, command.ny, command.numberSlices, command.dpa);
-	modelSimulated->imageCalculation(res, microscope);
-
-	res->saveMRC(command.fileNameOutput, model);
-
+	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
+	modelSimulated->imageCalculation(result, microscope);
 	delete microscope;
-
-	delete res;
-
-	delete modelPotential;
 	delete modelSimulated;
 
+	delete modelPotential;
+
+	
+	Image *result_module = result->getModule();
+	result_module->saveMRC(command.fileNameOutput, model, command.nx, command.ny, 1, FLOAT);
+	delete result_module;
+		
+	delete result;
+	
 	delete model;
 
 	/************************************************************************/
 	/************************************************************************/
 	/************************************************************************/
 
-	std::cout	<< "Calculation for %" << fileNameXML <<  "% finished successful." << std::endl << std::endl;
+	std::cout	<< "Calculation for [" << fileNameXML <<  "] finished successful." << std::endl << std::endl;
 
 	return 0;
 }

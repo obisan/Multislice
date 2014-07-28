@@ -13,14 +13,21 @@ ModelPotential::ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_
 	this->nz = nz;
 	this->dpa = dpa;
 	this->radius = radius;
+	
+	cudaMallocManaged(&(this->potential), nx * ny * nz * sizeof(double));
+
+	cudaError_t err;
+	if ((err = cudaGetLastError()) != cudaSuccess)
+		printf("CUDA error: %s, line %d\n", cudaGetErrorString(err), __LINE__);
+	
+	memset(this->potential, 0, nx * ny * nz * sizeof(double));
 }
 
 ModelPotential::~ModelPotential(void) {
 	if(this->model != nullptr) { model = nullptr; }
 }
 
-int ModelPotential::calculatePotentialGrid(Image *result) {
-	const size_t nChannels = result->nChannels;
+int ModelPotential::calculatePotentialGrid() {
 	const size_t nAtoms = model->getNumberAtoms();
 	const double dk = 1.0 / dpa;
 	const double a = model->getA();
@@ -50,23 +57,27 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	cudaSetDevice(cudadev);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	int		*atomId;
-	float	*atomR;
-	int		*atomsinpixel;
+	int1	*atomId;
+	float3	*atomXYZ;
 	
-	cudaMallocManaged(&atomId,			result->width * result->height * 50 * sizeof(int));
-	cudaMallocManaged(&atomR,			result->width * result->height * 50 * sizeof(float));
-	cudaMallocManaged(&atomsinpixel,	result->width * result->height * sizeof(int));
-
+	cudaMallocManaged(&atomId,	nAtoms * sizeof(int3));
+	cudaMallocManaged(&atomXYZ,	nAtoms * sizeof(float3));
+	
 	CUERR
 
-	memset(atomId,			1,	result->width * result->height * 50 * sizeof(int));
-	memset(atomR,			0,	result->width * result->height * 50 * sizeof(float));
-	memset(atomsinpixel,	0,	result->width * result->height * sizeof(int));
+	AModel::Cortege *pAtoms = model->getTableCell();
+	std::sort(pAtoms, pAtoms + nAtoms);
+	for(size_t i = 0; i < nAtoms; i++) {
+		atomId[i].x  = model->getNumberByName(pAtoms[i].element.Atom) - 1;
+		atomXYZ[i].x = pAtoms[i].element.xsCoordinate.x;
+		atomXYZ[i].y = pAtoms[i].element.xsCoordinate.y;
+		atomXYZ[i].z = pAtoms[i].element.xsCoordinate.z;
+	}
+	pAtoms = nullptr;
 
 	const size_t MAX_THREADS = 16;
-	dim3 threads(MAX_THREADS, MAX_THREADS, 1);														//размер квардатика
-	dim3 grid(result->width / MAX_THREADS, result->height / MAX_THREADS, 1 );		//сколько квадратиков нужно чтобы покрыть все изображение
+	dim3 threads(MAX_THREADS, MAX_THREADS, 1);							// размер квардатика
+	dim3 grid(this->nx / MAX_THREADS, this->ny / MAX_THREADS, 1 );		// сколько квадратиков нужно чтобы покрыть все изображение
 
 	CUERR
 
@@ -76,40 +87,8 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	cudaEventCreate(&stop);
 	cudaEventRecord(start,0);
 	
-
-	const int g_nNumberOfThreads = 8;
-	omp_set_num_threads(g_nNumberOfThreads);
-
-	AModel::Cortege *pAtoms = model->getTableCell();
 	for(size_t kz = 0; kz * dz < c; kz++) {
-
-		#pragma omp parallel
-		for(size_t ky = 0; ky * dy < b; ky++) {
-			for(size_t kx = 0; kx * dx < a; kx++) {
-
-				size_t batomsinpixel = 0;
-				for(size_t i = 0; i < nAtoms && batomsinpixel < 50; i++) {
-					AModel::XYZ ppAtoms = pAtoms[i].element.xsCoordinate;
-					if( (ppAtoms.z * c > kz * dz) && (ppAtoms.z * c <= (kz + 1) * dz) ) {
-						double dX = fabs(ppAtoms.x * a - (kx * dx));
-						double dY = fabs(ppAtoms.y * b - (ky * dy));
-						 		
-						dX = ( dX >= a / 2.0 ) ? dX - a : dX;
-						dY = ( dY >= b / 2.0 ) ? dY - b : dY;
-						 
-						double dR = sqrt(dX * dX + dY * dY);
-						 		
-						if(dR > radius) continue;
-						
-						atomId	[50 * nx * ky + 50 * kx + batomsinpixel] = model->getNumberByName(pAtoms[i].element.Atom) - 1;
-						atomR	[50 * nx * ky + 50 * kx + batomsinpixel] = ( dR < 1.0e-10 ) ? 1.0e-10 : dR;
-						atomsinpixel[nx * ky + kx] = ++batomsinpixel;
-					}
-				}
-			}
-		}
-
-		calculateProjectedPotential<<<grid, threads>>>(atomsinpixel, atomId, atomR, a, b, c, dx, dy, dz, /*(double*) (result->imageData)*/ result->getPointer<double>(kz, 0), nChannels, nx, ny, nz, radius, dk);
+		calculateProjectedPotential<<<grid, threads>>>(atomId, atomXYZ, nAtoms, a, b, c, dx, dy, dz, potential + nx * ny * kz, nx, ny, nz, radius, dk);
 		cudaThreadSynchronize();
 	}
 	
@@ -121,19 +100,12 @@ int ModelPotential::calculatePotentialGrid(Image *result) {
 	
 	std::cout << std::endl << "Kernel time: " << time << "ms." << std::endl << std::endl;
 
-	cudaFree(atomsinpixel);
 	cudaFree(atomId);
-	cudaFree(atomR);
+	cudaFree(atomXYZ);
 
 	atomId = nullptr;
-	atomR = nullptr;
-	atomsinpixel = nullptr;
-
-	return 0;
-}
-
-int ModelPotential::savePotential(Image *image) {
-
+	atomXYZ = nullptr;
+	
 	return 0;
 }
 

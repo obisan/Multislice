@@ -1,18 +1,28 @@
 #pragma once
 
 namespace ImageSpace {
-	enum IMAGE_API fft {
+	enum fft {
 		forward,
 		backward
 	};
 
-	enum IMAGE_API transformationStatus {
+	enum transformationStatus {
 		transformed,
 		notTransformed
 	};
 
-	enum IMAGE_API copyDirection {
+	enum copyDirection {
 		copyFFTtoImage,
 		copyImagetoFFT
+	};
+
+	enum mrcMode {
+		BYTE	= 0,
+		SHORT	= 1,
+		FLOAT	= 2,
+		SHORT2	= 3,
+		FLOAT2	= 4,
+		INT		= 6,
+		CHAR3	= 16
 	};
 }

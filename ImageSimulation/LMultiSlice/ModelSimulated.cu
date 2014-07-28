@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ModelSimulated.h"
+#include "kernel.cuh"
 
 ModelSimulated::ModelSimulated(void) {
 	
@@ -19,10 +20,13 @@ ModelSimulated::ModelSimulated(ModelPotential* modelPotential, size_t nx, size_t
 
 int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	const double keV = microscope->getKeV();
-	const int nChannels = result->nChannels;
+	double *potential = modelPotential->potential;
 	
-	fftw_complex *pfftw_in	= fftw_alloc_complex(nx * ny);
-	fftw_complex *pfftw_out = fftw_alloc_complex(nx * ny);
+	fftw_complex *pfftw_in  = nullptr; 
+ 	fftw_complex *pfftw_out = nullptr; 
+ 	cudaMallocManaged(&(pfftw_in),  nx * ny * sizeof(fftw_complex));
+ 	cudaMallocManaged(&(pfftw_out), nx * ny * sizeof(fftw_complex));
+
 	for(size_t i = 0; i < nx * ny; i++) {
 		pfftw_in[i][0] = 1.0;	
 		pfftw_in[i][1] = 0.0;
@@ -30,13 +34,12 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	
 	for(size_t kz = 0; kz < nz; kz++) {	
 		for(size_t iy = 0; iy < ny; iy++) {
-			double *pResult	= result->getPointer<double>(kz, iy);
 			for(size_t jx = 0; jx < nx; jx++) {
 				////////////////////////////////////////////////////////////////////////////////////////////////////////
 				/// T(x, y) = exp(sigma * p(x, y))
 				////////////////////////////////////////////////////////////////////////////////////////////////////////
-				double fi_re = cos(microscope->getSigma() * pResult[nChannels * jx] / 1000.0); // k - eV
-				double fi_im = sin(microscope->getSigma() * pResult[nChannels * jx] / 1000.0);
+				double fi_re = cos(microscope->getSigma() * potential[ nx * ny * kz + nx * iy + jx ] / 1000.0); // k - eV
+				double fi_im = sin(microscope->getSigma() * potential[ nx * ny * kz + nx * iy + jx ] / 1000.0);
 				
 				std::complex<double> fi(fi_re, fi_im);
 				std::complex<double> fi2(pfftw_in[nx * iy + jx][0], pfftw_in[nx * iy + jx][1]);
@@ -49,10 +52,16 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 			}
 		}
 		
+// 		const unsigned int MAX_THREADS = 16;
+// 		dim3 threads(MAX_THREADS, MAX_THREADS, 1);							// размер квадрата
+// 		dim3 grid( (int) nx / MAX_THREADS, (int) ny / MAX_THREADS, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
+// 
+// 		createPhaseObject<<<grid, threads>>>(potential, pfftw_in, nx, ny, microscope->getSigma());
+
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 		///// PHI(k) = FT [ phi(x, y) ]
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
-		fftw_plan fftw_forward = fftw_plan_dft_2d(nx, ny, pfftw_in, pfftw_out, FFTW_FORWARD, FFTW_ESTIMATE);
+		fftw_plan fftw_forward = fftw_plan_dft_2d( (int) nx, (int) ny, pfftw_in, pfftw_out, FFTW_FORWARD, FFTW_ESTIMATE);
 		fftw_execute(fftw_forward);
 		fftw_destroy_plan(fftw_forward);
 
@@ -84,7 +93,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		/// H(k) * PHI(k)
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		const double dImgSize = nx / dpa; // размер всего изображения в ангстремах
-		double Z = 0;
+		//double Z = 0;
 		
 		for(size_t iy = 0; iy < ny; iy++) {
 			for(size_t jx = 0; jx < nx; jx++) {
@@ -104,7 +113,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// phi(x, y) = FT^(-1) { PHI(k) }
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		fftw_plan fftw_backward = fftw_plan_dft_2d(nx, ny, pfftw_out, pfftw_in, FFTW_BACKWARD, FFTW_ESTIMATE);
+		fftw_plan fftw_backward = fftw_plan_dft_2d((int) nx, (int) ny, pfftw_out, pfftw_in, FFTW_BACKWARD, FFTW_ESTIMATE);
 		fftw_execute(fftw_backward);
 		fftw_destroy_plan(fftw_backward);
 		
@@ -114,12 +123,12 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		}
 		
 		/// !!!!!!!!!!!!!!!!!!!!
-		Z = 10;
-		Image::copyFFTtoImage<double>(result, pfftw_in, kz);
+		//Z = 10;
 	}
 
-	fftw_free(pfftw_in);
-	fftw_free(pfftw_out);
-	
+	Image::copyFFTtoImage<double>(result, pfftw_in, 0);
+
+	cudaFree(pfftw_in);
+	cudaFree(pfftw_out);
 	return 0;
 }

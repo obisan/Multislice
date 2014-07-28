@@ -9,15 +9,15 @@
 *.ace
 *.xyz
 
-docs\
-samples\
-statistics\
-statistics\config\
+docs/
+samples/
+statistics/
+statistics/config/
 
-x86.debug.common.dll\
-x64.debug.common.dll\
-x86.release.common.dll\
-x64.release.common.dll\
+x86.debug.common.dll/
+x64.debug.common.dll/
+x86.release.common.dll/
+x64.release.common.dll/
 
 #################
 ## data

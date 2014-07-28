@@ -25,7 +25,13 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include <fftw3.h>
+#define CUFFTW
+
+#ifdef CUFFTW
+	#include <cufftw.h>
+#else
+	#include <fftw3.h>
+#endif
 
 #include <AModel.h>
 #include <BaseStructures.h>

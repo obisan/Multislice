@@ -49,11 +49,10 @@ namespace ImageSpace {
 		}
 
 		static void zernike(Image* image, int transformationStatus);
-		static void fft(Image* image, int slide, int direction);
 		static void normalize(Image *image, int slide, int n);
 
 		void		save(const char*);
-		void		saveMRC(const char*, AModel::Model*);
+		void		saveMRC(const char*, AModel::Model*, int, int, int, int);
 		void		saveQtSpectrum(const char*, size_t n = 0);
 
 		Image*		getRealPart();
@@ -86,6 +85,5 @@ namespace ImageSpace {
 			}
 		}
 
-	private:
 	};
 }

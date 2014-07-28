@@ -12,7 +12,7 @@ Slice::Slice(size_t id, float lowerBound, float upperBound) {
 }
 
 Slice::~Slice(void) {
-
+	if(!composition.empty()) composition.clear();
 }
 
 AModel::Cortege Slice::operator[](size_t i) {

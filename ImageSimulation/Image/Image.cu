@@ -41,6 +41,11 @@ namespace ImageSpace {
 		this->widthStep		= this->width;
 
 		cudaMallocManaged(&(this->imageData), this->nSize);
+
+		cudaError_t err;
+		if ((err = cudaGetLastError()) != cudaSuccess)
+			printf("CUDA error: %s, line %d\n", cudaGetErrorString(err), __LINE__);
+
 		memset(this->imageData, 0, this->nSize);
 	}
 
@@ -69,44 +74,26 @@ namespace ImageSpace {
 	}
 
 	void Image::zernike(Image* image, int transformationStatus) {
-		if(transformationStatus == transformationStatus::transformed) {
-			double *p = (double*) image->imageData;
-			std::complex<double> z(p[0], p[1]);
-			std::complex<double> z1(0, 1);
-			p[0] = (z * z1).real();
-			p[1] = (z * z1).imag();
-		} else 
-			if (transformationStatus == transformationStatus::notTransformed) {
-				Image::fft(image, 0, fft::forward);
-				Image::normalize(image, 0, image->width);
-				double *p = (double*) image->imageData;
-				std::complex<double> z(p[0], p[1]);
-				std::complex<double> z1(0, 1);
-				p[0] = (z * z1).real();
-				p[1] = (z * z1).imag();
-				Image::fft(image, 0, fft::backward);
-				Image::normalize(image, 0, image->width);
-			}
+// 		if(transformationStatus == transformationStatus::transformed) {
+// 			double *p = (double*) image->imageData;
+// 			std::complex<double> z(p[0], p[1]);
+// 			std::complex<double> z1(0, 1);
+// 			p[0] = (z * z1).real();
+// 			p[1] = (z * z1).imag();
+// 		} else 
+// 			if (transformationStatus == transformationStatus::notTransformed) {
+// 				Image::fft(image, 0, fft::forward);
+// 				Image::normalize(image, 0, image->width);
+// 				double *p = (double*) image->imageData;
+// 				std::complex<double> z(p[0], p[1]);
+// 				std::complex<double> z1(0, 1);
+// 				p[0] = (z * z1).real();
+// 				p[1] = (z * z1).imag();
+// 				Image::fft(image, 0, fft::backward);
+// 				Image::normalize(image, 0, image->width);
+// 			}
+		_ASSERT(false);
 	}
-
-	void Image::fft(Image* image, int slide, int direction) {
-		fftw_complex *pfftw_in = fftw_alloc_complex(image->width * image->height);
-		fftw_complex *pfftw_out = fftw_alloc_complex(image->width * image->height);
-
-		Image::copyImagetoFFT<double>(image, pfftw_in, slide);
-
-		fftw_plan fftw_ward;
-		fftw_ward = (direction == fft::forward) ? 
-			fftw_plan_dft_2d(image->width, image->height, pfftw_in, pfftw_out, FFTW_FORWARD, FFTW_ESTIMATE) : 
-			fftw_plan_dft_2d(image->width, image->height, pfftw_in, pfftw_out, FFTW_BACKWARD, FFTW_ESTIMATE);
-		fftw_execute(fftw_ward);
-		fftw_destroy_plan(fftw_ward);
-
-		Image::copyFFTtoImage<double>(image, pfftw_out, slide);
-
-		fftw_free(pfftw_in);
-		fftw_free(pfftw_out);
-	}	
 
 	void Image::normalize(Image* image, int slide, int n) {
 		size_t nx = image->width;
@@ -148,11 +135,11 @@ namespace ImageSpace {
 		delete[] filenamesave_ext;
 	}
 
-	void Image::saveMRC(const char* filenamesave, AModel::Model* model) {
+	void Image::saveMRC(const char* filenamesave, AModel::Model* model, int width, int height, int thickness, int mode) {
 		float tiltangles[6] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 				
 		MRC *imageMRC = new MRC(
-			filenamesave, this->width, this->height, this->thickness, 4, 
+			filenamesave, width, height, thickness, mode, 
 			0, 0, 0, 
 			0, 0, 0, 
 			model->getA(), model->getB(), model->getC(), model->getAlpha(), model->getBeta(), model->getGamma(), 
