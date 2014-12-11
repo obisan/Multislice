@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "kernel.cuh"
-#include "cusp.cuh"
+
 
 #define ATOMS_PER_PIXEL_FOR_KERNEL 1024
 #define APP ATOMS_PER_PIXEL_FOR_KERNEL
@@ -40,62 +40,78 @@ __global__ void calculateProjectedPotential(int1 *atomId, float3 *atomXYZ, unsig
 
 }
 
-__global__ void phaseObject(double *potential, fftw_complex* pfftw, unsigned int nx, unsigned int ny, double sigma) {
+__global__ void phaseObject(double *potential, cusp::complex<double>* wave, unsigned int nx, unsigned int ny, double sigma) {
 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
 	const int LINESIZE = gridDim.x * blockDim.x;
 
-	/// T(x, y) = exp(sigma * p(x, y))
+	/// t(x, y) = exp(sigma * potential(x, y))		
 	double fi_re = cos(sigma * potential[ LINESIZE * iy + ix ] / 1000.0); // k - eV
 	double fi_im = sin(sigma * potential[ LINESIZE * iy + ix ] / 1000.0);
 
 	cusp::complex<double> fi(fi_re, fi_im);
-	cusp::complex<double> fi2(pfftw[LINESIZE * iy + ix][0], pfftw[LINESIZE * iy + ix][1]);
+	cusp::complex<double> fi2(wave[LINESIZE * iy + ix].x, wave[LINESIZE * iy + ix].y);
 
-	/// [ T(x, y) * phi(x, y) ]
-	pfftw[LINESIZE * iy + ix][0] = (fi * fi2).real();
-	pfftw[LINESIZE * iy + ix][1] = (fi * fi2).imag();
+	/// [ t(x, y) * phi(x, y) ]
+	wave[LINESIZE * iy + ix].x = (fi * fi2).real();
+	wave[LINESIZE * iy + ix].y = (fi * fi2).imag();
 }
 
-__global__ void	normalize(fftw_complex *pfftw, unsigned int n) {
+__global__ void	normalize(cusp::complex<double> *pfftw, unsigned int n) {
 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
 
 	if(ix < n * n) {
-		pfftw[ix][0] = pfftw[ix][0] / n;
-		pfftw[ix][1] = pfftw[ix][1] / n;
+		pfftw[ix].x = pfftw[ix].x / n;
+		pfftw[ix].y = pfftw[ix].y / n;
 	}
 }
 
-__global__ void	rearrangement(fftw_complex *pfftw) {
+__global__ void	rearrangement(cusp::complex<double> *pfftw) {
 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
 	const int LINESIZE2 = gridDim.x * blockDim.x;
 	const int LINESIZE = 2 * LINESIZE2;
 
 	// 4 - 2
-	swap(pfftw[iy * LINESIZE + ix][0], pfftw[(iy + LINESIZE2) * LINESIZE + LINESIZE2 + ix][0]);
-	swap(pfftw[iy * LINESIZE + ix][1], pfftw[(iy + LINESIZE2) * LINESIZE + LINESIZE2 + ix][1]);
+	swap(pfftw[iy * LINESIZE + ix].x, pfftw[(iy + LINESIZE2) * LINESIZE + LINESIZE2 + ix].x);
+	swap(pfftw[iy * LINESIZE + ix].y, pfftw[(iy + LINESIZE2) * LINESIZE + LINESIZE2 + ix].y);
 
 	// 1 - 3
-	swap(pfftw[((LINESIZE2 - 1 - iy) + LINESIZE2) * LINESIZE + ix][0], pfftw[(LINESIZE2 - 1 - iy) * LINESIZE + LINESIZE2 + ix][0]);
-	swap(pfftw[((LINESIZE2 - 1 - iy) + LINESIZE2) * LINESIZE + ix][1], pfftw[(LINESIZE2 - 1 - iy) * LINESIZE + LINESIZE2 + ix][1]);
+	swap(pfftw[((LINESIZE2 - 1 - iy) + LINESIZE2) * LINESIZE + ix].x, pfftw[(LINESIZE2 - 1 - iy) * LINESIZE + LINESIZE2 + ix].x);
+	swap(pfftw[((LINESIZE2 - 1 - iy) + LINESIZE2) * LINESIZE + ix].y, pfftw[(LINESIZE2 - 1 - iy) * LINESIZE + LINESIZE2 + ix].y);
 }	
 
-__global__ void objectLens(fftw_complex *pfftw, double lambda, double Cs, double aperture, double defocus, double imageSizeAngstrems) {
+__global__ void objectLens(cusp::complex<double> *wave, double lambda, double Cs, double aperture, double defocus, double imageSizeAngstrems) {
 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
 	const int LINESIZE = gridDim.x * blockDim.x;
-
+	
 	double u1 = fabs(LINESIZE / 2.0 - iy) / imageSizeAngstrems;
 	double u2 = fabs(LINESIZE / 2.0 - ix) / imageSizeAngstrems;
 	double k = u1 * u1 + u2 * u2;
 	double alpha = getAlpha(k, lambda, Cs, defocus);
 	double Es =  getEs(k, lambda, Cs, aperture, defocus);
 	cusp::complex<double> w1(Es * cos(alpha), Es * sin(alpha));
-	cusp::complex<double> w2(pfftw[iy * LINESIZE + ix][0], pfftw[iy * LINESIZE + ix][1]);
-	pfftw[iy * LINESIZE + ix][0] = (w1 * w2).real();
-	pfftw[iy * LINESIZE + ix][1] = (w1 * w2).imag();
+	cusp::complex<double> w2(wave[iy * LINESIZE + ix].x, wave[iy * LINESIZE + ix].y);
+	wave[iy * LINESIZE + ix].x = (w1 * w2).real();
+	wave[iy * LINESIZE + ix].y = (w1 * w2).imag();
+}
 
+__global__ void propagate(cusp::complex<double> *wave, double lambda, double dZ, double imageSizeAngstrems) {
+	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
+	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
+	const int LINESIZE = gridDim.x * blockDim.x;
+	
+	double u1 = fabs(LINESIZE / 2.0 - iy) / imageSizeAngstrems;
+	double u2 = fabs(LINESIZE / 2.0 - ix) / imageSizeAngstrems;
+	double k = u1 * u1 + u2 * u2;
+	
+ 	//cusp::complex<double> w1(cos(lambda * k * k * dZ), sin(lambda * k * k * dZ));
+	//cusp::complex<double> w1( 1.0 / (lambda * dZ) * cos(M_PI / (lambda * dZ) * k), 1.0 / (lambda * dZ) * sin(M_PI / (lambda * dZ) * k));
+	cusp::complex<double> w1( cos(-dZ / (4.0 * M_PI) * lambda * k), sin(-dZ / (4.0 * M_PI) * lambda * k));
+ 	cusp::complex<double> w2(wave[iy * LINESIZE + ix].x, wave[iy * LINESIZE + ix].y);
+  	wave[iy * LINESIZE + ix].x = (w1 * w2).real();
+  	wave[iy * LINESIZE + ix].y = (w1 * w2).imag();
 }
 
 __device__ double calculateProjectedPotential(int numberAtom, double r) {

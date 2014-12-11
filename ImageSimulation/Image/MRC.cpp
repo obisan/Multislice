@@ -312,18 +312,18 @@ namespace ImageSpace {
 						switch(mode) {
 						case 0:		// unsigned char
 						case 16:
-							((unsigned char*) oData)[ nChannel * (nx * ny * k + nx * i + j) + l ] = ( (double*) pData)[ nChannel * (nx * ny * k + nx * i + j) + l ];
+							((unsigned char*) oData)[ nChannel * (nx * ny * k + nx * i + j) + l ] = ((double*) pData)[ nChannel * (nx * ny * k + nx * i + j) + l ];
 							break;
 						case 1:		// short
 						case 3:
-							((short*) oData)[ nChannel * (nx * ny * k + nx * i + j) + l ] = ( (double*) pData)[ nChannel * (nx * ny * k + nx * i + j) + l ];
+							((short*) oData)[ nChannel * (nx * ny * k + nx * i + j) + l ] = ((double*) pData)[ nChannel * (nx * ny * k + nx * i + j) + l ];
 							break;
 						case 2:		// float
 						case 4:
-							((float*) oData)[ nChannel * (nx * ny * k + nx * i + j) + l ] = ( (double*) pData)[ nChannel * (nx * ny * k + nx * i + j) + l ];
+							((float*) oData)[ nChannel * (nx * ny * k + nx * i + j) + l ] = ((double*) pData)[ nChannel * (nx * ny * k + nx * i + j) + l ];
 							break;
 						case 6:		// unsigned short
-							((unsigned short*) oData)[ nChannel * (nx * ny * k + nx * i + j) + l ] = ( (double*) pData)[ nChannel * (nx * ny * k + nx * i + j) + l ];
+							((unsigned short*) oData)[ nChannel * (nx * ny * k + nx * i + j) + l ] = ((double*) pData)[ nChannel * (nx * ny * k + nx * i + j) + l ];
 							break;
 						default:
 							break;

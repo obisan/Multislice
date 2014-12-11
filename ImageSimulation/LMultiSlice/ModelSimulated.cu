@@ -30,16 +30,18 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	}
 	
 	double *potential = modelPotential->potential;
+	double dz = this->modelPotential->getModel()->getC() / nx;
 	for(size_t kz = 0; kz < nz; kz++) {	
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// T(x, y) = exp(sigma * p(x, y))
+		/// t(x, y) = exp(sigma * potential(x, y))
+		/// [ t(x, y) * phi(x, y) ]
 		////////////////////////////////////////////////////////////////////////////////////////////////////////		
 		const unsigned int MAX_THREADS_PHASE_OBJECT = 16;
 		dim3 threads_phase(MAX_THREADS_PHASE_OBJECT, MAX_THREADS_PHASE_OBJECT, 1);							// размер квадрата
 		dim3 grid_phase( (int) nx / MAX_THREADS_PHASE_OBJECT, (int) ny / MAX_THREADS_PHASE_OBJECT, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
 
-		phaseObject<<<grid_phase, threads_phase>>>(potential, pfftw_in, nx, ny, microscope->getSigma());
+		phaseObject<<<grid_phase, threads_phase>>>(potential + nx * ny * kz, (cusp::complex<double>*) pfftw_in, nx, ny, microscope->getSigma());
 		cudaThreadSynchronize();
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +55,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		dim3 threads_normalize(MAX_THREADS_NORMALIZE, 1, 1);
 		dim3 grid_normalize( (int) nx * ny / MAX_THREADS_NORMALIZE, 1, 1 );
 
-		normalize<<<grid_normalize, threads_normalize>>>(pfftw_out, nx);
+		normalize<<<grid_normalize, threads_normalize>>>((cusp::complex<double>*) pfftw_out, nx);
 		cudaThreadSynchronize();
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,25 +67,36 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		dim3 threads_rearrangement(MAX_THREADS_REARRANGEMENT, MAX_THREADS_REARRANGEMENT, 1);									// размер квадрата
 		dim3 grid_rearrangement( (int) nx / 2 / MAX_THREADS_REARRANGEMENT, (int) ny / 2 / MAX_THREADS_REARRANGEMENT, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
 
-		rearrangement<<<grid_rearrangement, threads_rearrangement>>>(pfftw_out);
+		rearrangement<<<grid_rearrangement, threads_rearrangement>>>((cusp::complex<double>*) pfftw_out);
 		cudaThreadSynchronize();
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// H(k) * PHI(k)
+		/// p(x, y, dZ) * [ t(x, y) * phi(x, y) ]
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		const double imageSizeAngstrems = nx / dpa; // размер всего изображения в ангстремах
-		const double lambda = microscope->getLambda();
-		const double Cs = microscope->getCs();
-		const double aperture = microscope->getAperture();
-		const double defocus = microscope->getDefocus();
-		//double Z = 0;
-
-		const unsigned int MAX_THREADS_OBJECT_LENS = 16;
-		dim3 threads_object_lens(MAX_THREADS_OBJECT_LENS, MAX_THREADS_OBJECT_LENS, 1);							// размер квадрата
-		dim3 grid_object_lens( (int) nx / MAX_THREADS_OBJECT_LENS, (int) ny / MAX_THREADS_OBJECT_LENS, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
-
-		objectLens<<<grid_object_lens, threads_object_lens>>>(pfftw_out, lambda, Cs, aperture, defocus, imageSizeAngstrems);
+		const unsigned int MAX_THREADS_PROPAGATION = 16;
+		dim3 threads_propagation(MAX_THREADS_PROPAGATION, MAX_THREADS_PROPAGATION, 1);							// размер квадрата
+		dim3 grid_propagation( (int) nx / MAX_THREADS_PROPAGATION, (int) ny / MAX_THREADS_PROPAGATION, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
+		
+		propagate<<<grid_propagation, threads_propagation>>>((cusp::complex<double>*) pfftw_out, microscope->getLambda(), kz * dz, nx / dpa );
 		cudaThreadSynchronize();
+
+		// 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 	/// H(k) * PHI(k)
+	 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 	 	const double imageSizeAngstrems = nx / dpa; // размер всего изображения в ангстремах
+// 	 	const double lambda = microscope->getLambda();
+// 	 	const double Cs = microscope->getCs();
+// 	 	const double aperture = microscope->getAperture();
+// 	 	const double defocus = microscope->getDefocus();
+// 	 	//double Z = 0;
+// 	 
+// 	 	const unsigned int MAX_THREADS_OBJECT_LENS = 16;
+// 	 	dim3 threads_object_lens(MAX_THREADS_OBJECT_LENS, MAX_THREADS_OBJECT_LENS, 1);							// размер квадрата
+// 	 	dim3 grid_object_lens( (int) nx / MAX_THREADS_OBJECT_LENS, (int) ny / MAX_THREADS_OBJECT_LENS, 1 );		// сколько квадратов нужно чтобы покрыть все изображение
+// 	 
+// 	 	objectLens<<<grid_object_lens, threads_object_lens>>>((cusp::complex<double>*) pfftw_out, lambda, Cs, aperture, defocus, imageSizeAngstrems);
+// 	 	cudaThreadSynchronize();
+	 	
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// phi(x, y) = FT^(-1) { PHI(k) }
@@ -92,14 +105,19 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		fftw_execute(fftw_backward);
 		fftw_destroy_plan(fftw_backward);
 		
-		normalize<<<grid_normalize, threads_normalize>>>(pfftw_in, nx);
+		normalize<<<grid_normalize, threads_normalize>>>((cusp::complex<double>*) pfftw_in, nx);
 		cudaThreadSynchronize();
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		Image::copyFFTtoImage<double>(result, pfftw_in, kz);
 
 		/// !!!!!!!!!!!!!!!!!!!!
 		//Z = 10;
 	}
 
-	Image::copyFFTtoImage<double>(result, pfftw_in, 0);
+
 
 	cudaFree(pfftw_in);
 	cudaFree(pfftw_out);

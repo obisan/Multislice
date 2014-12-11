@@ -44,7 +44,7 @@ namespace ImageSpace {
 
 		cudaError_t err;
 		if ((err = cudaGetLastError()) != cudaSuccess)
-			printf("CUDA error: %s, line %d\n", cudaGetErrorString(err), __LINE__);
+			printf("CUDA error: %s, file %s, line %d\n", cudaGetErrorString(err), __FILE__, __LINE__);
 
 		memset(this->imageData, 0, this->nSize);
 	}
@@ -135,7 +135,7 @@ namespace ImageSpace {
 		delete[] filenamesave_ext;
 	}
 
-	void Image::saveMRC(const char* filenamesave, AModel::Model* model, int width, int height, int thickness, int mode) {
+	int Image::saveMRC(const char* filenamesave, AModel::Model* model, int width, int height, int thickness, int mode) {
 		float tiltangles[6] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 				
 		MRC *imageMRC = new MRC(
@@ -156,10 +156,10 @@ namespace ImageSpace {
 			0,
 			"",
 			this->imageData);
-		
 		imageMRC->save(filenamesave);
-
 		delete imageMRC;
+
+		return 0;
 	}
 
 	void Image::saveQtSpectrum(const char* filenamesave, size_t numberSlice) {

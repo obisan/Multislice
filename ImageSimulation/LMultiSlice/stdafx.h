@@ -52,6 +52,7 @@
 #include "device_launch_parameters.h"
 
 #include <cuComplex.h>
+#include "cusp.cuh"
 
 #include "../pugixml-1.2/src/pugixml.hpp"
 

@@ -52,7 +52,7 @@ namespace ImageSpace {
 		static void normalize(Image *image, int slide, int n);
 
 		void		save(const char*);
-		void		saveMRC(const char*, AModel::Model*, int, int, int, int);
+		int			saveMRC(const char* filenamesave, AModel::Model* model, int width, int height, int thickness, int mode);
 		void		saveQtSpectrum(const char*, size_t n = 0);
 
 		Image*		getRealPart();

@@ -11,8 +11,9 @@ public:
 	~ModelPotential(void);
 
 	int		calculatePotentialGrid();
-	int		savePotential(Image *image);
+	int		savePotential(const char* filename);
 	
+	AModel::Model*		getModel();
 	size_t	getNx();
 	size_t	getNy();
 	size_t	getNz();
@@ -24,7 +25,6 @@ private:
 	size_t				nx;
 	size_t				ny;
 	size_t				nz;
-
 	
 	double				radius;
 	double				dpa;

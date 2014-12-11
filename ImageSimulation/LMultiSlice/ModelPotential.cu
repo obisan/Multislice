@@ -18,7 +18,7 @@ ModelPotential::ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_
 
 	cudaError_t err;
 	if ((err = cudaGetLastError()) != cudaSuccess)
-		printf("CUDA error: %s, line %d\n", cudaGetErrorString(err), __LINE__);
+		printf("CUDA error: %s, file %s, line %d\n", cudaGetErrorString(err), __FILE__,  __LINE__);
 	
 	memset(this->potential, 0, nx * ny * nz * sizeof(double));
 }
@@ -60,26 +60,11 @@ int ModelPotential::calculatePotentialGrid() {
 	int1	*atomId;
 	float3	*atomXYZ;
 	
-	cudaMallocManaged(&atomId,	nAtoms * sizeof(int3));
+	cudaMallocManaged(&atomId,	nAtoms * sizeof(int1));
 	cudaMallocManaged(&atomXYZ,	nAtoms * sizeof(float3));
 	
 	CUERR
 
-	AModel::Cortege *pAtoms = model->getTableCell();
-	std::sort(pAtoms, pAtoms + nAtoms);
-	for(size_t i = 0; i < nAtoms; i++) {
-		atomId[i].x  = model->getNumberByName(pAtoms[i].element.Atom) - 1;
-		atomXYZ[i].x = pAtoms[i].element.xsCoordinate.x;
-		atomXYZ[i].y = pAtoms[i].element.xsCoordinate.y;
-		atomXYZ[i].z = pAtoms[i].element.xsCoordinate.z;
-	}
-	pAtoms = nullptr;
-
-	const size_t MAX_THREADS = 16;
-	dim3 threads(MAX_THREADS, MAX_THREADS, 1);							// размер квардатика
-	dim3 grid(this->nx / MAX_THREADS, this->ny / MAX_THREADS, 1 );		// сколько квадратиков нужно чтобы покрыть все изображение
-
-	CUERR
 
 	cudaEvent_t start,stop;
 	float time = 0.0f;
@@ -87,10 +72,34 @@ int ModelPotential::calculatePotentialGrid() {
 	cudaEventCreate(&stop);
 	cudaEventRecord(start,0);
 	
+	const size_t MAX_THREADS = 16;
+	dim3 threads(MAX_THREADS, MAX_THREADS, 1);							// размер квардатика
+	dim3 grid(this->nx / MAX_THREADS, this->ny / MAX_THREADS, 1 );		// сколько квадратиков нужно чтобы покрыть все изображение
+
+	AModel::Cortege *pAtoms = model->getTableCell();
+	size_t numberAtoms = 0;
+	std::sort(pAtoms, pAtoms + nAtoms);
+		
 	for(size_t kz = 0; kz * dz < c; kz++) {
-		calculateProjectedPotential<<<grid, threads>>>(atomId, atomXYZ, nAtoms, a, b, c, dx, dy, dz, potential + nx * ny * kz, nx, ny, nz, radius, dk);
+		for(size_t i = 0; i < nAtoms; i++) {
+			if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c && pAtoms[i].element.xsCoordinate.z * c < (kz + 1) * dz ) {
+				atomId[i].x  = model->getNumberByName(pAtoms[i].element.Atom) - 1;
+				atomXYZ[i].x = pAtoms[i].element.xsCoordinate.x;
+				atomXYZ[i].y = pAtoms[i].element.xsCoordinate.y;
+				atomXYZ[i].z = pAtoms[i].element.xsCoordinate.z;
+				numberAtoms++;
+			}
+		}
+		
+		calculateProjectedPotential<<<grid, threads>>>(atomId, atomXYZ, numberAtoms, a, b, c, dx, dy, dz, potential + nx * ny * kz, nx, ny, nz, radius, dk);
 		cudaThreadSynchronize();
+
+		memset(atomId,	0,	nAtoms * sizeof(int1));
+		memset(atomXYZ, 0,	nAtoms * sizeof(float3));
+		numberAtoms = 0;
 	}
+
+	pAtoms = nullptr;
 	
 	cudaEventRecord(stop,0);
 	cudaEventSynchronize(stop);
@@ -107,6 +116,19 @@ int ModelPotential::calculatePotentialGrid() {
 	atomXYZ = nullptr;
 	
 	return 0;
+}
+
+int	ModelPotential::savePotential(const char* filename) {
+	Image *image = new Image(nx, ny, nz, sizeof(double), 1);
+	memcpy(image->imageData, this->potential, nx * ny * nz * sizeof(double));
+	image->saveMRC(filename, model, nx, ny, nz, mrc_FLOAT);
+	delete image;
+
+	return 0;
+}
+
+AModel::Model* ModelPotential::getModel() {
+	return model;
 }
 
 size_t ModelPotential::getNx() {

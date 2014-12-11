@@ -21,7 +21,7 @@
 	</image>
 	<slicing>
 		<radiuc>20.0</radiuc>
-		<numberslices>1</numberslices>
+		<numberslices>10</numberslices>
 	</slicing>
 	<microscope>
 		<aperture>10.37</aperture>

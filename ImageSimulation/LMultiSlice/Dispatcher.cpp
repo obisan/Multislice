@@ -187,11 +187,13 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Number slides = " << command.numberSlices << std::endl;
 	std::cout << "dpa = " << command.dpa << std::endl;
 
-	Image *result = new Image(command.nx, command.ny, 1, sizeof(double), 2);
+	Image *result = new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
 	
 	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
 	modelPotential->calculatePotentialGrid();
 	
+	//modelPotential->savePotential(command.fileNameOutput);
+
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, command.nx, command.ny, command.numberSlices, command.dpa);
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
 	modelSimulated->imageCalculation(result, microscope);
@@ -200,11 +202,12 @@ int Dispatcher::Run(const char* fileNameXML) {
 
 	delete modelPotential;
 
+	result->saveMRC(command.fileNameOutput, model, command.nx, command.ny, command.numberSlices, mrc_FLOAT2);
 	
-	Image *result_module = result->getModule();
-	result_module->saveMRC(command.fileNameOutput, model, command.nx, command.ny, 1, FLOAT);
-	delete result_module;
-		
+// 	Image *result_module = result->getModule();
+// 	result_module->saveMRC(command.fileNameOutput, model, command.nx, command.ny, command.numberSlices, mrc_FLOAT);
+// 	delete result_module;
+  		 		
 	delete result;
 	
 	delete model;
