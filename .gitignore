@@ -26,6 +26,8 @@ x64.debug.common.dll/
 x86.release.common.dll/
 x64.release.common.dll/
 
+!GPU_TEM_5/
+!Musli/
 
 #################
 ## Eclipse
