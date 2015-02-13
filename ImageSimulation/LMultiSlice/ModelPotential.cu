@@ -57,15 +57,6 @@ int ModelPotential::calculatePotentialGrid() {
 	cudaSetDevice(cudadev);
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	int1	*atomId;
-	float3	*atomXYZ;
-	
-	cudaMallocManaged(&atomId,	nAtoms * sizeof(int1));
-	cudaMallocManaged(&atomXYZ,	nAtoms * sizeof(float3));
-	
-	CUERR
-
-
 	cudaEvent_t start,stop;
 	float time = 0.0f;
 	cudaEventCreate(&start);
@@ -77,26 +68,34 @@ int ModelPotential::calculatePotentialGrid() {
 	dim3 grid(this->nx / MAX_THREADS, this->ny / MAX_THREADS, 1 );		// сколько квадратиков нужно чтобы покрыть все изображение
 
 	AModel::Cortege *pAtoms = model->getTableCell();
-	size_t numberAtoms = 0;
 	std::sort(pAtoms, pAtoms + nAtoms);
-		
+	
+	thrust::device_vector<int1>		atomIDDevice;
+	thrust::device_vector<float3>	atomXYZDevice;
+
+	int1 buffiD;
+	float3 buffXYZ;
+				
 	for(size_t kz = 0; kz * dz < c; kz++) {
 		for(size_t i = 0; i < nAtoms; i++) {
 			if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c && pAtoms[i].element.xsCoordinate.z * c < (kz + 1) * dz ) {
-				atomId[i].x  = model->getNumberByName(pAtoms[i].element.Atom) - 1;
-				atomXYZ[i].x = pAtoms[i].element.xsCoordinate.x;
-				atomXYZ[i].y = pAtoms[i].element.xsCoordinate.y;
-				atomXYZ[i].z = pAtoms[i].element.xsCoordinate.z;
-				numberAtoms++;
+				buffiD.x = model->getNumberByName(pAtoms[i].element.Atom) - 1;
+				buffXYZ.x = pAtoms[i].element.xsCoordinate.x;
+				buffXYZ.y = pAtoms[i].element.xsCoordinate.y;
+				buffXYZ.z = pAtoms[i].element.xsCoordinate.z;
+
+				atomIDDevice.push_back(buffiD);
+				atomXYZDevice.push_back(buffXYZ);
 			}
 		}
-		
-		calculateProjectedPotential<<<grid, threads>>>(atomId, atomXYZ, numberAtoms, a, b, c, dx, dy, dz, potential + nx * ny * kz, nx, ny, nz, radius, dk);
+		int1	*patomID	= thrust::raw_pointer_cast(&atomIDDevice[0]);
+		float3	*patomXYZ	= thrust::raw_pointer_cast(&atomXYZDevice[0]);
+
+		calculateProjectedPotential<<<grid, threads>>>(atomIDDevice.size(), patomID, patomXYZ, a, b, c, dx, dy, dz, potential + nx * ny * kz, radius, dk);
 		cudaThreadSynchronize();
 
-		memset(atomId,	0,	nAtoms * sizeof(int1));
-		memset(atomXYZ, 0,	nAtoms * sizeof(float3));
-		numberAtoms = 0;
+		atomIDDevice.clear();
+		atomXYZDevice.clear();
 	}
 
 	pAtoms = nullptr;
@@ -108,12 +107,6 @@ int ModelPotential::calculatePotentialGrid() {
 	CUERR
 	
 	std::cout << std::endl << "Kernel time: " << time << "ms." << std::endl << std::endl;
-
-	cudaFree(atomId);
-	cudaFree(atomXYZ);
-
-	atomId = nullptr;
-	atomXYZ = nullptr;
 	
 	return 0;
 }

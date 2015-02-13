@@ -14,8 +14,7 @@ Dispatcher::~Dispatcher(void) {
 bool Dispatcher::CheckFileExist(const char *fname) {
 	_finddata_t data;
 	intptr_t nFind = _findfirst(fname,&data);
-	if (nFind != -1)
-	{
+	if (nFind != -1) {
 		// Если этого не сделать, то произойдет утечка ресурсов
 		_findclose(nFind);
 		return true;
@@ -187,8 +186,6 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Number slides = " << command.numberSlices << std::endl;
 	std::cout << "dpa = " << command.dpa << std::endl;
 
-	Image *result = new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
-	
 	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
 	modelPotential->calculatePotentialGrid();
 	
@@ -196,19 +193,16 @@ int Dispatcher::Run(const char* fileNameXML) {
 
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, command.nx, command.ny, command.numberSlices, command.dpa);
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
+	Image *result = new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
+	
 	modelSimulated->imageCalculation(result, microscope);
+	result->saveMRC(command.fileNameOutput, model, command.nx, command.ny, command.numberSlices, mrc_FLOAT2);
+
+	delete result;
 	delete microscope;
 	delete modelSimulated;
 
 	delete modelPotential;
-
-	result->saveMRC(command.fileNameOutput, model, command.nx, command.ny, command.numberSlices, mrc_FLOAT2);
-	
-// 	Image *result_module = result->getModule();
-// 	result_module->saveMRC(command.fileNameOutput, model, command.nx, command.ny, command.numberSlices, mrc_FLOAT);
-// 	delete result_module;
-  		 		
-	delete result;
 	
 	delete model;
 

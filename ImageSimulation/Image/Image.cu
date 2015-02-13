@@ -37,7 +37,7 @@ namespace ImageSpace {
 		this->thickness		= (int)nz;
 		this->depth			= (int)depth;
 		this->nChannels		= (int)nChannels;
-		this->nSize			= this->width * this->height * this->thickness * this->depth * this->nChannels;
+		this->nSize			= (size_t) this->width * this->height * this->thickness * this->depth * this->nChannels;
 		this->widthStep		= this->width;
 
 		cudaMallocManaged(&(this->imageData), this->nSize);

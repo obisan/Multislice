@@ -11,17 +11,17 @@
 		<fileNameInput>D:\LEMOI\Work\model\model.ace</fileNameInput> 
 		<fileNameOutput>../samples/model</fileNameOutput>
 		-->
-		<fileNameInput>../samples/C_Si_Cu_Au_U.coo</fileNameInput> 
-		<fileNameOutput>../samples/C_Si_Cu_Au_U</fileNameOutput>
+		<fileNameInput>../samples/Si_Cell.coo</fileNameInput> 
+		<fileNameOutput>../samples/Si_Cell</fileNameOutput>
 	</io>
 	<image>
-		<nx>1024</nx>
-		<ny>1024</ny>
+		<nx>2048</nx>
+		<ny>2048</ny>
 		<dpa>10.0</dpa>		<!--- dots per angstrem --->
 	</image>
 	<slicing>
 		<radiuc>20.0</radiuc>
-		<numberslices>10</numberslices>
+		<numberslices>8</numberslices>
 	</slicing>
 	<microscope>
 		<aperture>10.37</aperture>

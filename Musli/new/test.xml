@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Calculation_parameters xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<ModelFileName>D:\github\Multislice\Musli\new\dump_0.coo</ModelFileName>
+	<ModelFileName>D:\github\Multislice\Musli\new\Si_Cell.coo</ModelFileName>
 	<!--Coordinate file-->
 	<PotType>PG_curve_DW_periodic</PotType>
 	<!-- These are the possible values of potential
@@ -30,7 +30,7 @@
 	<SliceType>Fixed</SliceType>
 	<SliceType>Layers</SliceType>
 	-->
-	<NSlices>30</NSlices>
+	<NSlices>8</NSlices>
 	<!--If <SliceType>Fixed</SliceType> than this number defines the number of slices to cut unit cell -->
 	<SaveSlices>false</SaveSlices>
 	<!--Defines if potentials should be saved. Ignored for PG potentials. -->
@@ -74,8 +74,8 @@
 		<double>47</double>
 	</ThWaves>
 	<!--List of thicknesses to save the wave -->
-	<N>1024</N>
-	<M>1024</M>
+	<N>2048</N>
+	<M>2048</M>
 	<!--The size of the matrix-->
 	<Nmult>1</Nmult>
 	<Mmult>1</Mmult>

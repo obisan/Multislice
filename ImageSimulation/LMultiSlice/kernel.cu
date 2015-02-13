@@ -5,15 +5,15 @@
 #define ATOMS_PER_PIXEL_FOR_KERNEL 1024
 #define APP ATOMS_PER_PIXEL_FOR_KERNEL
 
-__global__ void calculateProjectedPotential(int1 *atomId, float3 *atomXYZ, unsigned int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, unsigned int nx, unsigned int ny, unsigned int nz, double r, double dk) {
+__global__ void calculateProjectedPotential(unsigned int nAtoms, int1 *atomId, float3 *atomXYZ, double a, double b, double c, double dx, double dy, double dz, double *image, double r, double dk) {
 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
 	const int iz = blockDim.z * blockIdx.z + threadIdx.z;
 	const int LINESIZE = (gridDim.x * blockDim.x);
 	const int SLIDESIZE = (gridDim.x * blockDim.x) * (gridDim.y * blockDim.y);
 	
-	int1 atom[APP];
-	float1 atomdist[APP];
+	int1	atom[APP];
+	float1	atomdist[APP];
 	
 	int k = 0;
 	for(int l = 0; l < nAtoms && k < APP; l++) {
@@ -97,7 +97,7 @@ __global__ void objectLens(cusp::complex<double> *wave, double lambda, double Cs
 	wave[iy * LINESIZE + ix].y = (w1 * w2).imag();
 }
 
-__global__ void propagate(cusp::complex<double> *wave, double lambda, double dZ, double imageSizeAngstrems) {
+__global__ void propagate(cusp::complex<double> *wave_0, cusp::complex<double> *wave_1, double lambda, double dZ, double imageSizeAngstrems) {
 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
 	const int LINESIZE = gridDim.x * blockDim.x;
@@ -106,15 +106,16 @@ __global__ void propagate(cusp::complex<double> *wave, double lambda, double dZ,
 	double u2 = fabs(LINESIZE / 2.0 - ix) / imageSizeAngstrems;
 	double k = u1 * u1 + u2 * u2;
 	
- 	//cusp::complex<double> w1(cos(lambda * k * k * dZ), sin(lambda * k * k * dZ));
+	cusp::complex<double> w1(cos(- M_PI * lambda * k * k * dZ), sin(- M_PI * lambda * k * k * dZ));
 	//cusp::complex<double> w1( 1.0 / (lambda * dZ) * cos(M_PI / (lambda * dZ) * k), 1.0 / (lambda * dZ) * sin(M_PI / (lambda * dZ) * k));
-	cusp::complex<double> w1( cos(-dZ / (4.0 * M_PI) * lambda * k), sin(-dZ / (4.0 * M_PI) * lambda * k));
- 	cusp::complex<double> w2(wave[iy * LINESIZE + ix].x, wave[iy * LINESIZE + ix].y);
-  	wave[iy * LINESIZE + ix].x = (w1 * w2).real();
-  	wave[iy * LINESIZE + ix].y = (w1 * w2).imag();
+	//cusp::complex<double> w1( cos(-dZ / (4.0 * M_PI) * lambda * k), sin(-dZ / (4.0 * M_PI) * lambda * k));
+ 	cusp::complex<double> w2(wave_0[iy * LINESIZE + ix].x, wave_0[iy * LINESIZE + ix].y);
+	//wave_1[iy * LINESIZE + ix].x = (w1 * w2).real();
+	//wave_1[iy * LINESIZE + ix].y = (w1 * w2).imag();
+	wave_1[iy * LINESIZE + ix] = (w1 * w2);
 }
 
-__device__ double calculateProjectedPotential(int numberAtom, double r) {
+__device__ double	calculateProjectedPotential(int numberAtom, double r) {
 	double sumf = 0, sums = 0;
  	double dR1 = 6.2831853071796 * r; // 2 * PI * r
 

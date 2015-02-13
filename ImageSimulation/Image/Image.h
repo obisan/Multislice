@@ -35,7 +35,7 @@ namespace ImageSpace {
 		Image(const Image* image);
 		~Image();
 
-		int                 nSize;			// sizeof(IplImage)
+		size_t              nSize;			// sizeof(IplImage)
 		int                 nChannels;		// Число каналов
 		int                 depth;			// Глубина в битах
 		int                 width;			// Ширина

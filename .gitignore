@@ -1,3 +1,31 @@
+####################################
+## Image
+####################################
+
+*.mrc
+*.dll
+*.lib
+*.exe
+
+
+*.mrc
+*.lib
+*.exp
+*.coo
+*.ace
+*.xyz
+
+docs/
+samples/
+statistics/
+statistics/config/
+
+x86.debug.common.dll/
+x64.debug.common.dll/
+x86.release.common.dll/
+x64.release.common.dll/
+
+
 #################
 ## Eclipse
 #################
@@ -213,30 +241,3 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
-
-
-
-# Image
-
-*.mrc
-*.dll
-*.lib
-*.exe
-
-
-*.mrc
-*.lib
-*.exp
-*.coo
-*.ace
-*.xyz
-
-docs/
-samples/
-statistics/
-statistics/config/
-
-x86.debug.common.dll/
-x64.debug.common.dll/
-x86.release.common.dll/
-x64.release.common.dll/

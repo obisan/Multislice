@@ -48,6 +48,9 @@
 #include <cuda_runtime_api.h>
 #include <cuda_runtime.h>
 
+#include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
+
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
