@@ -18,8 +18,8 @@
 
 docs/
 samples/
-statistics/
-statistics/config/
+statistics/model/
+statistics/result/
 
 x86.debug.common.dll/
 x64.debug.common.dll/

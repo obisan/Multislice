@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<action>
+    <io>
+        <fileNameInput>model/Fe_16203270.coo</fileNameInput>
+        <fileNameOutput>result/Fe_16203270_32x32</fileNameOutput>
+    </io>
+    <image>
+        <nx>32</nx>
+        <ny>32</ny>
+       <dpa>10.0</dpa>        <!--- dots per angstrem --->
+    </image>
+    <slicing>
+        <radiuc>20.0</radiuc>
+        <numberslices>1</numberslices>
+    </slicing>
+    <microscope>
+        <aperture>10.37</aperture>
+        <cs>1.3</cs>
+        <defocus>-70</defocus>     <!---// nm --->
+        <keV>200</keV>
+    </microscope>
+</action>
