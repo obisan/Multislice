@@ -186,18 +186,43 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Number slides = " << command.numberSlices << std::endl;
 	std::cout << "dpa = " << command.dpa << std::endl;
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	int deviceCount = 0;
+	cudaGetDeviceCount(&deviceCount);
+	printf("\nDetected %d CUDA accelerators:\n", deviceCount);
+	int dev;
+	for (dev=0; dev < deviceCount; dev++) {
+		cudaDeviceProp deviceProp;
+		cudaGetDeviceProperties(&deviceProp, dev);
+		printf("  [%d]: '%s'  Clock: %.1f GHz  Mem: %dMB  Rev: %d.%d\n", 
+			dev, deviceProp.name, 
+			deviceProp.clockRate / 1000000.0f, deviceProp.totalGlobalMem / (1024*1024),
+			deviceProp.major, deviceProp.minor);
+	}
+
+	int cudadev = 0;
+	printf("  Single-threaded single-GPU test run.\n");
+	printf("  Opening CUDA device %d...\n\n", cudadev);
+	cudaSetDevice(cudadev);
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
-	modelPotential->calculatePotentialGrid();
+	if(modelPotential->calculatePotentialGrid() == -1) 
+		return -1;
 	
-	//modelPotential->savePotential(command.fileNameOutput);
+	modelPotential->savePotential(command.fileNameOutput);
 
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, command.nx, command.ny, command.numberSlices, command.dpa);
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
-	Image *result = new Image(command.nx, command.ny, command.numberSlices, sizeof(double), 2);
+	Image *result = new Image(command.nx, command.ny, 1, sizeof(double), 2);
 	
 	modelSimulated->imageCalculation(result, microscope);
-	result->saveMRC(command.fileNameOutput, model, command.nx, command.ny, command.numberSlices, mrc_FLOAT2);
+	Image *result_module = result->getModule();
+	result_module->saveMRC(command.fileNameOutput, model, command.nx, command.ny, 1, mrc_FLOAT);
 
+	delete result_module;
 	delete result;
 	delete microscope;
 	delete modelSimulated;
@@ -209,6 +234,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	/************************************************************************/
 	/************************************************************************/
 	/************************************************************************/
+	cudaDeviceReset();
 
 	std::cout	<< "Calculation for [" << fileNameXML <<  "] finished successful." << std::endl << std::endl;
 

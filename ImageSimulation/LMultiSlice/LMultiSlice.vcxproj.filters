@@ -19,9 +19,6 @@
     <ClInclude Include="Microscope.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="fparams.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="Dispatcher.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -45,12 +42,6 @@
     <ClCompile Include="Microscope.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="fparams.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="Dispatcher.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -68,6 +59,9 @@
       <Filter>src</Filter>
     </CudaCompile>
     <CudaCompile Include="ModelSimulated.cu">
+      <Filter>src</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Dispatcher.cu">
       <Filter>src</Filter>
     </CudaCompile>
   </ItemGroup>

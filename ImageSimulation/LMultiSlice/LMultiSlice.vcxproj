@@ -73,14 +73,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\ProgramData\NVIDIA Corporation\CUDA Samples\v6.5\common\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\ProgramData\NVIDIA Corporation\CUDA Samples\v6.5\common\inc;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\ProgramData\NVIDIA Corporation\CUDA Samples\v6.5\common\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <ExecutablePath>$(SolutionDir)amodel\x64\;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\ProgramData\NVIDIA Corporation\CUDA Samples\v6.5\common\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -176,7 +181,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClInclude Include="cusp.cuh" />
     <ClInclude Include="Dispatcher.h" />
-    <ClInclude Include="fparams.h" />
     <ClInclude Include="kernel.cuh" />
     <ClInclude Include="Microscope.h" />
     <ClInclude Include="ModelSimulated.h" />
@@ -186,8 +190,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="ModelPotential.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dispatcher.cpp" />
-    <ClCompile Include="fparams.cpp" />
+    <CudaCompile Include="Dispatcher.cu" />
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="LMultiSlice.cpp" />
     <ClCompile Include="Microscope.cpp" />

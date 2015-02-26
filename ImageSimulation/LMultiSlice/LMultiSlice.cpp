@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
 		std::cin >> fileNameXML;
 	}
 	if(argc > 1) {
+		std::cout << "Name XML file: " << argv[1] << std::endl;
 		strcpy(fileNameXML, argv[1]);
 	}
 
