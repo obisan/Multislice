@@ -139,11 +139,14 @@ __global__ void calculatePotentialGridGPU(int nAtoms, double a, double b, double
 	double imageval8 = 0.0;
 
 	for(l = 0; l < nAtoms; l++) {
+		int atomid = atominfoid[l];
 		float dY = fabsf(atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * l + 1] * b - (iy * dy));
+		float x = atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * l + 0] * a;
+
 		dY = ( dY >= b / 2.0 ) ? dY - b : dY;
 		dY = dY * dY;
 
-		float x = atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * l + 0] * a;
+		
 
 // 		float dX1 = ix * dx - x;
 // 		float dX2 = dX1 + gridspacing_u;
@@ -181,9 +184,6 @@ __global__ void calculatePotentialGridGPU(int nAtoms, double a, double b, double
 		float dR7 = sqrtf(dX7 * dX7 + dY);
 		float dR8 = sqrtf(dX8 * dX8 + dY);
 
-		
-		int atomid = atominfoid[l];
-		
 		if(dR1 < r) {
 			dR1 = (dR1 < 1.0e-10) ? 1.0e-10 : dR1;
 			imageval1 += calculateProjectedPotential(atomid, dR1);
