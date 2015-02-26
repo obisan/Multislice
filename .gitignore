@@ -28,8 +28,8 @@ x64.release.common.dll/
 
 !GPU_TEM_5/
 !Musli/
-!fftw-3.3.3-x64/
-!fftw-3.3.3-x86/
+!fftw-3.3.4-dll32/
+!fftw-3.3.4-dll64/
 
 #################
 ## Eclipse
