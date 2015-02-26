@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Calculation_parameters xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<ModelFileName>D:\github\Multislice\Musli\new\Si_Cell.coo</ModelFileName>
+	<ModelFileName>D:\github\Multislice\Musli\new\Fe_69439.coo</ModelFileName>
 	<!--Coordinate file-->
 	<PotType>PG_curve_DW_periodic</PotType>
 	<!-- These are the possible values of potential
