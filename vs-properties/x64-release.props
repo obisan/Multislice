@@ -7,11 +7,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\fftw-3.3.3-x64\;..\..\amodel\include;..\..\opencv\include\opencv2;..\..\opencv\include\opencv;..\..\opencv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\fftw-3.3.4-dll64\;..\..\amodel\include;..\..\opencv\include\opencv2;..\..\opencv\include\opencv;..\..\opencv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>AModel.lib;libfftw3-3.lib;libfftw3f-3.lib;libfftw3l-3.lib;opencv_core246.lib;opencv_imgproc246.lib;opencv_highgui246.lib;opencv_ml246.lib;opencv_video246.lib;opencv_features2d246.lib;opencv_calib3d246.lib;opencv_objdetect246.lib;opencv_contrib246.lib;opencv_legacy246.lib;opencv_flann246.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\fftw-3.3.3-x64\;..\..\opencv\x64\vc11\lib;..\..\amodel\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\fftw-3.3.4-dll64\;..\..\opencv\x64\vc11\lib;..\..\amodel\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />

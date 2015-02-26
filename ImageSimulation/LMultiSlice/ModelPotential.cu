@@ -73,7 +73,7 @@ int ModelPotential::calculatePotentialGrid() {
  				checkCudaErrors( cudaMemcpyToSymbol(atominfoid, atominfoid_host, ATOMS_IN_CONST_MEMORY * sizeof(int), 0, cudaMemcpyHostToDevice));
  				checkCudaErrors( cudaMemcpyToSymbol(atominfoxy, atominfoxy_host, ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * ATOMS_IN_CONST_MEMORY * sizeof(float), 0, cudaMemcpyHostToDevice));
 				
- 				calculatePotentialGridGPU<<<grid, threads>>>(j, a, b, c, dx, dy, dz, potentialSlice, radius, dk);
+ 				calculatePotentialGridGPU<<<grid, threads>>>(j, a, b, c, dx, dy, potentialSlice, radius, dk);
  				cudaThreadSynchronize();
 				CUERR
 

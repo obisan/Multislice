@@ -349,7 +349,9 @@ fftwl_mkplan_rdft
 fftwl_mkplan_rdft2
 fftwl_mkplanner
 fftwl_mkprinter
+fftwl_mkprinter_cnt
 fftwl_mkprinter_file
+fftwl_mkprinter_str
 fftwl_mkproblem
 fftwl_mkproblem_dft
 fftwl_mkproblem_dft_d
@@ -491,6 +493,7 @@ fftwl_solver_register
 fftwl_solver_use
 fftwl_solvtab_exec
 fftwl_spawn_loop
+fftwl_sprint_plan
 fftwl_tensor_append
 fftwl_tensor_compress
 fftwl_tensor_compress_contiguous

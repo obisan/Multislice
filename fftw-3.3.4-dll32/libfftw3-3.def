@@ -827,7 +827,9 @@ fftw_mkplan_rdft
 fftw_mkplan_rdft2
 fftw_mkplanner
 fftw_mkprinter
+fftw_mkprinter_cnt
 fftw_mkprinter_file
+fftw_mkprinter_str
 fftw_mkproblem
 fftw_mkproblem_dft
 fftw_mkproblem_dft_d
@@ -970,6 +972,7 @@ fftw_solver_register
 fftw_solver_use
 fftw_solvtab_exec
 fftw_spawn_loop
+fftw_sprint_plan
 fftw_stride_destroy
 fftw_taint
 fftw_tensor_append

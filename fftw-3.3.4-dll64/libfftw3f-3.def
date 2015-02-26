@@ -729,7 +729,9 @@ fftwf_mkplan_rdft
 fftwf_mkplan_rdft2
 fftwf_mkplanner
 fftwf_mkprinter
+fftwf_mkprinter_cnt
 fftwf_mkprinter_file
+fftwf_mkprinter_str
 fftwf_mkproblem
 fftwf_mkproblem_dft
 fftwf_mkproblem_dft_d
@@ -872,6 +874,7 @@ fftwf_solver_register
 fftwf_solver_use
 fftwf_solvtab_exec
 fftwf_spawn_loop
+fftwf_sprint_plan
 fftwf_stride_destroy
 fftwf_taint
 fftwf_tensor_append
