@@ -1,6 +1,14 @@
 #pragma once
 
-__global__ void calculatePotentialGridGPU(int nAtoms, double a, double b, double c, double dx, double dy, double *potential, double r, double dk);
+struct __align__(16) atom {
+	int id;
+	int num;
+	float x;
+	float y;
+};
+
+//__global__ void calculatePotentialGridGPU(int nAtoms, double a, double b, double c, double dx, double dy, double *potential, double r, double dk);
+__global__ void calculatePotentialGridGPU(double *potential, int *bin_num, atom *bin_d, double a, double b, double c, double dx, double dy, double binx, double biny, double bindimx, double bindimy, double radius);
 __global__ void phaseObject(double *potential, cusp::complex<double> *wave, unsigned int nx, unsigned int ny, double sigma);
 __global__ void nulling(cusp::complex<double> *pfftw);
 __global__ void	normalize(cusp::complex<double> *wave, unsigned int n);

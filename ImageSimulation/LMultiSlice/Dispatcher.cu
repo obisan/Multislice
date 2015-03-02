@@ -182,9 +182,10 @@ int Dispatcher::Run(const char* fileNameXML) {
 	/* Calculating map potentials	*****************************************/
 	/************************************************************************/
 	std::cout << std::endl;
-	std::cout << "Image size = " << command.nx << "x" << command.ny << std::endl;
-	std::cout << "Number slides = " << command.numberSlices << std::endl;
-	std::cout << "dpa = " << command.dpa << std::endl;
+	std::cout << "Image size		= " << command.nx << "x" << command.ny << std::endl;
+	std::cout << "Number of slices	= " << command.numberSlices << std::endl;
+	std::cout << "Number of atoms	= " << model->getNumberAtoms() << std::endl;
+	std::cout << "dots per atom		= " << command.dpa << std::endl;
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////

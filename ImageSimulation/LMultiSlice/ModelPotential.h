@@ -20,7 +20,6 @@
 #define BLOCKSIZEY	16
 #define BLOCKSIZE	 (BLOCKSIZEX*BLOCKSIZEY)
 
-
 __constant__ int	atominfoid[ATOMS_IN_CONST_MEMORY];
 __constant__ float	atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * ATOMS_IN_CONST_MEMORY];
 
