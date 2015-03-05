@@ -50,7 +50,6 @@ int ModelPotential::calculatePotentialGrid() {
 	cudaEventRecord(start,0);
 	
 	dim3 threads(BLOCKSIZEX, BLOCKSIZEY, 1);									// размер квардатика
-	//dim3 grid(this->nx / BLOCKSIZEX / UNROLLX, this->ny / BLOCKSIZEY, 1 );		// сколько квадратиков нужно чтобы покрыть все изображение
 	dim3 grid(this->nx / BLOCKSIZEX, this->ny / BLOCKSIZEY, 1 );		// сколько квадратиков нужно чтобы покрыть все изображение
 
 
@@ -70,11 +69,11 @@ int ModelPotential::calculatePotentialGrid() {
 	
 	std::vector<atom> slice;
 
-	for(size_t kz = 0; kz * dz < c; kz++) {
+	for(size_t kz = 0; kz < nz; kz++) {
 		for(size_t i = 0; i < nAtoms; i++) {
-			if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c && pAtoms[i].element.xsCoordinate.z * c < (kz + 1) * dz ) {
+			if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c && pAtoms[i].element.xsCoordinate.z * c <= (kz + 1) * dz ) {
 				atom buff;
- 				buff.id = i;
+ 				buff.id = i + 1;
 				buff.num = model->getNumberByName(pAtoms[i].element.Atom) - 1;
 				buff.x = pAtoms[i].element.xsCoordinate.x;
 				buff.y = pAtoms[i].element.xsCoordinate.y;
@@ -98,8 +97,6 @@ int ModelPotential::calculatePotentialGrid() {
 			summ_atoms_in_bins += bins[i].size();
 		}
 
-		std::cout << "atoms in slice / bins: " << slice.size() << " / " << summ_atoms_in_bins << std::endl;
-		
 		atom *bins_d;
 		cudaMallocManaged(&(bins_d), slice.size() * sizeof(atom));
 
@@ -122,7 +119,7 @@ int ModelPotential::calculatePotentialGrid() {
 		cudaThreadSynchronize();
 
 		cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
-		memset(potentialSlice, 0, nx * ny * sizeof(double));
+		//memset(potentialSlice, 0, nx * ny * sizeof(double));
 
 		slice.clear();
 
@@ -148,27 +145,27 @@ __global__ void calculatePotentialGridGPU(double *potential, int *bin_num, atom 
 	int i,j,kb;
 	i = j = kb = 0;
 
-	int bins[32] = {0};
+	int bins[64] = {0};
 	
 	float coordx = ix * dx;
 	float coordy = iy * dy;
 
-	for(i = 0; i < biny; i++) {
-		float dY1 = fabsf(coordy - i * bindimy);
+	for(i = 0; i < biny && kb < 64; i++) {
+		float dY1 = fabsf(coordy - (i + 0) * bindimy);
 		float dY2 = fabsf(coordy - (i + 1) * bindimy);
 		
 		dY1 = ( dY1 >= b / 2.0 ) ? fabsf(dY1 - b) : dY1;
 		dY2 = ( dY2 >= b / 2.0 ) ? fabsf(dY2 - b) : dY2;
 
-		if(dY1 < bindimy || dY2 < bindimy) {
-			for(j = 0; j < binx; j++) {
-				float dX1 = fabsf(coordx - j * bindimx);
+		if(dY1 <= radius + 0.866 * bindimy || dY2 <= radius + 0.866 * bindimy) { // 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
+			for(j = 0; j < binx && kb < 64; j++) {
+				float dX1 = fabsf(coordx - (j + 0) * bindimx);
 				float dX2 = fabsf(coordx - (j + 1) * bindimx);
 			
 				dX1 = ( dX1 >= a / 2.0 ) ? fabsf(dX1 - a) : dX1;
 				dX2 = ( dX2 >= a / 2.0 ) ? fabsf(dX2 - a) : dX2;
 
-				if(dX1 < bindimx || dX2 < bindimx) {
+				if(dX1 <= radius + 0.866 * bindimx || dX2 <= radius + 0.866 * bindimx) { // 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
 					bins[kb] = binx * i + j;
 					kb++;
 				}				
@@ -194,116 +191,9 @@ __global__ void calculatePotentialGridGPU(double *potential, int *bin_num, atom 
 		}
 	}
 
-	potential[ LINESIZE * iy + ix ] = potential[ LINESIZE * iy + ix ] + imageval; 
+	potential[ LINESIZE * iy + ix ] = imageval; 
 	
 }
-
-// __global__ void calculatePotentialGridGPU(int nAtoms, double a, double b, double c, double dx, double dy, double *potential, double r, double dk) {
-// 	const int ix = blockDim.x * blockIdx.x * UNROLLX + threadIdx.x;
-// 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
-// 	const int LINESIZE = UNROLLX * gridDim.x * blockDim.x;
-// 
-// 	int l;
-// 	
-// 	double imageval1 = 0.0;
-// 	double imageval2 = 0.0;
-// 	double imageval3 = 0.0;
-// 	double imageval4 = 0.0;
-// 	double imageval5 = 0.0;
-// 	double imageval6 = 0.0;
-// 	double imageval7 = 0.0;
-// 	double imageval8 = 0.0;
-// 
-// 	for(l = 0; l < nAtoms; l++) {
-// 		float dY = fabsf(atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * l + 1] * b - (iy * dy));
-// 		dY = ( dY >= b / 2.0 ) ? dY - b : dY;
-// 		dY = dY * dY;
-// 
-// 		float x = atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * l + 0] * a;
-// 
-// // 		float dX1 = ix * dx - x;
-// // 		float dX2 = dX1 + gridspacing_u;
-// // 		float dX3 = dX2 + gridspacing_u;
-// // 		float dX4 = dX3 + gridspacing_u;
-// // 		float dX5 = dX4 + gridspacing_u;
-// // 		float dX6 = dX5 + gridspacing_u;
-// // 		float dX7 = dX6 + gridspacing_u;
-// // 		float dX8 = dX7 + gridspacing_u;
-// 
-// 		float dX1 = fabsf(x - (ix + 0 * blockDim.x) * dx);
-// 		float dX2 = fabsf(x - (ix + 1 * blockDim.x) * dx);
-//  		float dX3 = fabsf(x - (ix + 2 * blockDim.x) * dx);
-// 		float dX4 = fabsf(x - (ix + 3 * blockDim.x) * dx);
-//  		float dX5 = fabsf(x - (ix + 4 * blockDim.x) * dx);
-//  		float dX6 = fabsf(x - (ix + 5 * blockDim.x) * dx);
-//  		float dX7 = fabsf(x - (ix + 6 * blockDim.x) * dx);
-//  		float dX8 = fabsf(x - (ix + 7 * blockDim.x) * dx);
-// 
-// 		dX1 = ( dX1 >= a / 2.0 ) ? dX1 - a : dX1;
-// 		dX2 = ( dX2 >= a / 2.0 ) ? dX2 - a : dX2;
-// 		dX3 = ( dX3 >= a / 2.0 ) ? dX3 - a : dX3;
-// 		dX4 = ( dX4 >= a / 2.0 ) ? dX4 - a : dX4;
-// 		dX5 = ( dX5 >= a / 2.0 ) ? dX5 - a : dX5;
-// 		dX6 = ( dX6 >= a / 2.0 ) ? dX6 - a : dX6;
-// 		dX7 = ( dX7 >= a / 2.0 ) ? dX7 - a : dX7;
-// 		dX8 = ( dX8 >= a / 2.0 ) ? dX8 - a : dX8;
-// 		
-// 		float dR1 = sqrtf(dX1 * dX1 + dY);
-// 		float dR2 = sqrtf(dX2 * dX2 + dY);
-// 		float dR3 = sqrtf(dX3 * dX3 + dY);
-// 		float dR4 = sqrtf(dX4 * dX4 + dY);
-// 		float dR5 = sqrtf(dX5 * dX5 + dY);
-// 		float dR6 = sqrtf(dX6 * dX6 + dY);
-// 		float dR7 = sqrtf(dX7 * dX7 + dY);
-// 		float dR8 = sqrtf(dX8 * dX8 + dY);
-// 
-// 		
-// 		int atomid = atominfoid[l];
-// 		
-// 		if(dR1 < r) {
-// 			dR1 = (dR1 < 1.0e-10) ? 1.0e-10 : dR1;
-// 			imageval1 += calculateProjectedPotential(atomid, dR1);
-// 		}
-// 		if(dR2 < r) {
-// 			dR2 = (dR2 < 1.0e-10) ? 1.0e-10 : dR2;
-// 			imageval2 += calculateProjectedPotential(atomid, dR2);
-// 		}
-// 		if(dR3 < r) {
-// 			dR3 = (dR3 < 1.0e-10) ? 1.0e-10 : dR3;
-// 			imageval3 += calculateProjectedPotential(atomid, dR3);
-// 		}
-// 		if(dR4 < r) {
-// 			dR4 = (dR4 < 1.0e-10) ? 1.0e-10 : dR4;
-// 			imageval4 += calculateProjectedPotential(atomid, dR4);
-// 		}
-// 		if(dR5 < r) {
-// 			dR5 = (dR5 < 1.0e-10) ? 1.0e-10 : dR5;
-// 			imageval5 += calculateProjectedPotential(atomid, dR5);
-// 		}
-// 		if(dR6 < r) {
-// 			dR6 = (dR6 < 1.0e-10) ? 1.0e-10 : dR6;
-// 			imageval6 += calculateProjectedPotential(atomid, dR6);
-// 		}
-// 		if(dR7 < r) {
-// 			dR7 = (dR7 < 1.0e-10) ? 1.0e-10 : dR7;
-// 			imageval7 += calculateProjectedPotential(atomid, dR7);
-// 		}
-// 		if(dR8 < r) {
-// 			dR8 = (dR8 < 1.0e-10) ? 1.0e-10 : dR8;
-// 			imageval8 += calculateProjectedPotential(atomid, dR8);
-// 		}
-// 	}
-// 
-// 	potential[ LINESIZE * iy + ix					] = potential[ LINESIZE * iy + ix					] + imageval1;
-//   	potential[ LINESIZE * iy + ix + 1 * blockDim.x	] = potential[ LINESIZE * iy + ix + 1 * blockDim.x	] + imageval2; 
-//   	potential[ LINESIZE * iy + ix + 2 * blockDim.x	] = potential[ LINESIZE * iy + ix + 2 * blockDim.x	] + imageval3;
-//   	potential[ LINESIZE * iy + ix + 3 * blockDim.x	] = potential[ LINESIZE * iy + ix + 3 * blockDim.x	] + imageval4;
-//   	potential[ LINESIZE * iy + ix + 4 * blockDim.x	] = potential[ LINESIZE * iy + ix + 4 * blockDim.x	] + imageval5;
-//   	potential[ LINESIZE * iy + ix + 5 * blockDim.x	] = potential[ LINESIZE * iy + ix + 5 * blockDim.x	] + imageval6;
-//   	potential[ LINESIZE * iy + ix + 6 * blockDim.x	] = potential[ LINESIZE * iy + ix + 6 * blockDim.x	] + imageval7;
-//   	potential[ LINESIZE * iy + ix + 7 * blockDim.x	] = potential[ LINESIZE * iy + ix + 7 * blockDim.x	] + imageval8;
-// 
-// }
 
 __device__ double	calculateProjectedPotential(int numberAtom, double r) {
 	double sumf;
@@ -331,8 +221,7 @@ __device__ double	calculateProjectedPotential(int numberAtom, double r) {
 
 __device__ double	bessk0( double x ) {
 	double ax, x2, sum;
-
-	
+		
 	ax = fabs( x );
 	if( (ax > 0.0)  && ( ax <=  2.0 ) ) {
 		x2 = ax / 2.0;
