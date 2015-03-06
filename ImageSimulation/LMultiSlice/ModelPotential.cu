@@ -119,8 +119,7 @@ int ModelPotential::calculatePotentialGrid() {
 		cudaThreadSynchronize();
 
 		cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
-		//memset(potentialSlice, 0, nx * ny * sizeof(double));
-
+		
 		slice.clear();
 
 		cudaFree(bins_d);
@@ -145,27 +144,36 @@ __global__ void calculatePotentialGridGPU(double *potential, int *bin_num, atom 
 	int i,j,kb;
 	i = j = kb = 0;
 
-	int bins[64] = {0};
-	
+	int bins[32] = {0};
+		
 	float coordx = ix * dx;
 	float coordy = iy * dy;
+	
+	float dRadiusX = (radius + 0.866f * bindimx);
+	float dRadiusY = (radius + 0.866f * bindimy);
 
-	for(i = 0; i < biny && kb < 64; i++) {
+	int numberofbinsX = ceil(dRadiusX / bindimx);
+	int numberofbinsY = ceil(dRadiusY / bindimy);
+
+	int coordbinx = ceil(coordx / bindimx);
+	int coordbiny = ceil(coordy / bindimy);
+	
+	for(i = 0; i < biny && kb < 32; i++) {
 		float dY1 = fabsf(coordy - (i + 0) * bindimy);
 		float dY2 = fabsf(coordy - (i + 1) * bindimy);
 		
 		dY1 = ( dY1 >= b / 2.0 ) ? fabsf(dY1 - b) : dY1;
 		dY2 = ( dY2 >= b / 2.0 ) ? fabsf(dY2 - b) : dY2;
 
-		if(dY1 <= radius + 0.866 * bindimy || dY2 <= radius + 0.866 * bindimy) { // 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
-			for(j = 0; j < binx && kb < 64; j++) {
+		if(dY1 <= dRadiusY || dY2 <= dRadiusY) { // 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
+			for(j = 0; j < binx && kb < 32; j++) {
 				float dX1 = fabsf(coordx - (j + 0) * bindimx);
 				float dX2 = fabsf(coordx - (j + 1) * bindimx);
 			
 				dX1 = ( dX1 >= a / 2.0 ) ? fabsf(dX1 - a) : dX1;
 				dX2 = ( dX2 >= a / 2.0 ) ? fabsf(dX2 - a) : dX2;
 
-				if(dX1 <= radius + 0.866 * bindimx || dX2 <= radius + 0.866 * bindimx) { // 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
+				if(dX1 <= dRadiusX || dX2 <= dRadiusX) { // 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
 					bins[kb] = binx * i + j;
 					kb++;
 				}				
