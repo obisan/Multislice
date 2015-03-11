@@ -2,7 +2,6 @@
 #include "ModelPotential.h"
 #include "kernel.cuh"
 
-
 ModelPotential::ModelPotential(void) {
 
 }
@@ -35,39 +34,56 @@ int ModelPotential::calculatePotentialGrid() {
 	const double dz = c / this->nz;
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	double *potentialSlice;
-	cudaMallocManaged(&(potentialSlice), nx * ny * sizeof(double));
-	memset(potentialSlice, 0, nx * ny * sizeof(double));
-	CUERR
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	cudaEvent_t start,stop;
-	float time = 0.0f;
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
-	cudaEventRecord(start,0);
+	checkCudaErrors( cudaMemcpyToSymbol(radius_d, &radius, sizeof(double)) );
+	checkCudaErrors( cudaMemcpyToSymbol(dx_d, &dx, sizeof(double)) );
+	checkCudaErrors( cudaMemcpyToSymbol(dy_d, &dy, sizeof(double)) );
 	
-	dim3 threads(BLOCKSIZEX, BLOCKSIZEY, 1);									// размер квардатика
-	dim3 grid(this->nx / BLOCKSIZEX, this->ny / BLOCKSIZEY, 1 );		// сколько квадратиков нужно чтобы покрыть все изображение
+	double a_h = model->getA();
+	double b_h = model->getB();
+	double c_h = model->getC();
+	checkCudaErrors( cudaMemcpyToSymbol(a_d, &a_h, sizeof(double)) );
+	checkCudaErrors( cudaMemcpyToSymbol(b_d, &b_h, sizeof(double)) );
+	checkCudaErrors( cudaMemcpyToSymbol(c_d, &c_h, sizeof(double)) );
 
-
-	AModel::Cortege *pAtoms = model->getTableCell();
-	std::sort(pAtoms, pAtoms + nAtoms);
-	
-	float bindimx = 15; // angstrem
-	float bindimy = 15; // angstrem
+	double bindimx = 15; // angstrem
+	double bindimy = 15; // angstrem
+	checkCudaErrors( cudaMemcpyToSymbol(bindimx_d, &bindimx, sizeof(double)) );
+	checkCudaErrors( cudaMemcpyToSymbol(bindimy_d, &bindimy, sizeof(double)) );
 
 	int	binx = ceil(a / bindimx);
 	int	biny = ceil(b / bindimy);
+	checkCudaErrors( cudaMemcpyToSymbol(binx_d, &binx, sizeof(int)) );
+	checkCudaErrors( cudaMemcpyToSymbol(biny_d, &biny, sizeof(int)) );
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	double *potentialSlice;
+	checkCudaErrors( cudaMallocManaged(&(potentialSlice), nx * ny * sizeof(double)));
+	memset(potentialSlice, 0, nx * ny * sizeof(double));
+	CUERR
+			
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	dim3 threads(BLOCKSIZEX, BLOCKSIZEY, 1);		
+	dim3 grid(this->nx / BLOCKSIZEX, this->ny / BLOCKSIZEY, 1 );
+
+	AModel::Cortege *pAtoms = model->getTableCell();
+	std::sort(pAtoms, pAtoms + nAtoms);
+
+	std::vector<atom> slice;
 	std::vector<atom> *bins = new std::vector<atom> [biny * binx];
 	
 	int *bins_num;
 	cudaMallocManaged(&(bins_num), binx * biny * sizeof(int));
 	
-	std::vector<atom> slice;
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	float time_kernel = 0.0f;
+	float time_total = 0.0f;
+	cudaEvent_t start_total,stop_total;
+	cudaEventCreate(&start_total);
+	cudaEventCreate(&stop_total);
+	cudaEventRecord(start_total,0);
 
 	for(size_t kz = 0; kz < nz; kz++) {
 		for(size_t i = 0; i < nAtoms; i++) {
@@ -115,8 +131,21 @@ int ModelPotential::calculatePotentialGrid() {
 		}
 		bins_num[0] = 0;
 
-		calculatePotentialGridGPU<<<grid, threads>>>(potentialSlice, bins_num, bins_d, a, b, c, dx, dy, binx, biny, bindimx, bindimy, radius);
+		cudaEvent_t start,stop;
+		float ctime = 0.0f;
+		cudaEventCreate(&start);
+		cudaEventCreate(&stop);
+		cudaEventRecord(start,0);
+
+		calculatePotentialGridGPU<<<grid, threads>>>(potentialSlice, bins_num, bins_d);
 		cudaThreadSynchronize();
+
+		cudaEventRecord(stop,0);
+		cudaEventSynchronize(stop);
+		cudaEventElapsedTime(&ctime, start, stop);
+		time_kernel += ctime;
+
+		std::cout << "slice: " << kz << std::endl << "calculated atoms: " << slice.size() << std::endl;
 
 		cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
 		
@@ -125,141 +154,251 @@ int ModelPotential::calculatePotentialGrid() {
 		cudaFree(bins_d);
 	}
 
+	cudaEventRecord(stop_total,0);
+	cudaEventSynchronize(stop_total);
+	cudaEventElapsedTime(&time_total, start_total, stop_total);
+
 	pAtoms = nullptr;
 	
-	cudaEventRecord(stop,0);
-	cudaEventSynchronize(stop);
-	cudaEventElapsedTime(&time, start, stop);
-	
-	std::cout << std::endl << "Kernel time calculating potential grid: " << time << "ms." << std::endl << std::endl;
+	std::cout << std::endl;
+	std::cout << "Kernel time calculating potential grid: " << time_kernel << "ms." << std::endl;
+	std::cout << "Total  time calculating potential grid: " << time_total << "ms." << std::endl << std::endl;
 	
 	return 0;
 }
 
-__global__ void calculatePotentialGridGPU(double *potential, int *bin_num, atom *bin_d, double a, double b, double c, double dx, double dy, double binx, double biny, double bindimx, double bindimy, double radius) {
-	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
-	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
-	const int LINESIZE = gridDim.x * blockDim.x;
+// __global__ void calculatePotentialGridGPU(double *potential, int *bin_num, atom *bin_d) {
+// 	const int ix = __umul24(blockDim.x, blockIdx.x) + threadIdx.x;
+// 	const int iy = __umul24(blockDim.y, blockIdx.y) + threadIdx.y;
+// 	const int is = __umul24(blockDim.x, threadIdx.y) + threadIdx.x;
+// 	const int LINESIZE = __umul24(gridDim.x, blockDim.x);
+// 
+// 	int i,j,kb;
+// 	i = j = kb = 0;
+// 
+// 	int bins[32];
+// 		
+// 	double coordx = ix * dx_d;
+// 	double coordy = iy * dy_d;
+// 	
+// 	double dRadiusX = (radius_d + 0.866 * bindimx_d);// 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
+// 	double dRadiusY = (radius_d + 0.866 * bindimy_d);// 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
+// 
+// 	int numberofbinsX = ceil(dRadiusX / bindimx_d);
+// 	int numberofbinsY = ceil(dRadiusY / bindimy_d);
+// 
+// 	int coordbinx = ceil(coordx / bindimx_d);
+// 	int coordbiny = ceil(coordy / bindimy_d);
+// 	
+// 	for(i = 0; i < biny_d && kb < 32; i++) {
+// 		double dY1 = fabs(coordy - (i + 0) * bindimy_d);
+// 		double dY2 = fabs(coordy - (i + 1) * bindimy_d);
+// 		
+// 		dY1 = ( dY1 >= b_d / 2.0 ) ? fabs(dY1 - b_d) : dY1;
+// 		dY2 = ( dY2 >= b_d / 2.0 ) ? fabs(dY2 - b_d) : dY2;
+// 
+// 		if(dY1 <= dRadiusY || dY2 <= dRadiusY) { 
+// 			for(j = 0; j < binx_d && kb < 32; j++) {
+// 				double dX1 = fabs(coordx - (j + 0) * bindimx_d);
+// 				double dX2 = fabs(coordx - (j + 1) * bindimx_d);
+// 			
+// 				dX1 = ( dX1 >= a_d / 2.0 ) ? fabs(dX1 - a_d) : dX1;
+// 				dX2 = ( dX2 >= a_d / 2.0 ) ? fabs(dX2 - a_d) : dX2;
+// 
+// 				if(dX1 <= dRadiusX || dX2 <= dRadiusX) { 
+// 					bins[kb] = binx_d * i + j;
+// 					kb++;
+// 				}				
+// 			}
+// 		}
+// 	}
+// 
+// 	__syncthreads();
+// 
+// 	__shared__ double imageval[BLOCKSIZEX*BLOCKSIZEY];
+// 	imageval[is] = 0.0;
+// 	
+// 	for(i = 0; i < kb - 1; i++) {
+// 		int n = bin_num[bins[i] + 1] - bin_num[bins[i]];
+// 		int offset = bin_num[bins[i]];
+// 		for(j = 0; j < n; j++) {
+// 			double x = fabs(bin_d[offset + j].x * a_d - ix * dx_d);
+// 			double y = fabs(bin_d[offset + j].y * b_d - iy * dy_d);
+// 
+// 			x = ( x >= a_d / 2.0 ) ? x - a_d : x;
+// 			y = ( y >= b_d / 2.0 ) ? y - b_d : y;
+// 
+// 			double r = __dsqrt_rn(x * x + y * y);
+// 
+// 			imageval[is] += calculateProjectedPotential(bin_d[offset + j].num, r);
+// 		}
+// 	}
+// 
+// 	__syncthreads();
+// 
+// 	potential[ LINESIZE * iy + ix ] = imageval[blockDim.x * threadIdx.y + threadIdx.x]; 
+// 	
+// }
+
+__global__ void calculatePotentialGridGPU(double *potential, int *bin_num, atom *bin_d) {
+	const int ix = __umul24(blockDim.x, blockIdx.x) + threadIdx.x;
+	const int iy = __umul24(blockDim.y, blockIdx.y) + threadIdx.y;
+	const int is = __umul24(blockDim.x, threadIdx.y) + threadIdx.x;
+	const int LINESIZE = __umul24(gridDim.x, blockDim.x);
 
 	int i,j,kb;
 	i = j = kb = 0;
 
-	int bins[32] = {0};
+	int bins[32];
 		
-	float coordx = ix * dx;
-	float coordy = iy * dy;
+	double coordx = ix * dx_d;
+	double coordy = iy * dy_d;
 	
-	float dRadiusX = (radius + 0.866f * bindimx);
-	float dRadiusY = (radius + 0.866f * bindimy);
+	double dRadiusX = (radius_d + 0.866 * bindimx_d);// 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
+	double dRadiusY = (radius_d + 0.866 * bindimy_d);// 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
 
-	int numberofbinsX = ceil(dRadiusX / bindimx);
-	int numberofbinsY = ceil(dRadiusY / bindimy);
+	int numberofbinsX = ceil(dRadiusX / bindimx_d);
+	int numberofbinsY = ceil(dRadiusY / bindimy_d);
 
-	int coordbinx = ceil(coordx / bindimx);
-	int coordbiny = ceil(coordy / bindimy);
+	int coordbinx = ceil(coordx / bindimx_d);
+	int coordbiny = ceil(coordy / bindimy_d);
 	
-	for(i = 0; i < biny && kb < 32; i++) {
-		float dY1 = fabsf(coordy - (i + 0) * bindimy);
-		float dY2 = fabsf(coordy - (i + 1) * bindimy);
+	for(i = 0; i < biny_d && kb < 32; i++) {
+		double dY1 = fabs(coordy - (i + 0) * bindimy_d);
+		double dY2 = fabs(coordy - (i + 1) * bindimy_d);
 		
-		dY1 = ( dY1 >= b / 2.0 ) ? fabsf(dY1 - b) : dY1;
-		dY2 = ( dY2 >= b / 2.0 ) ? fabsf(dY2 - b) : dY2;
+		dY1 = ( dY1 >= b_d / 2.0 ) ? fabs(dY1 - b_d) : dY1;
+		dY2 = ( dY2 >= b_d / 2.0 ) ? fabs(dY2 - b_d) : dY2;
 
-		if(dY1 <= dRadiusY || dY2 <= dRadiusY) { // 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
-			for(j = 0; j < binx && kb < 32; j++) {
-				float dX1 = fabsf(coordx - (j + 0) * bindimx);
-				float dX2 = fabsf(coordx - (j + 1) * bindimx);
+		if(dY1 <= dRadiusY || dY2 <= dRadiusY) { 
+			for(j = 0; j < binx_d && kb < 32; j++) {
+				double dX1 = fabs(coordx - (j + 0) * bindimx_d);
+				double dX2 = fabs(coordx - (j + 1) * bindimx_d);
 			
-				dX1 = ( dX1 >= a / 2.0 ) ? fabsf(dX1 - a) : dX1;
-				dX2 = ( dX2 >= a / 2.0 ) ? fabsf(dX2 - a) : dX2;
+				dX1 = ( dX1 >= a_d / 2.0 ) ? fabs(dX1 - a_d) : dX1;
+				dX2 = ( dX2 >= a_d / 2.0 ) ? fabs(dX2 - a_d) : dX2;
 
-				if(dX1 <= dRadiusX || dX2 <= dRadiusX) { // 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
-					bins[kb] = binx * i + j;
+				if(dX1 <= dRadiusX || dX2 <= dRadiusX) { 
+					bins[kb] = binx_d * i + j;
 					kb++;
 				}				
 			}
 		}
 	}
 
-	float imageval = 0.0f;
+	__syncthreads();
 
+	__shared__ double imageval[BLOCKSIZEX*BLOCKSIZEY];
+	
+	imageval[is] = 0.0;
+	
 	for(i = 0; i < kb - 1; i++) {
-		int n = bin_num[bins[i]+1] - bin_num[bins[i]];
+		int n = bin_num[bins[i] + 1] - bin_num[bins[i]];
 		int offset = bin_num[bins[i]];
 		for(j = 0; j < n; j++) {
-			float x = fabsf(bin_d[offset + j].x * a - ix * dx);
-			float y = fabsf(bin_d[offset + j].y * b - iy * dy);
+			int numberAtom = bin_d[offset + j].num;
+			double x = fabs(bin_d[offset + j].x * a_d - ix * dx_d);
+			double y = fabs(bin_d[offset + j].y * b_d - iy * dy_d);
 
-			x = ( x >= a / 2.0 ) ? x - a : x;
-			y = ( y >= b / 2.0 ) ? y - b : y;
+			x = ( x >= a_d / 2.0 ) ? x - a_d : x;
+			y = ( y >= b_d / 2.0 ) ? y - b_d : y;
 
-			float r = sqrtf(x * x + y * y);
+			double r = __dsqrt_rn(x * x + y * y); 			
+			double dR1 = 6.2831853071796 * r; // 2 * PI * r;
+		
+			imageval[is] += ( 
+				FParamsDevice[(numberAtom) * 12 + 0 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 1]))
+				+ FParamsDevice[(numberAtom) * 12 + 1 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 1]))
+				+ FParamsDevice[(numberAtom) * 12 + 2 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 1])) 
+				) * 300.73079394295
+				+ (
+				(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7])
+				+ (FParamsDevice[(numberAtom) * 12 + 1 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7])
+				+ (FParamsDevice[(numberAtom) * 12 + 2 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7])
+				) * 150.36539697148;
 
-			imageval += calculateProjectedPotential(bin_d[offset + j].num, r);
 		}
 	}
 
-	potential[ LINESIZE * iy + ix ] = imageval; 
+	__syncthreads();
+
+	potential[ LINESIZE * iy + ix ] = imageval[is]; 
 	
 }
 
+
 __device__ double	calculateProjectedPotential(int numberAtom, double r) {
-	double sumf;
-	double sums;
- 	double dR1;
-
-	sumf = 0.0;
-	sums = 0.0;
-	dR1 = 6.2831853071796 * r; // 2 * PI * r
-
- 	for(int k = 0; k < 3; k++) {
- 		int Offs = (numberAtom) * 12 + k * 2;
- 		sumf += FParamsDevice[Offs + 0] * bessk0(dR1 * sqrt(FParamsDevice[Offs + 1]));  
- 	}
+	double sumf = 0.0;
+	double sums = 0.0;
+ 	double dR1 = 6.2831853071796 * r; // 2 * PI * r;
+		
+	sumf += FParamsDevice[(numberAtom) * 12 + 0 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 1]));  
+	sumf += FParamsDevice[(numberAtom) * 12 + 1 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 1]));  
+	sumf += FParamsDevice[(numberAtom) * 12 + 2 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 1]));  
 	sumf *= 300.73079394295; // 4 * PI * PI *a0 * e
-	
- 	for(int k = 0; k < 3; k++) {
- 		int Offs = (numberAtom) * 12 + k * 2;
- 		sums += (FParamsDevice[Offs + 6] / FParamsDevice[Offs + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[Offs + 7]);
- 	}
+
+	sums += (FParamsDevice[(numberAtom) * 12 + 0 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]);
+	sums += (FParamsDevice[(numberAtom) * 12 + 1 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7]);
+	sums += (FParamsDevice[(numberAtom) * 12 + 2 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7]);
 	sums *= 150.36539697148; // 2 * PI * PI * a0 * e
 
 	return (sumf + sums);
 }
 
-__device__ double	bessk0( double x ) {
-	double ax, x2, sum;
+__device__ double	bessk0( double ax ) {
+	double x2;
+	double sum;
 		
-	ax = fabs( x );
 	if( (ax > 0.0)  && ( ax <=  2.0 ) ) {
-		x2 = ax / 2.0;
-		x2 = x2 * x2;
-		sum = k0a[6];
-		for( int i = 5; i >= 0; i--) sum = sum * x2 + k0a[i];
-		sum = -log(ax / 2.0) * bessi0( x ) + sum;
+		x2 = __ddiv_rn(ax, 2.0);
+		x2 = __dmul_rd(x2, x2);
+		sum = __fma_rn(k0a[6], x2, k0a[5]);
+		sum = __fma_rn(sum, x2, k0a[4]);
+		sum = __fma_rn(sum, x2, k0a[3]);
+		sum = __fma_rn(sum, x2, k0a[2]);
+		sum = __fma_rn(sum, x2, k0a[1]);
+		sum = __fma_rn(sum, x2, k0a[0]);
+
+		sum = -log(ax / 2.0) * bessi0( ax ) + sum;
 	} else if( ax > 2.0 ) {
-		x2 = 2.0/ax;
-		sum = k0b[6];
-		for( int i=5; i>=0; i--) sum = sum*x2 + k0b[i];
-		sum = exp( -ax ) * sum / sqrt( ax );
+		x2 = __ddiv_rn(2.0, ax);
+		sum = __fma_rn(k0b[6], x2, k0b[5]);
+		sum = __fma_rn(sum, x2, k0b[4]);
+		sum = __fma_rn(sum, x2, k0b[3]);
+		sum = __fma_rn(sum, x2, k0b[2]);
+		sum = __fma_rn(sum, x2, k0b[1]);
+		sum = __fma_rn(sum, x2, k0b[0]);
+
+		sum = exp( -ax ) * sum / __dsqrt_rn(ax);
 	} else sum = 1.0e20;
 	return ( sum );
 }
 
-__device__ double	bessi0( double x ) {
- 	double ax, sum, t;
+__device__ double	bessi0( double ax ) {
+ 	double sum;
+	double t;
  	
-	ax = fabs( x );
 	if( ax <= 3.75 ) {
-		t = x / 3.75;
-		t = t * t;
-		sum = i0a[6];
-		for( int  i = 5; i >= 0; i--) sum = sum * t + i0a[i]; 
+		t = __ddiv_rn(ax, 3.75);
+		t = __dmul_rd(t, t);
+		sum = __fma_rn(i0a[6], t, i0a[5]);
+		sum = __fma_rn(sum, t, i0a[4]);
+		sum = __fma_rn(sum, t, i0a[3]);
+		sum = __fma_rn(sum, t, i0a[2]);
+		sum = __fma_rn(sum, t, i0a[1]);
+		sum = __fma_rn(sum, t, i0a[0]);
 	} else {
-		t = 3.75 / ax;
-		sum = i0b[8];
-		for( int i = 7; i >= 0; i--) sum = sum * t + i0b[i];
-		sum = exp( ax ) * sum / sqrt( ax );
+		t = __ddiv_rn(3.75, ax);
+		sum = __fma_rn(i0b[8], t, i0a[7]);
+		sum = __fma_rn(sum, t, i0a[6]);
+		sum = __fma_rn(sum, t, i0a[5]);
+		sum = __fma_rn(sum, t, i0a[4]);
+		sum = __fma_rn(sum, t, i0a[3]);
+		sum = __fma_rn(sum, t, i0a[2]);
+		sum = __fma_rn(sum, t, i0a[1]);
+		sum = __fma_rn(sum, t, i0a[0]);
+
+		sum = exp( ax ) * sum / __dsqrt_rn( ax );
 	}
 	return( sum );
 }

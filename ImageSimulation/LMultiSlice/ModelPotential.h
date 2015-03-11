@@ -20,8 +20,21 @@
 #define BLOCKSIZEY	16
 #define BLOCKSIZE	 (BLOCKSIZEX*BLOCKSIZEY)
 
-__constant__ int	atominfoid[ATOMS_IN_CONST_MEMORY];
-__constant__ float	atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * ATOMS_IN_CONST_MEMORY];
+__constant__ double a_d;
+__constant__ double b_d;
+__constant__ double c_d;
+__constant__ double bindimx_d;
+__constant__ double bindimy_d;
+
+__constant__ double dx_d;
+__constant__ double dy_d;
+__constant__ int binx_d;
+__constant__ int biny_d;
+__constant__ double radius_d;
+
+
+//__constant__ int	atominfoid[ATOMS_IN_CONST_MEMORY];
+//__constant__ float	atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * ATOMS_IN_CONST_MEMORY];
 
 class ModelPotential {
 public:
@@ -54,24 +67,49 @@ private:
 //////////////////////////////////////////////////////////////////////////
 
 __constant__ double k0a[] = { 
-	-0.57721566, 0.42278420, 0.23069756,
-	0.03488590, 0.00262698, 0.00010750, 0.00000740};
+	-0.57721566, 
+	 0.42278420, 
+	 0.23069756,
+	 0.03488590, 
+	 0.00262698, 
+	 0.00010750, 
+	 0.00000740
+};
 
 __constant__ double k0b[] = { 
-	1.25331414, -0.07832358, 0.02189568,
-	-0.01062446, 0.00587872, -0.00251540, 0.00053208};
+	 1.25331414, 
+	-0.07832358, 
+	 0.02189568,
+	-0.01062446, 
+	 0.00587872, 
+	-0.00251540, 
+	 0.00053208
+};
 
 //////////////////////////////////////////////////////////////////////////
 // 128 bytes
 //////////////////////////////////////////////////////////////////////////
 
 __constant__ double i0a[] = { 
-	1.0, 3.5156229, 3.0899424, 1.2067492,
-	0.2659732, 0.0360768, 0.0045813 };
+	1.0, 
+	3.5156229, 
+	3.0899424, 
+	1.2067492,
+	0.2659732, 
+	0.0360768, 
+	0.0045813 
+};
 __constant__ double i0b[] = { 
-	0.39894228, 0.01328592, 0.00225319,
-	-0.00157565, 0.00916281, -0.02057706, 
-	0.02635537,	-0.01647633, 0.00392377};
+	 0.39894228, 
+	 0.01328592, 
+	 0.00225319,
+	-0.00157565, 
+	 0.00916281, 
+	-0.02057706, 
+	 0.02635537,	
+	-0.01647633, 
+	 0.00392377
+};
 
 //////////////////////////////////////////////////////////////////////////
 // 9888 bytes
