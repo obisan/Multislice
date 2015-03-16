@@ -86,14 +86,14 @@ int Dispatcher::parseCommand(const char* fileNameXML, Command& command) {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	strcpy(buffer, doc.child("action").child("slicing").child("radiuc").child_value() );
+	strcpy(buffer, doc.child("action").child("slicing").child("radius").child_value() );
 	if( strlen(buffer) == 0 ) {
-		std::cerr << "Empty radiuc field!" << std::endl;
+		std::cerr << "Empty radius field!" << std::endl;
 		return -1;
 	} try {
 		command.radiuc = (float) atof(buffer);
 	} catch(...) {
-		std::cerr << "Convert radiuc problems!" << std::endl;
+		std::cerr << "Convert radius problems!" << std::endl;
 		return -1;
 	}
 
