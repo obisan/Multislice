@@ -86,14 +86,35 @@ int Dispatcher::parseCommand(const char* fileNameXML, Command& command) {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	strcpy(buffer, doc.child("action").child("slicing").child("radiuc").child_value() );
+	strcpy(buffer, doc.child("action").child("slicing").child("radius").child_value() );
 	if( strlen(buffer) == 0 ) {
 		std::cerr << "Empty radiuc field!" << std::endl;
 		return -1;
 	} try {
-		command.radiuc = (float) atof(buffer);
+		command.radius = (float) atof(buffer);
+
+		if(command.radius > 20.0f) {
+			std::cerr << "Radius is too big, it was changed on 20A!" << std::endl;
+			command.bindim = 20.0f;
+		}
 	} catch(...) {
 		std::cerr << "Convert radiuc problems!" << std::endl;
+		return -1;
+	}
+
+	strcpy(buffer, doc.child("action").child("slicing").child("bindim").child_value() );
+	if( strlen(buffer) == 0 ) {
+		std::cerr << "Empty \"binsize\" field!" << std::endl;
+		return -1;
+	} try {
+		command.bindim = atoi(buffer);
+
+		if(command.bindim < 10.0f) {
+			std::cerr << "Bin size too small, it was changed on 10A!" << std::endl;
+			command.bindim = 10.0f;
+		}
+	} catch(...) {
+		std::cerr << "Convert \"bindim\" problems!" << std::endl;
 		return -1;
 	}
 
@@ -185,7 +206,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Image size		= " << command.nx << "x" << command.ny << std::endl;
 	std::cout << "Number of slices	= " << command.numberSlices << std::endl;
 	std::cout << "Number of atoms	= " << model->getNumberAtoms() << std::endl;
-	std::cout << "dots per atom		= " << command.dpa << std::endl;
+	std::cout << "Dots per atom		= " << command.dpa << std::endl;
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -209,7 +230,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
+	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radius, command.bindim);
 	if(modelPotential->calculatePotentialGrid() == -1) 
 		return -1;
 	

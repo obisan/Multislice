@@ -6,13 +6,9 @@
 //////////////////////////////////////////////////////////////////////////
 // 64 KB = 65536 bytes
 // 65536 - 9888 = 55648  // 4608 * 3 * 4 = 55296
-// 55648 - 55296 = 352 lost bytes
-// 352 - 112 = 240 bytes
-// 240 - 128 = 112 bytes
 //////////////////////////////////////////////////////////////////////////
 
-#define ATOMS_IN_CONST_MEMORY 4608
-#define ATOMS_IN_CONST_MEMORY_MULTIPLICATOR 2
+#define MAX_BINS_PER_PX 36
 
 #define UNROLLX		8
 #define UNROLLY		1
@@ -32,14 +28,10 @@ __constant__ int binx_d;
 __constant__ int biny_d;
 __constant__ double radius_d;
 
-
-//__constant__ int	atominfoid[ATOMS_IN_CONST_MEMORY];
-//__constant__ float	atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * ATOMS_IN_CONST_MEMORY];
-
 class ModelPotential {
 public:
 	ModelPotential(void);
-	ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double dpa, double radius);
+	ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double dpa, double radius, double bindim);
 	~ModelPotential(void);
 
 	int		calculatePotentialGrid();
@@ -59,6 +51,7 @@ private:
 	size_t				nz;
 	
 	double				radius;
+	double				bindim;
 	double				dpa;
 };
 

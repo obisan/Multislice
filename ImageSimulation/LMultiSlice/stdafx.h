@@ -29,6 +29,8 @@
 #include <io.h>
 #include <iomanip>
 
+#include <omp.h>
+
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
 
 #include <AModel.h>

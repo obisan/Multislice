@@ -8,7 +8,8 @@ private:
 		int nx;
 		int ny;
 		int numberSlices;
-		float radiuc;
+		float bindim;
+		float radius;
 		float dpa;
 
 		float aperture;
