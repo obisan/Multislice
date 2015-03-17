@@ -50,8 +50,8 @@ int ModelPotential::calculatePotentialGrid() {
 	checkCudaErrors( cudaMemcpyToSymbol(bindimx_d, &bindimx, sizeof(double)) );
 	checkCudaErrors( cudaMemcpyToSymbol(bindimy_d, &bindimy, sizeof(double)) );
 
-	int	binx = ceil(a_h / bindimx);
-	int	biny = ceil(b_h / bindimy);
+	int	binx = ceil(a_h / bindimx); // dimensionless
+	int	biny = ceil(b_h / bindimy); // dimensionless
 	checkCudaErrors( cudaMemcpyToSymbol(binx_d, &binx, sizeof(int)) );
 	checkCudaErrors( cudaMemcpyToSymbol(biny_d, &biny, sizeof(int)) );
 
@@ -99,6 +99,7 @@ int ModelPotential::calculatePotentialGrid() {
 	
 	unsigned short *bins_lattice;
 	checkCudaErrors( cudaMallocManaged(&(bins_lattice), (nx * ny * MAX_BINS_PER_PX ) * sizeof(unsigned short)));
+	memset(bins_lattice, -1, (nx * ny * MAX_BINS_PER_PX ) * sizeof(unsigned short));
 
 	for(size_t iy = 0; iy < ny; iy++) {
 		int coordbinstarty	= floor(iy * ((double) biny / ny) - radius / bindimy ) - 1;		// iy in px
@@ -126,7 +127,7 @@ int ModelPotential::calculatePotentialGrid() {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	for(size_t kz = 0; kz < nz; kz++) {
+	for(size_t kz = 3; kz < nz; kz++) {
 		for(size_t i = 0; i < nAtoms; i++) {
 			if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c_h && pAtoms[i].element.xsCoordinate.z * c_h <= (kz + 1) * dz ) {
 				atom buff;
@@ -142,8 +143,8 @@ int ModelPotential::calculatePotentialGrid() {
 		for(size_t iy = 0; iy < biny; iy++) {
 			for(size_t jx = 0; jx < binx; jx++) {
 				for(auto t : slice) {
-					if( t.x * a_h >= jx * bindimx && t.x * a_h < (jx + 1) * bindimx )
-						if( t.y * b_h >= iy * bindimy && t.y * b_h < (iy + 1) * bindimy )
+					if( t.x * a_h >= jx * bindimx && t.x * a_h <= (jx + 1) * bindimx )
+						if( t.y * b_h >= iy * bindimy && t.y * b_h <= (iy + 1) * bindimy )
 							bins[binx * iy + jx].push_back(t);
 				}
 			}
@@ -203,6 +204,7 @@ int ModelPotential::calculatePotentialGrid() {
 	std::cout << "Kernel time calculating potential grid: " << time_kernel	<< "ms." << std::endl;
 	std::cout << "Total  time calculating potential grid: " << time_total	<< "ms." << std::endl << std::endl;
 	
+
 	return 0;
 }
 
