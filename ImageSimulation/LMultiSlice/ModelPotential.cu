@@ -99,15 +99,14 @@ int ModelPotential::calculatePotentialGrid() {
 	
 	unsigned short *bins_lattice;
 	checkCudaErrors( cudaMallocManaged(&(bins_lattice), (nx * ny * MAX_BINS_PER_PX ) * sizeof(unsigned short)));
-	//checkCudaErrors( cudaMemset(bins_lattice, 65000, (nx * ny * MAX_BINS_PER_PX ) * sizeof(unsigned short)));
 
 	for(size_t iy = 0; iy < ny; iy++) {
-		int coordbinstarty	= floor(iy * ((double) biny / ny) - radius / bindimy );		// iy in px
-		int coordbinendy	= ceil(iy * ((double) biny / ny) + radius / bindimy );
+		int coordbinstarty	= floor(iy * ((double) biny / ny) - radius / bindimy ) - 1;		// iy in px
+		int coordbinendy	= ceil(iy * ((double) biny / ny) + radius / bindimy ) - 1;
 
 		for(size_t ix = 0; ix < nx; ix++) {                                 // jx in px
-			int coordbinstartx	= floor(ix * ((double) binx / nx) - radius / bindimx );
-			int coordbinendx	= ceil(ix * ((double) binx / nx) + radius / bindimx );
+			int coordbinstartx	= floor(ix * ((double) binx / nx) - radius / bindimx ) - 1;
+			int coordbinendx	= ceil(ix * ((double) binx / nx) + radius / bindimx ) - 1;
 			
 			int k = 0;
 			for(int i = coordbinstarty; i <= coordbinendy && k < MAX_BINS_PER_PX; i++) {
@@ -120,16 +119,6 @@ int ModelPotential::calculatePotentialGrid() {
 			}
 		}
 	}
-	
-// 	std::ofstream lattice_f("../samples/lattice.txt");
-// 	for(size_t i = 0; i < ny; i++) {
-// 		for(size_t j = 0; j < nx; j++) {
-// 			for(size_t k = 0; k < lattice[nx * i + j].size();k++) {
-// 				lattice_f << lattice[nx * i + j][k] << std::endl;
-// 			}
-// 		}
-// 	}
-// 	lattice_f.close();
 
 	std::cout << "calculate lattice-to-bin: " << (clock() - time_lattice) / CLOCKS_PER_SEC << "s." << std::endl;
 
@@ -196,9 +185,7 @@ int ModelPotential::calculatePotentialGrid() {
 
 		cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
 		
-		slice.clear();
-		memset(bins_offset, 0, (binx * biny + 1) * sizeof(int));
-
+		slice.clear();	
 		cudaFree(bins_d);
 	}
 
@@ -224,23 +211,16 @@ __global__ void calculatePotentialGridGPU(double *potential, int *bins_offset, i
 	const int iy = __umul24(blockDim.y, blockIdx.y) + threadIdx.y;
 	const int is = __umul24(blockDim.x, threadIdx.y) + threadIdx.x;
 	const int LINESIZE = __umul24(gridDim.x, blockDim.x);
-
-	int i,j,kb;
-	i = j = kb = 0;
+	
+	int i,j;
 	
 	double latticex = ix * dx_d; // lattice x
 	double latticey = iy * dy_d; // lattice y
 	
-	double dRadiusX = (radius_d < bindimx_d) ? bindimx_d : radius_d;// 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
-	double dRadiusY = (radius_d < bindimy_d) ? bindimy_d : radius_d;// 6.928 = 4 * sqrt(3) // 0.866 = sqrt(3)/2
-
 	const int numberBins = bins_num[LINESIZE * iy + ix];
 
-	
 	__shared__ double imageval[BLOCKSIZEX*BLOCKSIZEY];
-	
 	imageval[is] = 0.0;
-	
 	
 	for(i = 0; i < numberBins; i++) {
 		int ibin = bins_lattice[ MAX_BINS_PER_PX * (LINESIZE * iy + ix) + i];
@@ -250,8 +230,8 @@ __global__ void calculatePotentialGridGPU(double *potential, int *bins_offset, i
 
 		for(j = 0; j < n; j++) {
 			int numberAtom = bins_d[offset + j].num;
-			double x = fabs(bins_d[offset + j].x * a_d - ix * dx_d);
-			double y = fabs(bins_d[offset + j].y * b_d - iy * dy_d);
+			double x = fabs(bins_d[offset + j].x * a_d - latticex);
+			double y = fabs(bins_d[offset + j].y * b_d - latticey);
 
 			x = ( x >= a_d / 2.0 ) ? x - a_d : x;
 			y = ( y >= b_d / 2.0 ) ? y - b_d : y;
