@@ -127,7 +127,7 @@ int ModelPotential::calculatePotentialGrid() {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	for(size_t kz = 3; kz < nz; kz++) {
+	for(size_t kz = 0; kz < nz; kz++) {
 		for(size_t i = 0; i < nAtoms; i++) {
 			if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c_h && pAtoms[i].element.xsCoordinate.z * c_h <= (kz + 1) * dz ) {
 				atom buff;
@@ -140,6 +140,16 @@ int ModelPotential::calculatePotentialGrid() {
 			}
 		}
 
+// 		std::ofstream fout("../samples/slice.txt");
+// 		for(size_t i = 0; i < 9; i++) {
+// 			for(auto s : slice) {
+// 				if(fabs(s.x * a_h - 40 * dx) < 4)
+// 					if(fabs(s.y * b_h - 40 * dy) < 4)
+// 				fout << s.id << "\t" << s.num << "\t" << s.x * a_h << "\t" << s.y * b_h << std::endl;
+// 			}
+// 		}
+// 		fout.close();
+
 		for(size_t iy = 0; iy < biny; iy++) {
 			for(size_t jx = 0; jx < binx; jx++) {
 				for(auto t : slice) {
@@ -149,7 +159,18 @@ int ModelPotential::calculatePotentialGrid() {
 				}
 			}
 		}
-				
+
+// 		std::ofstream fout("../samples/bin.txt");
+// 		for(size_t i = 0; i < 9; i++) {
+// 			for(auto s : bins[bins_lattice[ MAX_BINS_PER_PX * (nx * 40 + 40) + i ]]) {
+// 				if(fabs(s.x * a_h - 40 * dx) < 10)
+// 					if(fabs(s.y * b_h - 40 * dy) < 10)
+// 				fout << s.id << "\t" << s.num << "\t" << s.x * a_h << "\t" << s.y * b_h << std::endl;
+// 			}
+// 		}
+// 		fout.close();
+
+
 		atom *bins_d;
 		checkCudaErrors( cudaMallocManaged(&(bins_d), slice.size() * sizeof(atom)));
 
