@@ -1,19 +1,29 @@
 #include "stdafx.h"
 #include "ModelPotential.h"
-#include "kernel.cuh"
 
-#include <set>
+struct __align__(16) atom {
+	int id;
+	int num;
+	float x;
+	float y;
+};
+
+__global__ void calculatePotentialGridGPU(double *potential, int *bins_offset, int *bins_num, atom *bins_d, unsigned short *bins_lattice);
+
+__device__ double	bessk0( double x );
+__device__ double	bessi0( double x );
+__device__ void		swap2(double& a, double& b);
+
 
 ModelPotential::ModelPotential(void) {
 
 }
 
-ModelPotential::ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double dpa, double radius, double bindim) {
+ModelPotential::ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double radius, double bindim) {
 	this->model = model;
 	this->nx = nx;
 	this->ny = ny;
 	this->nz = nz;
-	this->dpa = dpa;
 	this->radius = radius;
 	this->bindim = bindim;
 	
@@ -28,7 +38,6 @@ ModelPotential::~ModelPotential(void) {
 
 int ModelPotential::calculatePotentialGrid() {
 	const size_t nAtoms = model->getNumberAtoms();
-	const double dk = 1.0 / dpa;
 	const double a_h = model->getA();
 	const double b_h = model->getB();
 	const double c_h = model->getC();
@@ -64,10 +73,12 @@ int ModelPotential::calculatePotentialGrid() {
 	
 	int *bins_offset;
 	checkCudaErrors( cudaMallocManaged(&(bins_offset), (binx * biny + 1) * sizeof(int)));
+	memset(bins_offset, 0, (binx * biny + 1) * sizeof(int));
 	CUERR
 
 	int *bins_num;
 	checkCudaErrors( cudaMallocManaged(&(bins_num), (nx * ny) * sizeof(int)));
+	memset(bins_num, 0, (nx * ny) * sizeof(int));
 	CUERR
 
 
@@ -98,8 +109,8 @@ int ModelPotential::calculatePotentialGrid() {
 	clock_t time_lattice = clock();
 	
 	unsigned short *bins_lattice;
-	checkCudaErrors( cudaMallocManaged(&(bins_lattice), (nx * ny * MAX_BINS_PER_PX ) * sizeof(unsigned short)));
-	memset(bins_lattice, -1, (nx * ny * MAX_BINS_PER_PX ) * sizeof(unsigned short));
+	checkCudaErrors( cudaMallocManaged(&(bins_lattice), (nx * ny * MAX_BINS_PER_PX) * sizeof(unsigned short)));
+	memset(bins_lattice, -1, (nx * ny * MAX_BINS_PER_PX) * sizeof(unsigned short));
 
 	for(size_t iy = 0; iy < ny; iy++) {
 		int coordbinstarty	= floor(iy * ((double) biny / ny) - radius / bindimy ) - 1;		// iy in px
@@ -128,6 +139,10 @@ int ModelPotential::calculatePotentialGrid() {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	for(size_t kz = 0; kz < nz; kz++) {
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////	Divide on slices /////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		for(size_t i = 0; i < nAtoms; i++) {
 			if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c_h && pAtoms[i].element.xsCoordinate.z * c_h <= (kz + 1) * dz ) {
 				atom buff;
@@ -140,16 +155,9 @@ int ModelPotential::calculatePotentialGrid() {
 			}
 		}
 
-// 		std::ofstream fout("../samples/slice.txt");
-// 		for(size_t i = 0; i < 9; i++) {
-// 			for(auto s : slice) {
-// 				if(fabs(s.x * a_h - 40 * dx) < 4)
-// 					if(fabs(s.y * b_h - 40 * dy) < 4)
-// 				fout << s.id << "\t" << s.num << "\t" << s.x * a_h << "\t" << s.y * b_h << std::endl;
-// 			}
-// 		}
-// 		fout.close();
-
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////	Divide on bins	//////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		for(size_t iy = 0; iy < biny; iy++) {
 			for(size_t jx = 0; jx < binx; jx++) {
 				for(auto t : slice) {
@@ -159,17 +167,6 @@ int ModelPotential::calculatePotentialGrid() {
 				}
 			}
 		}
-
-// 		std::ofstream fout("../samples/bin.txt");
-// 		for(size_t i = 0; i < 9; i++) {
-// 			for(auto s : bins[bins_lattice[ MAX_BINS_PER_PX * (nx * 40 + 40) + i ]]) {
-// 				if(fabs(s.x * a_h - 40 * dx) < 10)
-// 					if(fabs(s.y * b_h - 40 * dy) < 10)
-// 				fout << s.id << "\t" << s.num << "\t" << s.x * a_h << "\t" << s.y * b_h << std::endl;
-// 			}
-// 		}
-// 		fout.close();
-
 
 		atom *bins_d;
 		checkCudaErrors( cudaMallocManaged(&(bins_d), slice.size() * sizeof(atom)));

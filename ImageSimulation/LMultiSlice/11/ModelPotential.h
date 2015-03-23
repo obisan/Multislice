@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Microscope.h"
 
 //////////////////////////////////////////////////////////////////////////
 // 64 KB = 65536 bytes
@@ -10,11 +9,11 @@
 
 #define MAX_BINS_PER_PX 36
 
-#define UNROLLX		8
-#define UNROLLY		1
-#define BLOCKSIZEX	16
-#define BLOCKSIZEY	16
-#define BLOCKSIZE	 (BLOCKSIZEX*BLOCKSIZEY)
+#define UNROLLX			8
+#define UNROLLY			1
+#define BLOCKSIZEX		16
+#define BLOCKSIZEY		16
+#define BLOCKSIZE		(BLOCKSIZEX*BLOCKSIZEY)
 
 __constant__ double a_d;
 __constant__ double b_d;
@@ -31,7 +30,7 @@ __constant__ double radius_d;
 class ModelPotential {
 public:
 	ModelPotential(void);
-	ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double dpa, double radius, double bindim);
+	ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double radius, double bindim);
 	~ModelPotential(void);
 
 	int		calculatePotentialGrid();
@@ -50,9 +49,10 @@ private:
 	size_t				ny;
 	size_t				nz;
 	
+	bool				isSaveSlices;
+
 	double				radius;
 	double				bindim;
-	double				dpa;
 };
 
 //////////////////////////////////////////////////////////////////////////

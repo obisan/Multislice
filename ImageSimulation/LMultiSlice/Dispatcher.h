@@ -12,6 +12,8 @@ private:
 		float radius;
 		float dpa;
 
+		bool isSaveSlices;
+
 		float aperture;
 		float cs;
 		float defocus; // nm

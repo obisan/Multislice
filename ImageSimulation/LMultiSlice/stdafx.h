@@ -66,6 +66,8 @@
 #include "../Image/Image.h"
 #include "../Image/MRC.h"
 
+#include "../PotentialBuilder/ModelPotential.h"
+
 using namespace ImageSpace;
 using namespace pugi;
 

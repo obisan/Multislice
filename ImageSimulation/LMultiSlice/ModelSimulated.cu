@@ -10,7 +10,7 @@ ModelSimulated::~ModelSimulated(void) {
 	if(this->modelPotential != nullptr) this->modelPotential = nullptr;
 }
 
-ModelSimulated::ModelSimulated(ModelPotential* modelPotential, size_t nx, size_t ny, size_t nz, double dpa) {
+ModelSimulated::ModelSimulated(PotentialBuilder::ModelPotential* modelPotential, size_t nx, size_t ny, size_t nz, double dpa) {
 	this->modelPotential = modelPotential;
 	this->nx = nx;
 	this->ny = ny;
