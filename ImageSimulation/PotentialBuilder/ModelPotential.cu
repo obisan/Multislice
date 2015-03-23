@@ -41,11 +41,11 @@ namespace PotentialBuilder {
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		cudaEvent_t start,stop;
-		float time = 0.0f;
-		cudaEventCreate(&start);
-		cudaEventCreate(&stop);
-		cudaEventRecord(start,0);
+		cudaEvent_t start_total,stop_total;
+		float time_total = 0.0f;
+		cudaEventCreate(&start_total);
+		cudaEventCreate(&stop_total);
+		cudaEventRecord(start_total,0);
 	
 		dim3 threads(BLOCKSIZEX, BLOCKSIZEY, 1);										// размер квардатика
 		dim3 grid(this->nx / BLOCKSIZEX / UNROLLX, this->ny / BLOCKSIZEY, 1 );		// сколько квадратиков нужно чтобы покрыть все изображение
@@ -58,6 +58,7 @@ namespace PotentialBuilder {
 		float	atominfoxy_host[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * ATOMS_IN_CONST_MEMORY];
 	
 		int j = 0;
+		float time_kernel = 0.0f;
 		for(size_t kz = 0; kz * dz < c; kz++) {
 			for(size_t i = 0; i < nAtoms; i++) {
 				if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c && pAtoms[i].element.xsCoordinate.z * c < (kz + 1) * dz ) {
@@ -71,11 +72,23 @@ namespace PotentialBuilder {
  					checkCudaErrors( cudaMemcpyToSymbol(atominfoid, atominfoid_host, ATOMS_IN_CONST_MEMORY * sizeof(int), 0, cudaMemcpyHostToDevice));
  					checkCudaErrors( cudaMemcpyToSymbol(atominfoxy, atominfoxy_host, ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * ATOMS_IN_CONST_MEMORY * sizeof(float), 0, cudaMemcpyHostToDevice));
 				
- 					calculatePotentialGridGPU<<<grid, threads>>>(j, a, b, c, dx, dy, potentialSlice, radius);
- 					cudaThreadSynchronize();
-					CUERR
+					cudaEvent_t start_kernel,stop_kernel;
+					float ctime = 0.0f;
+					cudaEventCreate(&start_kernel);
+					cudaEventCreate(&stop_kernel);
+					cudaEventRecord(start_kernel,0);
 
-					//std::cout << "Slice: " << kz << std::endl << "Atoms: "<< j << " Current atom: " << i << std::endl;
+ 					calculatePotentialGridGPU<<<grid, threads>>>(j, a, b, c, dx, dy, potentialSlice, radius);
+ 					checkCudaErrors( cudaThreadSynchronize() );
+					
+					cudaEventRecord(stop_kernel,0);
+					cudaEventSynchronize(stop_kernel);
+					cudaEventElapsedTime(&ctime, start_kernel, stop_kernel);
+
+					time_kernel += ctime;
+
+					std::cout << "slice: " << kz << "calculated atoms: " << j << " current atom: " << i << std::endl;
+					
 					j = 0;				
 				}
 			}
@@ -87,11 +100,13 @@ namespace PotentialBuilder {
 
 		pAtoms = nullptr;
 	
-		cudaEventRecord(stop,0);
-		cudaEventSynchronize(stop);
-		cudaEventElapsedTime(&time, start, stop);
+		cudaEventRecord(stop_total,0);
+		cudaEventSynchronize(stop_total);
+		cudaEventElapsedTime(&time_total, start_total, stop_total);
 	
-		std::cout << std::endl << "Kernel time calculating potential grid: " << time << "ms." << std::endl << std::endl;
+		std::cout << std::endl;
+		std::cout << "Kernel time calculating potential grid: " << time_kernel	<< "ms." << std::endl;
+		std::cout << "Total  time calculating potential grid: " << time_total	<< "ms." << std::endl << std::endl;
 	
 		return 0;
 	}

@@ -53,7 +53,6 @@
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-//#include "C:/ProgramData/NVIDIA Corporation/CUDA Samples/v6.5/common/inc/helper_cuda.h"
 #include "helper_cuda.h"
 
 #include <cuComplex.h>
