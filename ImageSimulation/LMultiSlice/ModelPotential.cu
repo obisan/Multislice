@@ -98,30 +98,6 @@ int ModelPotential::calculatePotentialGrid() {
 	return 0;
 }
 
-// __global__ void calculatePotentialGridGPU(int nAtoms, double a, double b, double c, double dx, double dy, double dz, double *image, double r, double dk) {
-// 	const int ix = blockDim.x * blockIdx.x + threadIdx.x;
-// 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;
-// 	const int iz = blockDim.z * blockIdx.z + threadIdx.z;
-// 	const int LINESIZE = (gridDim.x * blockDim.x);
-// 	const int SLIDESIZE = (gridDim.x * blockDim.x) * (gridDim.y * blockDim.y);
-// 		
-// 	int l;
-// 	
-// 	for(l = 0; l < nAtoms; l++) {
-// 		float dX = fabsf(atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * l + 0] * a - (ix * dx));
-// 		float dY = fabsf(atominfoxy[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * l + 1] * b - (iy * dy));
-// 		
-// 		dX = ( dX >= a / 2.0 ) ? dX - a : dX;
-// 		dY = ( dY >= b / 2.0 ) ? dY - b : dY;
-// 
-// 		float dR = sqrtf(dX * dX + dY * dY);	
-// 		if(dR > r) continue;
-// 		dR = (dR < 1.0e-10) ? 1.0e-10 : dR;
-// 
-// 		image[ SLIDESIZE * iz + LINESIZE * iy + ix ] += calculateProjectedPotential(atominfoid[l], dR);
-// 	}
-// }
-
 __global__ void calculatePotentialGridGPU(int nAtoms, double a, double b, double c, double dx, double dy, double *potential, double r, double dk) {
 	const int ix = blockDim.x * blockIdx.x * UNROLLX + threadIdx.x;
 	const int iy = blockDim.y * blockIdx.y + threadIdx.y;

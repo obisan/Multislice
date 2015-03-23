@@ -21,6 +21,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LMultiSlice", "LMultiSlice\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PotentialBuilder", "PotentialBuilder\PotentialBuilder.vcxproj", "{73C076C3-CE99-451C-AB76-CCA28015C08F}"
 	ProjectSection(ProjectDependencies) = postProject
+		{89A1E353-E2DC-495C-B403-742BE206ACED} = {89A1E353-E2DC-495C-B403-742BE206ACED}
 		{F1053BCC-9945-469B-BA77-328B73EC428F} = {F1053BCC-9945-469B-BA77-328B73EC428F}
 	EndProjectSection
 EndProject
@@ -72,7 +73,6 @@ Global
 		{40BD4594-CDDF-475E-B537-4DE29F5EA21D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{40BD4594-CDDF-475E-B537-4DE29F5EA21D}.Debug|Win32.Build.0 = Debug|Win32
 		{40BD4594-CDDF-475E-B537-4DE29F5EA21D}.Debug|x64.ActiveCfg = Debug|x64
-		{40BD4594-CDDF-475E-B537-4DE29F5EA21D}.Debug|x64.Build.0 = Debug|x64
 		{40BD4594-CDDF-475E-B537-4DE29F5EA21D}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{40BD4594-CDDF-475E-B537-4DE29F5EA21D}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{40BD4594-CDDF-475E-B537-4DE29F5EA21D}.Release|Win32.ActiveCfg = Release|Win32
@@ -94,7 +94,6 @@ Global
 		{69E5B3B7-5E73-46CD-BDAE-8D6495E50BF2}.Debug|Win32.ActiveCfg = Debug|Win32
 		{69E5B3B7-5E73-46CD-BDAE-8D6495E50BF2}.Debug|Win32.Build.0 = Debug|Win32
 		{69E5B3B7-5E73-46CD-BDAE-8D6495E50BF2}.Debug|x64.ActiveCfg = Debug|x64
-		{69E5B3B7-5E73-46CD-BDAE-8D6495E50BF2}.Debug|x64.Build.0 = Debug|x64
 		{69E5B3B7-5E73-46CD-BDAE-8D6495E50BF2}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{69E5B3B7-5E73-46CD-BDAE-8D6495E50BF2}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{69E5B3B7-5E73-46CD-BDAE-8D6495E50BF2}.Release|Win32.ActiveCfg = Release|Win32
@@ -116,7 +115,6 @@ Global
 		{73BFF463-27C5-4B27-9676-028373B58AB8}.Debug|Win32.ActiveCfg = Debug|Win32
 		{73BFF463-27C5-4B27-9676-028373B58AB8}.Debug|Win32.Build.0 = Debug|Win32
 		{73BFF463-27C5-4B27-9676-028373B58AB8}.Debug|x64.ActiveCfg = Debug|x64
-		{73BFF463-27C5-4B27-9676-028373B58AB8}.Debug|x64.Build.0 = Debug|x64
 		{73BFF463-27C5-4B27-9676-028373B58AB8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{73BFF463-27C5-4B27-9676-028373B58AB8}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{73BFF463-27C5-4B27-9676-028373B58AB8}.Release|Win32.ActiveCfg = Release|Win32
