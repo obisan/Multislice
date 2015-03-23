@@ -2,16 +2,15 @@
 
 #include "stdafx.h"
 #include "Microscope.h"
-#include "ModelPotential.h"
 
 class ModelSimulated {
 public:
 	ModelSimulated(void);
 	~ModelSimulated(void);
-	ModelSimulated(ModelPotential* modelPotential, size_t nx, size_t ny, size_t nz, double dpa);
+	ModelSimulated(PotentialBuilder::ModelPotential* modelPotential, size_t nx, size_t ny, size_t nz, double dpa);
 	int imageCalculation(Image *result, Microscope *microscope);
 private:
-	ModelPotential		*modelPotential;
+	PotentialBuilder::ModelPotential		*modelPotential;
 	
 	size_t				nx;
 	size_t				ny;

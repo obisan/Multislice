@@ -22,9 +22,6 @@
     <ClInclude Include="Dispatcher.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="ModelPotential.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="kernel.cuh">
       <Filter>src</Filter>
     </ClInclude>
@@ -50,9 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="LMultiSlice.cpp">
-      <Filter>src</Filter>
-    </CudaCompile>
-    <CudaCompile Include="ModelPotential.cu">
       <Filter>src</Filter>
     </CudaCompile>
     <CudaCompile Include="kernel.cu">

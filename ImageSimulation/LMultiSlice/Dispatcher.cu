@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Dispatcher.h"
-#include "ModelPotential.h"
 #include "ModelSimulated.h"
 
 Dispatcher::Dispatcher(void) {
@@ -208,7 +207,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	ModelPotential *modelPotential = new ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
+	PotentialBuilder::ModelPotential *modelPotential = new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.dpa, command.radiuc);
 	if(modelPotential->calculatePotentialGrid() == -1) 
 		return -1;
 	
