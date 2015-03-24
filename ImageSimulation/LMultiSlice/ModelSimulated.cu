@@ -14,7 +14,7 @@ ModelSimulated::ModelSimulated(const char* PotentialDirectory, AModel::Model* mo
 	this->modelPotential = modelPotential;
 	this->nx = nx;
 	this->ny = ny;
-	this->nz = nz;
+	this->countSlices = countSlices;
 	this->dpa = dpa;
 }
 
@@ -47,16 +47,18 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	cudaEventRecord(start,0);
 	
 
-	double *potential = modelPotential->potential;
-	double dz = this->modelPotential->getModel()->getC() / nz;
-	for(size_t kz = 0; kz < nz; kz++) {	
-		
+	double dz = this->model->getC() / countSlices;
+	for(size_t kz = 0; kz < countSlices; kz++) {	
+		FILE *pFile;
+		pFile = fopen(slices[kz].c_str(), "rb");
+		fread(potentialSlice, sizeof(double), nx * ny, pFile);
+		fclose(pFile);
+
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// t(x, y) = exp(sigma * potential(x, y))
 		/// [ t(x, y) * phi(x, y) ]
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
-		memcpy(potentialSlice, potential + nx * ny * kz, nx * ny * sizeof(double)); // Host to Device
-
+		
 		const unsigned int MAX_THREADS_PHASE_OBJECT = 16;
 		dim3 threads_phase(MAX_THREADS_PHASE_OBJECT, MAX_THREADS_PHASE_OBJECT, 1);							// ðàçìåð êâàäðàòà
 		dim3 grid_phase( (int) nx / MAX_THREADS_PHASE_OBJECT, (int) ny / MAX_THREADS_PHASE_OBJECT, 1 );		// ñêîëüêî êâàäðàòîâ íóæíî ÷òîáû ïîêðûòü âñå èçîáðàæåíèå
