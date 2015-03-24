@@ -12,6 +12,7 @@
 #define AMODEL_API __declspec(dllimport)
 #endif
 
+#define GetCurrentDir _getcwd
 
 #include "BaseStructures.h"
 
@@ -49,6 +50,7 @@ namespace AModel {
 		//////////////////////////////////////////////////////////////////////////
 
 		virtual	int read(const char* filename) = 0;
+		virtual int readhead(const char* filename) = 0;
 		
 		int	writeAce(const char* filename);
 		int writeCoo(const char* filename);

@@ -25,6 +25,7 @@ namespace AModel {
 		~ModelCoo(void);
 
 		int		read(const char* filename);
+		int		readhead(const char* filename);
 
 	private:
 		
