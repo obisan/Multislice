@@ -19,7 +19,6 @@ namespace PotentialBuilder {
 
 	ModelPotential::~ModelPotential(void) {
 		if(this->model != nullptr) { model = nullptr; }
-		if(this->potential != nullptr) { free(this->potential); }
 	}
 
 	int ModelPotential::calculatePotentialGrid() {
@@ -209,7 +208,7 @@ namespace PotentialBuilder {
 #if defined(_DEBUG)
 			std::cout << "slice: " << kz << std::endl << "calculated atoms: " << slice.size() << std::endl;
 #endif
-			cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
+			//cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
 
 			char slicename[256];
 			sprintf(slicename, "%s/slice%003u.slc", fileNameOutput, kz);
@@ -367,7 +366,7 @@ namespace PotentialBuilder {
 		char filenamept[256];
 		strcpy(filenamept, filename);
 		strcat(filenamept, "_pt");
-		memcpy(image->imageData, this->potential, nx * ny * nz * sizeof(double));
+		//memcpy(image->imageData, this->potential, nx * ny * nz * sizeof(double));
 		image->saveMRC(filenamept, model, nx, ny, nz, mrc_FLOAT);
 		delete image;
 
