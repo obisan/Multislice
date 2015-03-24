@@ -7,6 +7,8 @@
 
 #include "targetver.h"
 
+#include <windows.h>
+
 #include <stdio.h>
 #include <tchar.h>
 
@@ -28,6 +30,7 @@
 #include <assert.h>
 #include <io.h>
 #include <iomanip>
+#include <sys/stat.h>
 
 #include <omp.h>
 

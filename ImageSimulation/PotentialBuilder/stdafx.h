@@ -29,6 +29,7 @@
 #include <string>
 #include <iterator>
 #include <complex>
+#include <sys/stat.h>
 
 #include <time.h> 
 
@@ -66,7 +67,6 @@
 #include "helper_cuda.h"
 
 #include <cuComplex.h>
-#include "cusp.cuh"
 
 #include "../pugixml-1.2/src/pugixml.hpp"
 

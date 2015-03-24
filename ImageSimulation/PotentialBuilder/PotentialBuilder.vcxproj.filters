@@ -20,16 +20,7 @@
     <ClInclude Include="stdafx.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="PotentialBuilder.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="Dispatcher.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelPotential.cuh">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="cusp.cuh">
+    <ClInclude Include="ModelPotential.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
@@ -37,17 +28,13 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="PotentialBuilder.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Dispatcher.cpp">
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="ModelPotential.cu">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelPotential.cu">
-      <Filter>src</Filter>
-    </ClCompile>
+    </CudaCompile>
   </ItemGroup>
 </Project>

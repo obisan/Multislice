@@ -6,13 +6,15 @@ namespace PotentialBuilder {
 
 	}
 
-	ModelPotential::ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double radius, double bindim) {
+	ModelPotential::ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double radius, double bindim, const char* fileNameOutput) {
 		this->model = model;
 		this->nx = nx;
 		this->ny = ny;
 		this->nz = nz;
 		this->radius = radius;
 		this->bindim = bindim;
+
+		strcpy(this->fileNameOutput, fileNameOutput);
 
 		this->potential = (double*) malloc(nx * ny * nz * sizeof(double));
 		memset(this->potential, 0, nx * ny * nz * sizeof(double));
@@ -24,6 +26,24 @@ namespace PotentialBuilder {
 	}
 
 	int ModelPotential::calculatePotentialGrid() {
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		struct stat statbuf;
+		if(stat(fileNameOutput,&statbuf)) {
+			wchar_t wzfileNameOutput[256];
+			mbstowcs(wzfileNameOutput, fileNameOutput, 256);
+			if (CreateDirectory(wzfileNameOutput,NULL))
+				std::cout << "Directory [" << fileNameOutput << "] created." << std::endl;
+			else {
+				std::cout << "Error create [" << fileNameOutput << "] directory." << std::endl;
+				return -1;
+			}
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		const size_t nAtoms = model->getNumberAtoms();
 		const double a_h = model->getA();
 		const double b_h = model->getB();
@@ -32,6 +52,8 @@ namespace PotentialBuilder {
 		const double dy = b_h / this->ny;
 		const double dz = c_h / this->nz;
 
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		checkCudaErrors( cudaMemcpyToSymbol(radius_d, &radius, sizeof(double)) );
 		checkCudaErrors( cudaMemcpyToSymbol(dx_d, &dx, sizeof(double)) );
@@ -90,7 +112,7 @@ namespace PotentialBuilder {
 		cudaEventRecord(start_total,0);
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////	Bins to pixel ////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		clock_t time_lattice = clock();
@@ -190,6 +212,13 @@ namespace PotentialBuilder {
 			std::cout << "slice: " << kz << std::endl << "calculated atoms: " << slice.size() << std::endl;
 
 			cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
+
+			char slicename[256];
+			sprintf(slicename, "%s/slice%003u.slc", fileNameOutput, kz);
+			FILE *pFile;
+			pFile = fopen(slicename, "wb");
+			fwrite(potentialSlice, sizeof(double), nx * ny, pFile);
+			fclose(pFile);
 
 			slice.clear();	
 			cudaFree(bins_d);

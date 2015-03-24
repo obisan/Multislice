@@ -55,7 +55,7 @@ namespace PotentialBuilder {
 	class POTENTIALBUILDER_API ModelPotential {
 	public:
 		ModelPotential(void);
-		ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double radius, double bindim);
+		ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double radius, double bindim, const char* fileNameOutput);
 		~ModelPotential(void);
 
 		int		calculatePotentialGrid();
@@ -70,14 +70,14 @@ namespace PotentialBuilder {
 
 	private:
 		AModel::Model		*model;
-		size_t				nx;
-		size_t				ny;
-		size_t				nz;
-
-		bool				isSaveSlices;
+		int					nx;
+		int					ny;
+		int 				nz;
 
 		double				radius;
 		double				bindim;
+
+		char				fileNameOutput[256];
 	};
 
 	//////////////////////////////////////////////////////////////////////////

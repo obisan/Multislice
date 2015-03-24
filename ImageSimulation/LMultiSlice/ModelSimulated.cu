@@ -8,14 +8,32 @@ ModelSimulated::ModelSimulated(void) {
 
 ModelSimulated::~ModelSimulated(void) {
 	if(this->modelPotential != nullptr) this->modelPotential = nullptr;
+	if(this->model != nullptr) this->model = nullptr;
 }
 
 ModelSimulated::ModelSimulated(PotentialBuilder::ModelPotential* modelPotential, size_t nx, size_t ny, size_t nz, double dpa) {
 	this->modelPotential = modelPotential;
 	this->nx = nx;
 	this->ny = ny;
-	this->nz = nz;
+	this->countSlices = nz;
 	this->dpa = dpa;
+}
+
+ModelSimulated::ModelSimulated(const char* potentialDirectory, AModel::Model* model, int nx, int ny, int countSlices, double dpa) {
+	this->modelPotential = modelPotential;
+	this->nx = nx;
+	this->ny = ny;
+	this->countSlices = countSlices;
+	this->dpa = dpa;
+
+	this->model = model;
+
+	for(size_t i = 0; i < countSlices; i++) {
+		char slicename[256];
+		sprintf(slicename, "%s/slice%003u.slc", potentialDirectory, i);
+		std::string slice(slicename);
+		slices.push_back(slicename);
+	}
 }
 
 int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
@@ -48,8 +66,13 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	
 
 	double *potential = modelPotential->potential;
-	double dz = this->modelPotential->getModel()->getC() / nx;
-	for(size_t kz = 0; kz < nz; kz++) {	
+	//double dz = this->model->getC() / countSlices;
+	double dz = this->modelPotential->getModel()->getC() / countSlices;
+	for(size_t kz = 0; kz < countSlices; kz++) {	
+		//FILE *pFile;
+		//pFile = fopen(slices[kz].c_str(), "rb");
+		//fread(potentialSlice, sizeof(double), nx * ny, pFile);
+		//fclose(pFile);
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// t(x, y) = exp(sigma * potential(x, y))

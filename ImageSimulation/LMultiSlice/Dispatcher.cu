@@ -11,7 +11,7 @@ Dispatcher::~Dispatcher(void) {
 
 }
 
-bool Dispatcher::CheckFileExist(const char *fname) {
+bool Dispatcher::isFileExist(const char *fname) {
 	_finddata_t data;
 	intptr_t nFind = _findfirst(fname,&data);
 	if (nFind != -1) {
@@ -20,6 +20,14 @@ bool Dispatcher::CheckFileExist(const char *fname) {
 		return true;
 	}
 	return false;
+}
+
+bool Dispatcher::isDirectoryExist(const char* dirname) {
+	struct stat statbuf;
+	if(stat(dirname,&statbuf)) {
+		return false;
+	}
+	return true;
 }
 
 int Dispatcher::parseCommand(const char* fileNameXML, Command& command) {
@@ -43,9 +51,15 @@ int Dispatcher::parseCommand(const char* fileNameXML, Command& command) {
 		return -1;
 	}
 
-	strcpy(command.fileNameOutput, doc.child("action").child("io").child("fileNameOutput").child_value());
+	strcpy(command.potentialDirectory, doc.child("action").child("io").child("fileNameOutput").child_value());
 	if( strlen(command.fileNameOutput) == 0 ) {
 		std::cerr << "Empty \"file output\" field!" << std::endl;
+		return -1;
+	}
+
+	strcpy(command.fileNameOutput, doc.child("action").child("io").child("PotentialDirectory").child_value());
+	if( strlen(command.potentialDirectory) == 0 ) {
+		std::cerr << "Empty \"Potential Directory\" field!" << std::endl;
 		return -1;
 	}
 
@@ -129,18 +143,6 @@ int Dispatcher::parseCommand(const char* fileNameXML, Command& command) {
 		return -1;
 	}
 
-	strcpy(buffer, doc.child("action").child("slicing").child("saveslices").child_value() );
-	if( strlen(buffer) == 0 ) {
-		std::cerr << "Empty \"saveslices\" field!" << std::endl;
-		return -1;
-	} try {
-		if(strstr(buffer, "yes")) command.isSaveSlices = true;
-		if(strstr(buffer, "no")) command.isSaveSlices = false;
-	} catch(...) {
-		std::cerr << "Convert \"saveslices\" problems!" << std::endl;
-		return -1;
-	}
-
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	strcpy(buffer, doc.child("action").child("microscope").child("aperture").child_value() );
@@ -192,7 +194,7 @@ int Dispatcher::parseCommand(const char* fileNameXML, Command& command) {
 }
 
 int Dispatcher::Run(const char* fileNameXML) {
-	if(!CheckFileExist(fileNameXML)) {
+	if(!isFileExist(fileNameXML)) {
 		std::cerr << "XML File with name [" << fileNameXML << "] doesn't exist." << std::endl;
 		return -1;
 	} else {
@@ -202,24 +204,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	if( parseCommand(fileNameXML, command) == -1) {
 		return -1;
 	}
-
-	AModel::Model *model = getModelType(command.fileNameInput);
-	if( model->read(command.fileNameInput) == -1 ) {
-		std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
-		return -1;
-	} else {
-		std::cout << "Read file model [" << command.fileNameInput << "] successful." << std::endl;
-	} 
-
-	/************************************************************************/
-	/* Calculating map potentials	*****************************************/
-	/************************************************************************/
-	std::cout << std::endl;
-	std::cout << "Image size		= " << command.nx << "x" << command.ny << std::endl;
-	std::cout << "Number of slices	= " << command.numberSlices << std::endl;
-	std::cout << "Number of atoms	= " << model->getNumberAtoms() << std::endl;
-	std::cout << "Dots per atom		= " << command.dpa << std::endl;
-
+	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	int deviceCount = 0;
@@ -242,13 +227,43 @@ int Dispatcher::Run(const char* fileNameXML) {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	PotentialBuilder::ModelPotential *modelPotential = new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim);
-	if(modelPotential->calculatePotentialGrid() == -1) 
-		return -1;
+	AModel::Model *model = getModelType(command.fileNameInput);
+	PotentialBuilder::ModelPotential *modelPotential = new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory);
+
+	if(!isDirectoryExist(command.potentialDirectory)) {
+		if( model->read(command.fileNameInput) == -1 ) {
+			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
+			return -1;
+		} else {
+			std::cout << "Read file model [" << command.fileNameInput << "] successful." << std::endl;
+		} 
+
+		//////////////////////////////////////////////////////////////////////////
+		// Calculating map potentials	//////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////
+		
+		if(modelPotential->calculatePotentialGrid() == -1) 
+			return -1;
+		modelPotential->savePotential(command.fileNameOutput);
+		
+	} else {
+		if( model->readhead(command.fileNameInput) == -1 ) {
+			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
+			return -1;
+		} else {
+			std::cout << "Read file model [" << command.fileNameInput << "] successful." << std::endl;
+		} 
+	}
+
+	std::cout << std::endl;
+	std::cout << "Image size		= " << command.nx << "x" << command.ny << std::endl;
+	std::cout << "Number of slices	= " << command.numberSlices << std::endl;
+	std::cout << "Number of atoms	= " << model->getNumberAtoms() << std::endl;
+	std::cout << "Dots per atom		= " << command.dpa << std::endl;
 	
-	modelPotential->savePotential(command.fileNameOutput);
 
 	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, command.nx, command.ny, command.numberSlices, command.dpa);
+	//ModelSimulated *modelSimulated = new ModelSimulated(command.potentialDirectory, model, command.nx, command.ny, command.numberSlices, command.dpa);
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
 	Image *result = new Image(command.nx, command.ny, 1, sizeof(double), 2);
 	
@@ -261,8 +276,9 @@ int Dispatcher::Run(const char* fileNameXML) {
 	delete microscope;
 	delete modelSimulated;
 
-	delete modelPotential;
 	
+	delete modelPotential;
+
 	delete model;
 
 	/************************************************************************/
