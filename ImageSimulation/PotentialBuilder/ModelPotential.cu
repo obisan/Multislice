@@ -6,24 +6,32 @@ namespace PotentialBuilder {
 
 	}
 
-	ModelPotential::ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double radius, double bindim) {
+	ModelPotential::ModelPotential(AModel::Model *model, int nx, int ny, int nz, double radius, double bindim, const char* fileNameOutput) {
 		this->model = model;
 		this->nx = nx;
 		this->ny = ny;
 		this->nz = nz;
 		this->radius = radius;
 		this->bindim = bindim;
-
-		this->potential = (double*) malloc(nx * ny * nz * sizeof(double));
-		memset(this->potential, 0, nx * ny * nz * sizeof(double));
 	}
 
 	ModelPotential::~ModelPotential(void) {
 		if(this->model != nullptr) { model = nullptr; }
-		if(this->potential != nullptr) { free(this->potential); }
 	}
 
 	int ModelPotential::calculatePotentialGrid() {
+		struct stat statbuf;
+		if(stat(fileNameOutput,&statbuf)) {
+			wchar_t wzfileNameOutput[256];
+			mbstowcs(wzfileNameOutput, fileNameOutput, 256);
+			if (CreateDirectory(wzfileNameOutput,NULL))
+				std::cout << "Directory [" << fileNameOutput << "] created." << std::endl;
+			else {
+				std::cout << "Error create [" << fileNameOutput << "] directory." << std::endl << std::endl;
+				return -1;
+			}
+		}
+
 		const size_t nAtoms = model->getNumberAtoms();
 		const double a = model->getA();
 		const double b = model->getB();
@@ -93,8 +101,15 @@ namespace PotentialBuilder {
 				}
 			}
 
-			// Device to Host
-			memcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double));
+			// Device to File
+			char slicename[256];
+			sprintf(slicename, "%s/slice%003u.slc", fileNameOutput, kz);
+			FILE *pFile;
+			pFile = fopen(slicename, "wb");
+			fwrite(potentialSlice, sizeof(double), nx * ny, pFile);
+			fclose(pFile);
+
+			//memcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double));
 			memset(potentialSlice, 0, nx * ny * sizeof(double));
 		}
 
@@ -315,7 +330,7 @@ namespace PotentialBuilder {
 		char filenamept[256];
 		strcpy(filenamept, filename);
 		strcat(filenamept, "_pt");
-		memcpy(image->imageData, this->potential, nx * ny * nz * sizeof(double));
+		//memcpy(image->imageData, this->potential, nx * ny * nz * sizeof(double));
 		image->saveMRC(filenamept, model, nx, ny, nz, mrc_FLOAT);
 		delete image;
 
