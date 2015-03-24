@@ -87,7 +87,7 @@ namespace PotentialBuilder {
 
 					time_kernel += ctime;
 
-					std::cout << "slice: " << kz << "calculated atoms: " << j << " current atom: " << i << std::endl;
+					std::cout << "slice: " << kz << " calculated atoms: " << j << " current atom: " << i << std::endl;
 					
 					j = 0;				
 				}

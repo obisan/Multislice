@@ -48,7 +48,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	
 
 	double *potential = modelPotential->potential;
-	double dz = this->modelPotential->getModel()->getC() / nx;
+	double dz = this->modelPotential->getModel()->getC() / nz;
 	for(size_t kz = 0; kz < nz; kz++) {	
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
