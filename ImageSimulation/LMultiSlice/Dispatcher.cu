@@ -228,8 +228,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	AModel::Model *model = getModelType(command.fileNameInput);
-	PotentialBuilder::ModelPotential *modelPotential = new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory);
-
+	
 	if(!isDirectoryExist(command.potentialDirectory)) {
 		if( model->read(command.fileNameInput) == -1 ) {
 			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
@@ -241,11 +240,11 @@ int Dispatcher::Run(const char* fileNameXML) {
 		//////////////////////////////////////////////////////////////////////////
 		// Calculating map potentials	//////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////
-		
+		PotentialBuilder::ModelPotential *modelPotential = new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory);
 		if(modelPotential->calculatePotentialGrid() == -1) 
 			return -1;
 		modelPotential->savePotential(command.fileNameOutput);
-		
+		delete modelPotential;
 	} else {
 		if( model->readhead(command.fileNameInput) == -1 ) {
 			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
@@ -262,8 +261,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Dots per atom		= " << command.dpa << std::endl;
 	
 
-	ModelSimulated *modelSimulated = new ModelSimulated(modelPotential, command.nx, command.ny, command.numberSlices, command.dpa);
-	//ModelSimulated *modelSimulated = new ModelSimulated(command.potentialDirectory, model, command.nx, command.ny, command.numberSlices, command.dpa);
+	ModelSimulated *modelSimulated = new ModelSimulated(command.potentialDirectory, model, command.nx, command.ny, command.numberSlices, command.dpa);
 	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
 	Image *result = new Image(command.nx, command.ny, 1, sizeof(double), 2);
 	
@@ -277,7 +275,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 	delete modelSimulated;
 
 	
-	delete modelPotential;
+	
 
 	delete model;
 

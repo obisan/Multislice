@@ -15,9 +15,6 @@ namespace PotentialBuilder {
 		this->bindim = bindim;
 
 		strcpy(this->fileNameOutput, fileNameOutput);
-
-		this->potential = (double*) malloc(nx * ny * nz * sizeof(double));
-		memset(this->potential, 0, nx * ny * nz * sizeof(double));
 	}
 
 	ModelPotential::~ModelPotential(void) {
@@ -36,7 +33,7 @@ namespace PotentialBuilder {
 			if (CreateDirectory(wzfileNameOutput,NULL))
 				std::cout << "Directory [" << fileNameOutput << "] created." << std::endl;
 			else {
-				std::cout << "Error create [" << fileNameOutput << "] directory." << std::endl;
+				std::cout << "Error create [" << fileNameOutput << "] directory." << std::endl << std::endl;
 				return -1;
 			}
 		}
@@ -209,8 +206,9 @@ namespace PotentialBuilder {
 			cudaEventElapsedTime(&ctime, start, stop);
 			time_kernel += ctime;
 
+#if defined(_DEBUG)
 			std::cout << "slice: " << kz << std::endl << "calculated atoms: " << slice.size() << std::endl;
-
+#endif
 			cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
 
 			char slicename[256];
