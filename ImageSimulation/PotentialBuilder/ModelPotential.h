@@ -57,22 +57,16 @@ namespace PotentialBuilder {
 		int		savePotential(const char* filename);
 
 		AModel::Model*		getModel();
-		size_t	getNx();
-		size_t	getNy();
-		size_t	getNz();
-
+		
 		double				*potential;
 
 	private:
 		AModel::Model		*model;
-		size_t				nx;
-		size_t				ny;
-		size_t				nz;
-
-		bool				isSaveSlices;
-
+				
 		double				radius;
 		double				bindim;
+
+		char				fileNameOutput[256];
 	};
 
 	//////////////////////////////////////////////////////////////////////////
