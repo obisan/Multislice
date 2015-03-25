@@ -373,6 +373,18 @@ namespace PotentialBuilder {
 		return 0;
 	}
 
+	int	ModelPotential::savePotentialStack(const char* filename, const char* stackDirectory) {
+		Image *image = new Image(nx, ny, nz, sizeof(double), 1);
+		char filenamept[256];
+		strcpy(filenamept, filename);
+		strcat(filenamept, "_pt");
+		image->saveStackMRC(filenamept, stackDirectory, model, nx, ny, nz, mrc_FLOAT);
+		delete image;
+
+		return 0;
+	}
+
+
 	AModel::Model* ModelPotential::getModel() {
 		return model;
 	}

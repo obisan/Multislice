@@ -240,10 +240,11 @@ int Dispatcher::Run(const char* fileNameXML) {
 		//////////////////////////////////////////////////////////////////////////
 		// Calculating map potentials	//////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////
-		PotentialBuilder::ModelPotential *modelPotential = new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory);
+		PotentialBuilder::ModelPotential *modelPotential 
+			= new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory);
 		if(modelPotential->calculatePotentialGrid() == -1) 
 			return -1;
-		modelPotential->savePotential(command.fileNameOutput);
+		modelPotential->savePotentialStack(command.fileNameOutput, command.potentialDirectory);
 		delete modelPotential;
 	} else {
 		if( model->readhead(command.fileNameInput) == -1 ) {
@@ -254,6 +255,10 @@ int Dispatcher::Run(const char* fileNameXML) {
 		} 
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	
 	std::cout << std::endl;
 	std::cout << "Image size		= " << command.nx << "x" << command.ny << std::endl;
 	std::cout << "Number of slices	= " << command.numberSlices << std::endl;
@@ -274,14 +279,11 @@ int Dispatcher::Run(const char* fileNameXML) {
 	delete microscope;
 	delete modelSimulated;
 
-	
-	
-
 	delete model;
 
-	/************************************************************************/
-	/************************************************************************/
-	/************************************************************************/
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
 	cudaDeviceReset();
 
 	std::cout	<< "Calculation for [" << fileNameXML <<  "] finished successful." << std::endl << std::endl;

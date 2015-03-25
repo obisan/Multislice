@@ -16,6 +16,7 @@
 #include <complex>
 #include <cstdlib>
 #include <map>
+#include <vector>
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
 
