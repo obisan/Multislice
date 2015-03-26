@@ -7,12 +7,10 @@ ModelSimulated::ModelSimulated(void) {
 }
 
 ModelSimulated::~ModelSimulated(void) {
-	if(this->modelPotential != nullptr) this->modelPotential = nullptr;
 	if(this->model != nullptr) this->model = nullptr;
 }
 
 ModelSimulated::ModelSimulated(const char* potentialDirectory, AModel::Model* model, int nx, int ny, int countSlices, double dpa) {
-	this->modelPotential = modelPotential;
 	this->nx = nx;
 	this->ny = ny;
 	this->countSlices = countSlices;
