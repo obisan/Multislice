@@ -10,7 +10,6 @@ public:
 	ModelSimulated(const char* PotentialDirectory, AModel::Model* model, int nx, int ny, int countSlices, double dpa);
 	int imageCalculation(Image *result, Microscope *microscope);
 private:
-	PotentialBuilder::ModelPotential *modelPotential;
 	AModel::Model*	model;
 
 	int			nx;
