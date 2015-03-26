@@ -243,7 +243,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 		PotentialBuilder::ModelPotential *modelPotential = new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory);
 		if(modelPotential->calculatePotentialGrid() == -1) 
 			return -1;
-		modelPotential->savePotential(command.fileNameOutput);
+		modelPotential->savePotentialStack(command.fileNameOutput, command.potentialDirectory);
 		delete modelPotential;
 	} else {
 		if( model->readhead(command.fileNameInput) == -1 ) {

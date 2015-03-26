@@ -55,6 +55,7 @@ namespace PotentialBuilder {
 
 		int		calculatePotentialGrid();
 		int		savePotential(const char* filename);
+		int		savePotentialStack(const char* filename, const char* stackDirectory);
 
 		AModel::Model*		getModel();
 		
