@@ -52,6 +52,7 @@ namespace ImageSpace {
 		~MRC(void);
 
 		int save(const char* filename);
+		int saveBinaryStack(const char* filename, const char* stackdirectory);
 
 	private:
 		char filename[128];

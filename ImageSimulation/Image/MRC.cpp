@@ -344,4 +344,165 @@ namespace ImageSpace {
 		return 0;
 	}
 
+	int MRC::saveBinaryStack(const char* filename, const char* stackdirectory) {
+		char *filenamesave_ext = new char[ strlen(filename) + 8 ];
+		strcpy(filenamesave_ext, filename);
+		strcat(filenamesave_ext,".mrc");
+
+		std::ofstream fout(filenamesave_ext, std::ios::binary);
+
+		fout.write(reinterpret_cast<const char*> (&nx), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&ny), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&nz), sizeof(int));
+
+		fout.write(reinterpret_cast<const char*> (&mode), sizeof(int));
+
+		fout.write(reinterpret_cast<const char*> (&nxStart), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&nyStart), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&nzStart), sizeof(int));
+
+		fout.write(reinterpret_cast<const char*> (&mx), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&my), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&mz), sizeof(int));
+
+		fout.write(reinterpret_cast<const char*> (&xlen), sizeof(float));
+		fout.write(reinterpret_cast<const char*> (&ylen), sizeof(float));
+		fout.write(reinterpret_cast<const char*> (&zlen), sizeof(float));
+
+		fout.write(reinterpret_cast<const char*> (&alpha), sizeof(float));
+		fout.write(reinterpret_cast<const char*> (&beta), sizeof(float));
+		fout.write(reinterpret_cast<const char*> (&gamma), sizeof(float));
+
+		fout.write(reinterpret_cast<const char*> (&mapc), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&mapr), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&maps), sizeof(int));
+
+		fout.write(reinterpret_cast<const char*> (&amin), sizeof(float));
+		fout.write(reinterpret_cast<const char*> (&amax), sizeof(float));
+		fout.write(reinterpret_cast<const char*> (&amean), sizeof(float));
+
+		fout.write(reinterpret_cast<const char*> (&ispq), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&next), sizeof(int));
+
+		fout.write(reinterpret_cast<const char*> (&creatid), sizeof(short));
+		fout.write(reinterpret_cast<const char*> (&extra_data), 30 * sizeof(char)); // !!! char 30
+
+		fout.write(reinterpret_cast<const char*> (&nint), sizeof(short));
+		fout.write(reinterpret_cast<const char*> (&nreal), sizeof(short));
+
+		fout.write(reinterpret_cast<const char*> (&extra_data_2), 20 * sizeof(char)); // !!! char 20
+
+		fout.write(reinterpret_cast<const char*> (&imodStamp), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&imodFlag), sizeof(int));
+
+		fout.write(reinterpret_cast<const char*> (&idtype), sizeof(short));
+		fout.write(reinterpret_cast<const char*> (&lens), sizeof(short));
+		fout.write(reinterpret_cast<const char*> (&nd1), sizeof(short));
+		fout.write(reinterpret_cast<const char*> (&nd2), sizeof(short));
+		fout.write(reinterpret_cast<const char*> (&vd1), sizeof(short));
+		fout.write(reinterpret_cast<const char*> (&vd2), sizeof(short));
+
+		fout.write(reinterpret_cast<const char*> (&tiltangles), 6 * sizeof(float));
+
+		fout.write(reinterpret_cast<const char*> (&xorg), sizeof(float));
+		fout.write(reinterpret_cast<const char*> (&yorg), sizeof(float));
+		fout.write(reinterpret_cast<const char*> (&zorg), sizeof(float));
+
+		fout.write(reinterpret_cast<const char*> (&cmap), 4 * sizeof(char));
+		fout.write(reinterpret_cast<const char*> (&stamp), 4 * sizeof(char));
+
+		fout.write(reinterpret_cast<const char*> (&rms), sizeof(float));
+
+		fout.write(reinterpret_cast<const char*> (&nlabl), sizeof(int));
+		fout.write(reinterpret_cast<const char*> (&vlabl), 10 * 80 * sizeof(char));
+
+		int nChannel = nChannels(mode);
+
+		void *oData = nullptr;
+
+		switch(mode) {
+		case 0:
+			oData = (unsigned char*) malloc1D(nx * ny * nChannel, sizeof(char), "Output data unsigned char");
+			break;
+		case 1:
+			oData = (short*) malloc1D(nx * ny * nChannel, sizeof(short), "Output data signed short");
+			break;
+		case 2:
+			oData = (float*) malloc1D(nx * ny * nChannel, sizeof(float), "Output data float");
+			break;
+		case 3:
+			oData = (short*) malloc1D(nx * ny * nChannel, sizeof(short), "Output data short * 2");
+			break;
+		case 4:
+			oData = (float*) malloc1D(nx * ny * nChannel, sizeof(float), "Output data float * 2");
+			break;
+		case 6:
+			oData = (unsigned short*) malloc1D(nx * ny * nChannel, sizeof(short), "Output data unsigned short");
+			break;
+		case 16:
+			oData = (unsigned char*) malloc1D(nx * ny * nChannel, sizeof(char), "Output data unsigned char * 3");
+		default:
+			oData = nullptr;
+			break;
+		}
+
+		std::vector<std::string> slices;
+		for(size_t i = 0; i < nz; i++) {
+			char slicename[256];
+			sprintf(slicename, "%s/slice%003u.slc", stackdirectory, i);
+			std::string slice(slicename);
+			slices.push_back(slicename);
+		}
+
+		double *potentialSlice = new double[nx * ny];
+		for(size_t k = 0; k < nz; k++) {
+
+			FILE *pFile;
+			pFile = fopen(slices[k].c_str(), "rb");
+			fread(potentialSlice, sizeof(double), nx * ny, pFile);
+			fclose(pFile);
+			
+			pData = (char*) potentialSlice;
+
+			for(size_t i = 0; i < ny; i++) {
+				for(size_t j = 0; j < nx; j++) {
+					for(size_t l = 0; l < nChannel; l++) {
+						switch(mode) {
+						case 0:		// unsigned char
+						case 16:
+							((unsigned char*) oData)[ nChannel * (nx * i + j) + l ] = ((double*) pData)[ nChannel * (nx * i + j) + l ];
+							break;
+						case 1:		// short
+						case 3:
+							((short*) oData)[ nChannel * (nx * i + j) + l ] = ((double*) pData)[ nChannel * (nx * i + j) + l ];
+							break;
+						case 2:		// float
+						case 4:
+							((float*) oData)[ nChannel * (nx * i + j) + l ] = ((double*) pData)[ nChannel * (nx * i + j) + l ];
+							break;
+						case 6:		// unsigned short
+							((unsigned short*) oData)[ nChannel * (nx * i + j) + l ] = ((double*) pData)[ nChannel * (nx * i + j) + l ];
+							break;
+						default:
+							break;
+						}
+
+					}
+				}
+			}
+
+			fout.write(reinterpret_cast<const char*> (oData), this->nx * this->ny * sizeof(float) * nChannel);
+
+		}
+		delete[] potentialSlice;
+
+		delete[] oData;
+
+		fout.close();
+
+		delete[] filenamesave_ext;
+
+		return 0;
+	}
+
 }

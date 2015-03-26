@@ -53,6 +53,7 @@ namespace ImageSpace {
 
 		void		save(const char*);
 		int			saveMRC(const char* filenamesave, AModel::Model* model, int width, int height, int thickness, int mode);
+		int			saveStackMRC(const char* filenamesave, const char* StackDirectory, AModel::Model* model, int width, int height, int thickness, int mode);
 		void		saveQtSpectrum(const char*, size_t n = 0);
 
 		Image*		getRealPart();

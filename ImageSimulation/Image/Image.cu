@@ -162,6 +162,33 @@ namespace ImageSpace {
 		return 0;
 	}
 
+	int Image::saveStackMRC(const char* filenamesave, const char* StackDirectory, AModel::Model* model, int width, int height, int thickness, int mode) {
+		float tiltangles[6] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+				
+		MRC *imageMRC = new MRC(
+			filenamesave, width, height, thickness, mode, 
+			0, 0, 0, 
+			0, 0, 0, 
+			model->getA(), model->getB(), model->getC(), model->getAlpha(), model->getBeta(), model->getGamma(), 
+			1, 2, 3, 0, 0, 0,
+			0, 0, 
+			0, "",
+			0, 0, "",
+			0, 0,
+			1, 0, 0, 0, 0, 0,
+			tiltangles,
+			0.0f, 0.0f, 0.0f,
+			"", "", 
+			0.0f,
+			0,
+			"",
+			this->imageData);
+		imageMRC->saveBinaryStack(filenamesave, StackDirectory);
+		delete imageMRC;
+
+		return 0;
+	}
+
 	void Image::saveQtSpectrum(const char* filenamesave, size_t numberSlice) {
 		double *pp = 0;
 		size_t nnx = this->width;
