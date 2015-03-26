@@ -20,6 +20,7 @@ docs/
 samples/
 statistics/model/
 statistics/result/
+statistics/*.py
 
 x86.debug.common.dll/
 x64.debug.common.dll/
