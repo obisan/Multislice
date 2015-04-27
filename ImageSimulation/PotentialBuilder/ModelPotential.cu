@@ -51,35 +51,12 @@ namespace PotentialBuilder {
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		checkCudaErrors( cudaMemcpyToSymbol(radius_d, &radius, sizeof(double)) );
-		checkCudaErrors( cudaMemcpyToSymbol(dx_d, &dx, sizeof(double)) );
-		checkCudaErrors( cudaMemcpyToSymbol(dy_d, &dy, sizeof(double)) );
-
-		checkCudaErrors( cudaMemcpyToSymbol(a_d, &a_h, sizeof(double)) );
-		checkCudaErrors( cudaMemcpyToSymbol(b_d, &b_h, sizeof(double)) );
-		checkCudaErrors( cudaMemcpyToSymbol(c_d, &c_h, sizeof(double)) );
-
-		double bindimx = this->bindim; // angstrem
-		double bindimy = this->bindim; // angstrem
-		checkCudaErrors( cudaMemcpyToSymbol(bindimx_d, &bindimx, sizeof(double)) );
-		checkCudaErrors( cudaMemcpyToSymbol(bindimy_d, &bindimy, sizeof(double)) );
-
-		int	binx = ceil(a_h / bindimx); // dimensionless
-		int	biny = ceil(b_h / bindimy); // dimensionless
-		checkCudaErrors( cudaMemcpyToSymbol(binx_d, &binx, sizeof(int)) );
-		checkCudaErrors( cudaMemcpyToSymbol(biny_d, &biny, sizeof(int)) );
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
+		
 		double *potentialSlice;
-		checkCudaErrors( cudaMallocManaged(&(potentialSlice), nx * ny * sizeof(double)));
+		potentialSlice = (double*) malloc(nx * ny * sizeof(double));
 		memset(potentialSlice, 0, nx * ny * sizeof(double));
-		CUERR
-
+		
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		dim3 threads(BLOCKSIZEX, BLOCKSIZEY, 1);		
-		dim3 grid(this->nx / BLOCKSIZEX, this->ny / BLOCKSIZEY, 1 );
 
 		AModel::Cortege *pAtoms = model->getTableCell();
 		std::sort(pAtoms, pAtoms + nAtoms);
@@ -121,13 +98,7 @@ namespace PotentialBuilder {
 			//////////////	atoms			//////////////////////////////////////////////////////////////////////
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
 			
-			atom *SliceAtoms;
-			checkCudaErrors( cudaMallocManaged(&(SliceAtoms), slice.size() * sizeof(atom)));
-			for(size_t l = 0; l < slice.size(); l++) {
-				SliceAtoms[l] = slice[l];
-			}
-
-			//memcpy(SliceAtoms, &slice, slice.size() * sizeof(atom));
+			std::vector<atom> &atoms = slice;
 
 			cudaEvent_t start,stop;
 			float ctime = 0.0f;
@@ -135,10 +106,43 @@ namespace PotentialBuilder {
 			cudaEventCreate(&stop);
 			cudaEventRecord(start,0);
 			
-			calculatePotentialGridGPU<<<grid, threads>>>(potentialSlice, SliceAtoms, slice.size());
-			CUERR
+			for(size_t iy = 0; iy < ny; iy++) {
+				for(size_t ix = 0; ix < nx; ix) {
 
-			checkCudaErrors( cudaThreadSynchronize() );
+					double latticex = ix * dx; // lattice x
+					double latticey = iy * dy; // lattice y
+
+					double imageval = 0.0;
+
+					for(unsigned int i = 0; i < slice.size(); i++) {
+						int numberAtom = atoms[i].num;
+						double x = fabs(atoms[i].x * a_h - latticex);
+						double y = fabs(atoms[i].y * b_h - latticey);
+
+						x = ( x >= a_h / 2.0 ) ? x - a_h : x;
+						y = ( y >= b_h / 2.0 ) ? y - b_h : y;
+
+						double r = sqrt(x * x + y * y);
+			
+						if(r > radius) continue;
+						r = (r < 1e-20) ? 1e-20 : r;
+						double dR1 = 6.2831853071796 * r; // 2 * PI * r;
+
+						imageval += ( 
+									FParamsDevice[(numberAtom) * 12 + 0 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 1]))
+								+	FParamsDevice[(numberAtom) * 12 + 1 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 1]))
+								+	FParamsDevice[(numberAtom) * 12 + 2 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 1])) 
+								) * 300.73079394295
+								+ (
+								(	FParamsDevice[(numberAtom) * 12 + 0 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7])
+								+	(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7])
+								+	(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7])
+								) * 150.36539697148;
+		
+					}
+					potentialSlice[ nx * ny * iy + ix ] = imageval; 
+				}				
+			}
 
 			cudaEventRecord(stop,0);
 			cudaEventSynchronize(stop);
@@ -155,7 +159,7 @@ namespace PotentialBuilder {
 			fclose(pFile);
 
 			slice.clear();
-			cudaFree(SliceAtoms);
+			free(potentialSlice);
 		}
 
 		cudaEventRecord(stop_total,0);
@@ -172,118 +176,85 @@ namespace PotentialBuilder {
 		return 0;
 	}
 
-	__global__ void calculatePotentialGridGPU(double *potential, atom* atoms, unsigned int n) {
-		const int ix = __umul24(blockDim.x, blockIdx.x) + threadIdx.x;
-		const int iy = __umul24(blockDim.y, blockIdx.y) + threadIdx.y;
-		const int is = __umul24(blockDim.x, threadIdx.y) + threadIdx.x;
-		const int LINESIZE = __umul24(gridDim.x, blockDim.x);
-
-		double latticex = ix * dx_d; // lattice x
-		double latticey = iy * dy_d; // lattice y
-
-		__shared__ double imageval[BLOCKSIZEX*BLOCKSIZEY];
-		imageval[is] = 0.0;
-
-		for(unsigned int i = 0; i < n; i++) {
-			int numberAtom = atoms[i].num;
-			double x = fabs(atoms[i].x * a_d - latticex);
-			double y = fabs(atoms[i].y * b_d - latticey);
-
-			x = ( x >= a_d / 2.0 ) ? x - a_d : x;
-			y = ( y >= b_d / 2.0 ) ? y - b_d : y;
-
-			double r = __dsqrt_rn(x * x + y * y);
-			
-			if(r > radius_d) continue;
-			r = (r < 1e-20) ? 1e-20 : r;
-			double dR1 = 6.2831853071796 * r; // 2 * PI * r;
-
-			imageval[is] += ( 
-						FParamsDevice[(numberAtom) * 12 + 0 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 1]))
-					+	FParamsDevice[(numberAtom) * 12 + 1 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 1]))
-					+	FParamsDevice[(numberAtom) * 12 + 2 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 1])) 
-					) * 300.73079394295
-					+ (
-					(	FParamsDevice[(numberAtom) * 12 + 0 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7])
-					+	(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7])
-					+	(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7])
-					) * 150.36539697148;
-		
-		}
-
-		__syncthreads();
-
-		potential[ LINESIZE * iy + ix ] = imageval[is]; 
-
-	}
-
-	__device__ void		swap2(double& a, double& b) {
-		double buffer = a;
-		a = b;
-		b = buffer;
-	}
-
-	__device__ double	bessk0( double ax ) {
-		double x2;
-		double sum;
-
+	/*-------------------- bessk0() ---------------*/
+	/*
+		modified Bessel function K0(x)
+		see Abramowitz and Stegun page 380
+    
+		Note: K0(0) is not define and this function
+			returns 1E20
+ 
+		x = (double) real arguments
+    
+		this routine calls bessi0() = Bessel function I0(x)
+    
+		12-feb-1997 E. Kirkland
+	 */
+	double bessk0( double x )
+	{
+		double bessi0(double);
+	
+		int i;
+		double ax, x2, sum;
+		double k0a[] = { -0.57721566, 0.42278420, 0.23069756,
+			0.03488590, 0.00262698, 0.00010750, 0.00000740};
+	
+		double k0b[] = { 1.25331414, -0.07832358, 0.02189568,
+			-0.01062446, 0.00587872, -0.00251540, 0.00053208};
+	
+		ax = fabs( x );
 		if( (ax > 0.0)  && ( ax <=  2.0 ) ) {
-			x2 = __ddiv_rn(ax, 2.0);
-			x2 = __dmul_rd(x2, x2);
-			sum = __fma_rn(k0a[6], x2, k0a[5]);
-			sum = __fma_rn(sum, x2, k0a[4]);
-			sum = __fma_rn(sum, x2, k0a[3]);
-			sum = __fma_rn(sum, x2, k0a[2]);
-			sum = __fma_rn(sum, x2, k0a[1]);
-			sum = __fma_rn(sum, x2, k0a[0]);
-
-
-
-			sum = -log(ax / 2.0) * bessi0( ax ) + sum;
-
-
+			x2 = ax / 2.0;
+			x2 = x2 * x2;
+			sum = k0a[6];
+			for( i=5; i>=0; i--) sum = sum*x2 + k0a[i];
+			sum = -log(ax/2.0) * bessi0(x) + sum;
 		} else if( ax > 2.0 ) {
-			x2 = __ddiv_rn(2.0, ax);
-			sum = __fma_rn(k0b[6], x2, k0b[5]);
-			sum = __fma_rn(sum, x2, k0b[4]);
-			sum = __fma_rn(sum, x2, k0b[3]);
-			sum = __fma_rn(sum, x2, k0b[2]);
-			sum = __fma_rn(sum, x2, k0b[1]);
-			sum = __fma_rn(sum, x2, k0b[0]);
-
-			sum = exp( -ax ) * sum / __dsqrt_rn(ax);
+			x2 = 2.0/ax;
+			sum = k0b[6];
+			for( i=5; i>=0; i--) sum = sum*x2 + k0b[i];
+			sum = exp( -ax ) * sum / sqrt( ax );
 		} else sum = 1.0e20;
 		return ( sum );
-	}
+	
+	}  /* end bessk0() */
 
-	__device__ double	bessi0( double ax ) {
-		double sum;
-		double t;
 
+	/*-------------------- bessi0() ---------------*/
+	/*
+		modified Bessel function I0(x)
+		see Abramowitz and Stegun page 379
+
+		x = (double) real arguments
+
+		12-feb-1997 E. Kirkland
+	 */
+	 double bessi0( double x )	 {
+ 		int i;
+ 		double ax, sum, t;
+ 	
+ 		double i0a[] = { 1.0, 3.5156229, 3.0899424, 1.2067492,
+			0.2659732, 0.0360768, 0.0045813 };
+
+ 		double i0b[] = { 0.39894228, 0.01328592, 0.00225319,
+ 			-0.00157565, 0.00916281, -0.02057706, 0.02635537,
+ 			-0.01647633, 0.00392377};
+
+		ax = fabs( x );
 		if( ax <= 3.75 ) {
-			t = __ddiv_rn(ax, 3.75);
-			t = __dmul_rd(t, t);
-			sum = __fma_rn(i0a[6], t, i0a[5]);
-			sum = __fma_rn(sum, t, i0a[4]);
-			sum = __fma_rn(sum, t, i0a[3]);
-			sum = __fma_rn(sum, t, i0a[2]);
-			sum = __fma_rn(sum, t, i0a[1]);
-			sum = __fma_rn(sum, t, i0a[0]);
+			t = x / 3.75;
+			t = t * t;
+			sum = i0a[6];
+			for( i=5; i>=0; i--) sum = sum*t + i0a[i]; 
 		} else {
-			t = __ddiv_rn(3.75, ax);
-			sum = __fma_rn(i0b[8], t, i0a[7]);
-			sum = __fma_rn(sum, t, i0a[6]);
-			sum = __fma_rn(sum, t, i0a[5]);
-			sum = __fma_rn(sum, t, i0a[4]);
-			sum = __fma_rn(sum, t, i0a[3]);
-			sum = __fma_rn(sum, t, i0a[2]);
-			sum = __fma_rn(sum, t, i0a[1]);
-			sum = __fma_rn(sum, t, i0a[0]);
-
-			sum = exp( ax ) * sum / __dsqrt_rn( ax );
+			t = 3.75 / ax;
+			sum = i0b[8];
+			for( i=7; i>=0; i--) sum = sum*t + i0b[i];
+			sum = exp( ax ) * sum / sqrt( ax );
 		}
 		return( sum );
-	}
+
+	}  /* end bessi0() */
 
 	int	ModelPotential::savePotential(const char* filename) {
 		Image *image = new Image(nx, ny, nz, sizeof(double), 1);

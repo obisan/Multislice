@@ -18,18 +18,6 @@ namespace PotentialBuilder {
 	// 65536 - 9888 = 55648  // 4608 * 3 * 4 = 55296
 	//////////////////////////////////////////////////////////////////////////
 
-	static __constant__ double a_d;
-	static __constant__ double b_d;
-	static __constant__ double c_d;
-	static __constant__ double bindimx_d;
-	static __constant__ double bindimy_d;
-
-	static __constant__ double dx_d;
-	static __constant__ double dy_d;
-	static __constant__ int binx_d;
-	static __constant__ int biny_d;
-	static __constant__ double radius_d;
-
 #define MAX_BINS_PER_PX 36
 
 #define UNROLLX			8
@@ -47,9 +35,9 @@ namespace PotentialBuilder {
 
 	__global__ void calculatePotentialGridGPU(double *potential, atom* SliceAtoms, unsigned int n);
 
-	__device__ double	bessk0( double x );
-	__device__ double	bessi0( double x );
-	__device__ void		swap2(double& a, double& b);
+	double	bessk0( double x );
+	double	bessi0( double x );
+	void	swap2(double& a, double& b);
 
 
 	class POTENTIALBUILDER_API ModelPotential {
@@ -80,7 +68,7 @@ namespace PotentialBuilder {
 	// 112 bytes
 	//////////////////////////////////////////////////////////////////////////
 
-	static __constant__ double k0a[] = { 
+	static double k0a[] = { 
 		-0.57721566, 
 		0.42278420, 
 		0.23069756,
@@ -90,7 +78,7 @@ namespace PotentialBuilder {
 		0.00000740
 	};
 
-	static __constant__ double k0b[] = { 
+	static double k0b[] = { 
 		1.25331414, 
 		-0.07832358, 
 		0.02189568,
@@ -104,7 +92,7 @@ namespace PotentialBuilder {
 	// 128 bytes
 	//////////////////////////////////////////////////////////////////////////
 
-	static __constant__ double i0a[] = { 
+	static double i0a[] = { 
 		1.0, 
 		3.5156229, 
 		3.0899424, 
@@ -113,7 +101,7 @@ namespace PotentialBuilder {
 		0.0360768, 
 		0.0045813 
 	};
-	static __constant__ double i0b[] = { 
+	static double i0b[] = { 
 		0.39894228, 
 		0.01328592, 
 		0.00225319,
@@ -128,7 +116,7 @@ namespace PotentialBuilder {
 	//////////////////////////////////////////////////////////////////////////
 	// 9888 bytes
 	//////////////////////////////////////////////////////////////////////////
-	static __constant__ double FParamsDevice[] = {
+	static double FParamsDevice[] = {
 		// Z=  1,  chisq=    0.170190
 		3.55221981e-002,2.25354459e-001,2.62782423e-002,2.25354636e-001,
 		3.52695173e-002,2.25355749e-001,6.77755867e-002,4.38850114e+000,
