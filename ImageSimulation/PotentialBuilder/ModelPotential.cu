@@ -76,17 +76,6 @@ namespace PotentialBuilder {
 		memset(potentialSlice, 0, nx * ny * sizeof(double));
 		CUERR
 
-		int *bins_offset;
-		checkCudaErrors( cudaMallocManaged(&(bins_offset), (binx * biny + 1) * sizeof(int)));
-		memset(bins_offset, 0, (binx * biny + 1) * sizeof(int));
-		CUERR
-
-		int *bins_num;
-		checkCudaErrors( cudaMallocManaged(&(bins_num), (nx * ny) * sizeof(int)));
-		memset(bins_num, 0, (nx * ny) * sizeof(int));
-		CUERR
-
-
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		dim3 threads(BLOCKSIZEX, BLOCKSIZEY, 1);		
@@ -96,8 +85,7 @@ namespace PotentialBuilder {
 		std::sort(pAtoms, pAtoms + nAtoms);
 
 		std::vector<atom> slice;
-		std::vector<atom> *bins = new std::vector<atom> [biny * binx];
-
+		
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		float time_kernel = 0.0f;
@@ -106,38 +94,6 @@ namespace PotentialBuilder {
 		cudaEventCreate(&start_total);
 		cudaEventCreate(&stop_total);
 		cudaEventRecord(start_total,0);
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////	Bins to pixel ////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		clock_t time_lattice = clock();
-
-		unsigned short *bins_lattice;
-		checkCudaErrors( cudaMallocManaged(&(bins_lattice), (nx * ny * MAX_BINS_PER_PX) * sizeof(unsigned short)));
-		memset(bins_lattice, -1, (nx * ny * MAX_BINS_PER_PX) * sizeof(unsigned short));
-
-		for(size_t iy = 0; iy < ny; iy++) {
-			int coordbinstarty	= floor(iy * ((double) biny / ny) - radius / bindimy ) - 1;		// iy in px
-			int coordbinendy	= ceil(iy * ((double) biny / ny) + radius / bindimy ) - 1;
-
-			for(size_t ix = 0; ix < nx; ix++) {                                 // jx in px
-				int coordbinstartx	= floor(ix * ((double) binx / nx) - radius / bindimx ) - 1;
-				int coordbinendx	= ceil(ix * ((double) binx / nx) + radius / bindimx ) - 1;
-
-				int k = 0;
-				for(int i = coordbinstarty; i <= coordbinendy && k < MAX_BINS_PER_PX; i++) {
-					int bincurr_y = (i + biny) % biny;
-					for(int j = coordbinstartx; j <= coordbinendx && k < MAX_BINS_PER_PX; j++, k++) {
-						int bincur_x = (j + binx) % binx;
-						bins_lattice[ MAX_BINS_PER_PX * (nx * iy + ix) + k ] = binx * bincurr_y + bincur_x;
-						bins_num[nx * iy + ix] = k + 1;
-					}
-				}
-			}
-		}
-
-		std::cout << "calculate lattice-to-bin: " << (clock() - time_lattice) / CLOCKS_PER_SEC << "s." << std::endl;
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,43 +118,26 @@ namespace PotentialBuilder {
 			}
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
-			//////////////	Divide on bins	//////////////////////////////////////////////////////////////////////
+			//////////////	atoms			//////////////////////////////////////////////////////////////////////
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
-			for(size_t iy = 0; iy < biny; iy++) {
-				for(size_t jx = 0; jx < binx; jx++) {
-					for(auto t : slice) {
-						if( t.x * a_h >= jx * bindimx && t.x * a_h <= (jx + 1) * bindimx )
-							if( t.y * b_h >= iy * bindimy && t.y * b_h <= (iy + 1) * bindimy )
-								bins[binx * iy + jx].push_back(t);
-					}
-				}
+			
+			atom *SliceAtoms;
+			checkCudaErrors( cudaMallocManaged(&(SliceAtoms), slice.size() * sizeof(atom)));
+			for(size_t l = 0; l < slice.size(); l++) {
+				SliceAtoms[l] = slice[l];
 			}
 
-			atom *bins_d;
-			checkCudaErrors( cudaMallocManaged(&(bins_d), slice.size() * sizeof(atom)));
-
-			bins_offset[0] = 0;
-			for(size_t i = 0, k = 0; i < binx * biny; i++) {
-				bins_offset[i + 1] = bins[i].size();
-				for(auto s : bins[i]) {
-					bins_d[k] = s;
-					k++;
-				}
-				bins[i].clear();
-			}
-
-			// make number to offset
-			for(int i = 2; i < binx * biny + 1; i++) {
-				bins_offset[i] = bins_offset[i] + bins_offset[i - 1];
-			}
+			//memcpy(SliceAtoms, &slice, slice.size() * sizeof(atom));
 
 			cudaEvent_t start,stop;
 			float ctime = 0.0f;
 			cudaEventCreate(&start);
 			cudaEventCreate(&stop);
 			cudaEventRecord(start,0);
+			
+			calculatePotentialGridGPU<<<grid, threads>>>(potentialSlice, SliceAtoms, slice.size());
+			CUERR
 
-			calculatePotentialGridGPU<<<grid, threads>>>(potentialSlice, bins_offset, bins_num, bins_d, bins_lattice);
 			checkCudaErrors( cudaThreadSynchronize() );
 
 			cudaEventRecord(stop,0);
@@ -207,8 +146,7 @@ namespace PotentialBuilder {
 			time_kernel += ctime;
 
 			std::cout << "slice: " << kz << std::endl << "calculated atoms: " << slice.size() << std::endl;
-			//cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
-
+			
 			char slicename[256];
 			sprintf(slicename, "%s/slice%003u.slc", fileNameOutput, kz);
 			FILE *pFile;
@@ -216,13 +154,9 @@ namespace PotentialBuilder {
 			fwrite(potentialSlice, sizeof(double), nx * ny, pFile);
 			fclose(pFile);
 
-			slice.clear();	
-			cudaFree(bins_d);
+			slice.clear();
+			cudaFree(SliceAtoms);
 		}
-
-		cudaFree(bins_num);
-		cudaFree(bins_lattice);
-		cudaFree(bins_offset);
 
 		cudaEventRecord(stop_total,0);
 		cudaEventSynchronize(stop_total);
@@ -238,52 +172,43 @@ namespace PotentialBuilder {
 		return 0;
 	}
 
-	__global__ void calculatePotentialGridGPU(double *potential, int *bins_offset, int *bins_num, atom *bins_d, unsigned short *bins_lattice) {
+	__global__ void calculatePotentialGridGPU(double *potential, atom* atoms, unsigned int n) {
 		const int ix = __umul24(blockDim.x, blockIdx.x) + threadIdx.x;
 		const int iy = __umul24(blockDim.y, blockIdx.y) + threadIdx.y;
 		const int is = __umul24(blockDim.x, threadIdx.y) + threadIdx.x;
 		const int LINESIZE = __umul24(gridDim.x, blockDim.x);
 
-		int i,j;
-
 		double latticex = ix * dx_d; // lattice x
 		double latticey = iy * dy_d; // lattice y
-
-		const int numberBins = bins_num[LINESIZE * iy + ix];
 
 		__shared__ double imageval[BLOCKSIZEX*BLOCKSIZEY];
 		imageval[is] = 0.0;
 
-		for(i = 0; i < numberBins; i++) {
-			int ibin = bins_lattice[ MAX_BINS_PER_PX * (LINESIZE * iy + ix) + i];
+		for(unsigned int i = 0; i < n; i++) {
+			int numberAtom = atoms[i].num;
+			double x = fabs(atoms[i].x * a_d - latticex);
+			double y = fabs(atoms[i].y * b_d - latticey);
 
-			int n = bins_offset[ibin + 1] - bins_offset[ibin];
-			int offset = bins_offset[ibin];
+			x = ( x >= a_d / 2.0 ) ? x - a_d : x;
+			y = ( y >= b_d / 2.0 ) ? y - b_d : y;
 
-			for(j = 0; j < n; j++) {
-				int numberAtom = bins_d[offset + j].num;
-				double x = fabs(bins_d[offset + j].x * a_d - latticex);
-				double y = fabs(bins_d[offset + j].y * b_d - latticey);
+			double r = __dsqrt_rn(x * x + y * y);
+			
+			//if(r > radius_d) continue;
+			r = (r < 1e-20) ? 1e-20 : r;
+			double dR1 = 6.2831853071796 * r; // 2 * PI * r;
 
-				x = ( x >= a_d / 2.0 ) ? x - a_d : x;
-				y = ( y >= b_d / 2.0 ) ? y - b_d : y;
-
-				double r = __dsqrt_rn(x * x + y * y);
-				r = (r < 1e-20) ? 1e-20 : r;
-				double dR1 = 6.2831853071796 * r; // 2 * PI * r;
-
-				imageval[is] += ( 
-					FParamsDevice[(numberAtom) * 12 + 0 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 1]))
+			imageval[is] += ( 
+						FParamsDevice[(numberAtom) * 12 + 0 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 1]))
 					+	FParamsDevice[(numberAtom) * 12 + 1 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 1]))
 					+	FParamsDevice[(numberAtom) * 12 + 2 * 2 + 0] * bessk0(dR1 * __dsqrt_rn(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 1])) 
 					) * 300.73079394295
 					+ (
-					(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7])
+					(	FParamsDevice[(numberAtom) * 12 + 0 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7])
 					+	(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7])
 					+	(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7])
 					) * 150.36539697148;
-
-			}
+		
 		}
 
 		__syncthreads();

@@ -45,7 +45,7 @@ namespace PotentialBuilder {
 		float y;
 	};
 
-	__global__ void calculatePotentialGridGPU(double *potential, int *bins_offset, int *bins_num, atom *bins_d, unsigned short *bins_lattice);
+	__global__ void calculatePotentialGridGPU(double *potential, atom* SliceAtoms, unsigned int n);
 
 	__device__ double	bessk0( double x );
 	__device__ double	bessi0( double x );
