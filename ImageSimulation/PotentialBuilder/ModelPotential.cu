@@ -152,7 +152,8 @@ namespace PotentialBuilder {
 				if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c_h && pAtoms[i].element.xsCoordinate.z * c_h <= (kz + 1) * dz ) {
 					atom buff;
 					buff.id = i + 1;
-					buff.num = model->getNumberByName(pAtoms[i].element.Atom) - 1;
+					//buff.num = model->getNumberByName(pAtoms[i].element.Atom) - 1;
+					buff.num = pAtoms[i].element.Atom - 1;
 					buff.x = pAtoms[i].element.xsCoordinate.x;
 					buff.y = pAtoms[i].element.xsCoordinate.y;
 

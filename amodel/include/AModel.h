@@ -35,7 +35,7 @@ AMODEL_API enum fileFormat {
 
 AMODEL_API enum kindAtoms {
 	none	= -1,
-	all		= 10000
+	//all		= 10000
 };
 
 AMODEL_API fileFormat getFileFormat(const char*);

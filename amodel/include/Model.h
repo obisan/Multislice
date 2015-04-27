@@ -16,6 +16,8 @@
 
 #include "BaseStructures.h"
 
+#include <algorithm>
+
 namespace AModel {
 	
 	class AMODEL_API Model {
