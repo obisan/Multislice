@@ -194,7 +194,7 @@ namespace PotentialBuilder {
 
 			double r = __dsqrt_rn(x * x + y * y);
 			
-			//if(r > radius_d) continue;
+			if(r > radius_d) continue;
 			r = (r < 1e-20) ? 1e-20 : r;
 			double dR1 = 6.2831853071796 * r; // 2 * PI * r;
 
