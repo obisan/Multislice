@@ -33,6 +33,11 @@ AMODEL_API enum fileFormat {
 	extentionXyz = 3
 };
 
+AMODEL_API enum kindAtoms {
+	none	= -1,
+	all		= 10000
+};
+
 AMODEL_API fileFormat getFileFormat(const char*);
 
 AMODEL_API AModel::Model* getModelType(const char* filename);

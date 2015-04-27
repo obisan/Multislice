@@ -118,12 +118,19 @@ namespace AModel {
 	};
 
 	struct AMODEL_API Record {
-		char		Atom[4];
+		int			Atom;
 		float		oxygenation;
 		XYZ			xsCoordinate;
 		float		R_e;
 		float		occupation;
 		float		absorbtion;
+
+		friend std::istream& operator>>(std::istream& in, Record& ptrc) {
+			in	>> ptrc.xsCoordinate.x >> ptrc.xsCoordinate.y >> ptrc.xsCoordinate.z
+				>> ptrc.Atom >> ptrc.absorbtion >> ptrc.oxygenation >> ptrc.occupation;
+			ptrc.R_e = 0.2f;
+			return in;
+		}
 	};
 	struct AMODEL_API Cortege {
 		bool isInclude;
