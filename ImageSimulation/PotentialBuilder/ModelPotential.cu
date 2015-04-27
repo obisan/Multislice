@@ -206,9 +206,7 @@ namespace PotentialBuilder {
 			cudaEventElapsedTime(&ctime, start, stop);
 			time_kernel += ctime;
 
-#if defined(_DEBUG)
 			std::cout << "slice: " << kz << std::endl << "calculated atoms: " << slice.size() << std::endl;
-#endif
 			//cudaMemcpy(potential + nx * ny * kz, potentialSlice, nx * ny * sizeof(double), cudaMemcpyDeviceToHost);
 
 			char slicename[256];
