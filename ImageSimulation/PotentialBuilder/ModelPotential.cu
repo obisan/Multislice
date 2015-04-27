@@ -107,7 +107,7 @@ namespace PotentialBuilder {
 			cudaEventRecord(start,0);
 			
 			for(size_t iy = 0; iy < ny; iy++) {
-				for(size_t ix = 0; ix < nx; ix) {
+				for(size_t ix = 0; ix < nx; ix++) {
 
 					double latticex = ix * dx; // lattice x
 					double latticey = iy * dy; // lattice y
