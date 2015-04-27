@@ -70,7 +70,7 @@ namespace PotentialBuilder {
 		float time_kernel = 0.0f;
 		for(size_t kz = 0; kz * dz < c; kz++) {
 			for(size_t i = 0; i < nAtoms; i++) {
-				if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c && pAtoms[i].element.xsCoordinate.z * c < (kz + 1) * dz ) {
+				if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c && pAtoms[i].element.xsCoordinate.z * c <= (kz + 1) * dz ) {
  					//atominfoid_host[j] = model->getNumberByName(pAtoms[i].element.Atom) - 1;
 					atominfoid_host[j] = pAtoms[i].element.Atom - 1;
  					atominfoxy_host[ATOMS_IN_CONST_MEMORY_MULTIPLICATOR * j + 0] = pAtoms[i].element.xsCoordinate.x;
