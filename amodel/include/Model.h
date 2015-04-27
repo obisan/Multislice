@@ -49,6 +49,8 @@ namespace AModel {
 		void			setSpaceGroup(int spaceGroup);
 		//////////////////////////////////////////////////////////////////////////
 
+		void			freeTable();
+
 		virtual	int read(const char* filename) = 0;
 		virtual int readhead(const char* filename) = 0;
 		
@@ -61,7 +63,7 @@ namespace AModel {
 		//////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////
 		
-		__forceinline int getNumberByName(const char *name) {
+		static __forceinline int getNumberByName(const char *name) {
 			char *table[] = {
 				"H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", 
 				"Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", 
@@ -105,30 +107,27 @@ namespace AModel {
 						return iByfer;
 				return -1;
 			}
-		__forceinline double StringToDouble(const char *_str) {
+		__forceinline float StringToDouble(const char *_str) {
 			char bstr[15] = "\0";
 			strcpy(bstr,_str);
-			size_t iByfer = iFindSymbol(bstr,'/');
+			
+			if( strstr(bstr, "/") ) {
+				__int64 pos = strstr(bstr, "/") - bstr;
 
-			if( iByfer != -1 ) {
 				char chisl[15], znamenat[15];
 				size_t ilen;
 
 				ilen = strlen(_str);
-				strncpy(chisl, _str, iByfer);
-				strncpy(znamenat, _str + iByfer + 1, ilen - iByfer);
+				strncpy(chisl, _str, pos);
+				strncpy(znamenat, _str + pos + 1, ilen - pos);
 				chisl[9] = znamenat[9] = '\0';
 
-				return	(atof(chisl) / atof(znamenat));
+				return	(float)(atof(chisl) / atof(znamenat));
 			}
 
-			iByfer = iFindSymbol(bstr,',');
-			if( iByfer != -1) {
-				bstr[1] = '.';
-				return atof(bstr);
-			}
-			else 
-				return atof(_str);
+			std::replace(bstr, bstr + 15, ',', '.');
+			return (float) atof(bstr);
+
 			return 0;
 		}
 		
