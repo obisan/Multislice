@@ -227,8 +227,8 @@ int Dispatcher::Run(const char* fileNameXML) {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	AModel::Model *model = getModelType(command.fileNameInput);
-	
+	std::shared_ptr<AModel::Model> model(getModelType(command.fileNameInput));
+
 	if(!isDirectoryExist(command.potentialDirectory)) {
 		if( model->read(command.fileNameInput) == -1 ) {
 			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
@@ -240,12 +240,10 @@ int Dispatcher::Run(const char* fileNameXML) {
 		//////////////////////////////////////////////////////////////////////////
 		// Calculating map potentials	//////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////
-		PotentialBuilder::ModelPotential *modelPotential 
-			= new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory);
+		std::unique_ptr<PotentialBuilder::ModelPotential> modelPotential(new PotentialBuilder::ModelPotential(model.get(), command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory));
 		if(modelPotential->calculatePotentialGrid() == -1) 
 			return -1;
 		modelPotential->savePotentialStack(command.fileNameOutput, command.potentialDirectory);
-		delete modelPotential;
 	} else {
 		if( model->readhead(command.fileNameInput) == -1 ) {
 			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
@@ -266,21 +264,15 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Dots per atom		= " << command.dpa << std::endl;
 	
 
-	ModelSimulated *modelSimulated = new ModelSimulated(command.potentialDirectory, model, command.nx, command.ny, command.numberSlices, command.dpa);
-	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
-	Image *result = new Image(command.nx, command.ny, 1, sizeof(double), 2);
+	std::shared_ptr<ModelSimulated> modelSimulated(new ModelSimulated(command.potentialDirectory, model.get(), command.nx, command.ny, command.numberSlices, command.dpa));
+	std::unique_ptr<Microscope> microscope(new Microscope(command.keV, command.cs, command.aperture, command.defocus));
+	std::shared_ptr<Image> result(new Image(command.nx, command.ny, 1, sizeof(double), 2));
 	
-	modelSimulated->imageCalculation(result, microscope);
-	Image *result_module = result->getModule();
-	result_module->saveMRC(command.fileNameOutput, model, command.nx, command.ny, 1, mrc_FLOAT);
-
-	delete result_module;
-	delete result;
-	delete microscope;
-	delete modelSimulated;
-
-	delete model;
-
+	modelSimulated->imageCalculation(result.get(), microscope.get());
+	std::unique_ptr<Image> result_module(result->getModule());
+	result_module->saveMRC(command.fileNameOutput, model.get(), command.nx, command.ny, 1, mrc_FLOAT);
+	
+	
 	//////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////

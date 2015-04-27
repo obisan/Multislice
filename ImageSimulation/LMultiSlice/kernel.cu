@@ -15,6 +15,8 @@ __global__ void phaseObject(double *potential, cusp::complex<double>* wave, unsi
 	
 	/// [ t(x, y) * phi(x, y) ]
 	wave[LINESIZE * iy + ix] = fi * wave[LINESIZE * iy + ix];
+	//wave[LINESIZE * iy + ix].x = potential[ LINESIZE * iy + ix ];
+	//wave[LINESIZE * iy + ix].y = 0;
 }
 
 __global__ void nulling(cusp::complex<double> *pfftw) {
@@ -75,6 +77,7 @@ __global__ void propagate(cusp::complex<double> *wave_in, cusp::complex<double> 
 	//cusp::complex<double> w1( 1.0 / (lambda * dZ) * sin(M_PI / (lambda * dZ) * k), - 1.0 / (lambda * dZ) * cos(M_PI / (lambda * dZ) * k)); // p-mini after sanya
 	cusp::complex<double> w1( cos(M_PI * lambda * k * k * dZ), sin(M_PI * lambda * k * k * dZ)); // p-big
 	wave_out[iy * LINESIZE + ix] = w1 * wave_in[iy * LINESIZE + ix];
+	//wave_out[iy * LINESIZE + ix] = wave_in[iy * LINESIZE + ix];
 }
 
 __device__ void		swap(double& a, double& b) {

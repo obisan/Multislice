@@ -53,7 +53,6 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 	cudaEventRecord(start,0);
-	
 
 	double dz = this->model->getC() / countSlices;
 	for(size_t kz = 0; kz < countSlices; kz++) {	
@@ -73,7 +72,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 
 		phaseObject<<<grid_phase, threads_phase>>>(potentialSlice, (cusp::complex<double>*) wave_in, nx, ny, microscope->getSigma());
 		cudaThreadSynchronize();
-
+		
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 		///// PHI(k) = FFT [ t_n(x, y) * phi_n(x, y) ]
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +86,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 
 		normalize<<<grid_normalize, threads_normalize>>>((cusp::complex<double>*) wave_out, nx);
 		cudaThreadSynchronize();
-
+		
 		/////////////////////////////////////////////////////////////////////////////////////////////////
 		/// Rearrangement 
 		///	4 3  to 2 1 
@@ -99,15 +98,18 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 
 		rearrangement<<<grid_rearrangement, threads_rearrangement>>>((cusp::complex<double>*) wave_out);
 		cudaThreadSynchronize();
-
+		
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// p_n(x, y, dZ) * FFT [ t_n(x, y) * phi_n(x, y) ]
+		/// PHI_n+1(x,y) = p_n(x, y, dZ) * FFT [ t_n(x, y) * phi_n(x, y) ]
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		const unsigned int MAX_THREADS_PROPAGATION = 16;
 		dim3 threads_propagation(MAX_THREADS_PROPAGATION, MAX_THREADS_PROPAGATION, 1);							// ðàçìåð êâàäðàòà
 		dim3 grid_propagation( (int) nx / MAX_THREADS_PROPAGATION, (int) ny / MAX_THREADS_PROPAGATION, 1 );		// ñêîëüêî êâàäðàòîâ íóæíî ÷òîáû ïîêðûòü âñå èçîáðàæåíèå
 		
-		propagate<<<grid_propagation, threads_propagation>>>((cusp::complex<double>*) wave_out, (cusp::complex<double>*) wave_next, microscope->getLambda(), (kz + 1) * dz, nx / dpa );
+		propagate<<<grid_propagation, threads_propagation>>>((cusp::complex<double>*) wave_out, (cusp::complex<double>*) wave_next, microscope->getLambda(), kz * dz, nx / dpa );
+		cudaThreadSynchronize();
+		
+		rearrangement<<<grid_rearrangement, threads_rearrangement>>>((cusp::complex<double>*) wave_next);
 		cudaThreadSynchronize();
 
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +121,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		
 		normalize<<<grid_normalize, threads_normalize>>>((cusp::complex<double>*) wave_in, nx);
 		cudaThreadSynchronize();
-
+		
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		//Image::copyFFTtoImage<double>(result, wave_in + nx * ny * kz, kz);
@@ -128,6 +130,9 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		//Z = 10;
 	}
 	
+#define _OBJECT_LENS_
+#if defined(_OBJECT_LENS_)
+
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///// PHI(k) = FFT [ phi_exit(x, y) ]
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,7 +158,7 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 
 	rearrangement<<<grid_rearrangement, threads_rearrangement>>>((cusp::complex<double>*) wave_out);
 	cudaThreadSynchronize();
-
+	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// H(k) * PHI(k)
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +185,8 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 		
 	normalize<<<grid_normalize, threads_normalize>>>((cusp::complex<double>*) wave_in, nx);
 	cudaThreadSynchronize();
-
+#endif
+	
 	Image::copyFFTtoImage<double>(result, wave_in, 0);
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,14 +195,11 @@ int ModelSimulated::imageCalculation(Image *result, Microscope *microscope) {
 	cudaEventSynchronize(stop);
 	cudaEventElapsedTime(&time, start, stop);
 	
-	std::cout << std::endl << "Kernel time calculating electron image image: " << time << "ms." << std::endl << std::endl;
+	std::cout << std::endl << "Kernel time calculating electron image: " << time << "ms." << std::endl << std::endl;
 	
-
 	cudaFree(wave_in);
 	cudaFree(wave_out);
 	cudaFree(wave_next);
 	
-
-
 	return 0;
 }

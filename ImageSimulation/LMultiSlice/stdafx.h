@@ -24,6 +24,7 @@
 #include <string>
 #include <iterator>
 #include <complex>
+#include <memory>
 
 #include <time.h> 
 
