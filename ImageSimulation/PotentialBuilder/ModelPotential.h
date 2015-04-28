@@ -33,8 +33,7 @@ namespace PotentialBuilder {
 		float y;
 	};
 
-	__global__ void calculatePotentialGridGPU(double *potential, atom* SliceAtoms, unsigned int n);
-
+	void calculatePotentialGridGPU(double *potential, std::vector<atom> slice, unsigned int nx, unsigned int ny, double dx, double dy, double a_h, double b_h, double radius);
 	double	bessk0( double x );
 	double	bessi0( double x );
 	void	swap2(double& a, double& b);

@@ -98,51 +98,13 @@ namespace PotentialBuilder {
 			//////////////	atoms			//////////////////////////////////////////////////////////////////////
 			//////////////////////////////////////////////////////////////////////////////////////////////////////
 			
-			std::vector<atom> &atoms = slice;
-
 			cudaEvent_t start,stop;
 			float ctime = 0.0f;
 			cudaEventCreate(&start);
 			cudaEventCreate(&stop);
 			cudaEventRecord(start,0);
 			
-			for(size_t iy = 0; iy < ny; iy++) {
-				for(size_t ix = 0; ix < nx; ix++) {
-
-					double latticex = ix * dx; // lattice x
-					double latticey = iy * dy; // lattice y
-
-					double imageval = 0.0;
-
-					for(unsigned int i = 0; i < slice.size(); i++) {
-						int numberAtom = atoms[i].num;
-						double x = fabs(atoms[i].x * a_h - latticex);
-						double y = fabs(atoms[i].y * b_h - latticey);
-
-						x = ( x >= a_h / 2.0 ) ? x - a_h : x;
-						y = ( y >= b_h / 2.0 ) ? y - b_h : y;
-
-						double r = sqrt(x * x + y * y);
-			
-						if(r > radius) continue;
-						r = (r < 1e-20) ? 1e-20 : r;
-						double dR1 = 6.2831853071796 * r; // 2 * PI * r;
-
-						imageval += ( 
-									FParamsDevice[(numberAtom) * 12 + 0 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 1]))
-								+	FParamsDevice[(numberAtom) * 12 + 1 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 1]))
-								+	FParamsDevice[(numberAtom) * 12 + 2 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 1])) 
-								) * 300.73079394295
-								+ (
-								(	FParamsDevice[(numberAtom) * 12 + 0 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7])
-								+	(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7])
-								+	(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7])
-								) * 150.36539697148;
-		
-					}
-					potentialSlice[ nx * iy + ix ] = imageval; 
-				}				
-			}
+			calculatePotentialGridGPU(potentialSlice, slice, nx, ny, dx, dy, a_h, b_h, radius);
 
 			cudaEventRecord(stop,0);
 			cudaEventSynchronize(stop);
@@ -176,6 +138,49 @@ namespace PotentialBuilder {
 
 		return 0;
 	}
+
+	void calculatePotentialGridGPU(double *potential, std::vector<atom> slice, unsigned int nx, unsigned int ny, double dx, double dy, double a_h, double b_h, double radius) {
+		std::vector<atom> &atoms = slice;
+
+		for(size_t iy = 0; iy < ny; iy++) {
+				for(size_t ix = 0; ix < nx; ix++) {
+
+					double latticex = ix * dx; // lattice x
+					double latticey = iy * dy; // lattice y
+
+					double imageval = 0.0;
+
+					for(unsigned int i = 0; i < slice.size(); i++) {
+						int numberAtom = atoms[i].num;
+						double x = fabs(atoms[i].x * a_h - latticex);
+						double y = fabs(atoms[i].y * b_h - latticey);
+
+						x = ( x >= a_h / 2.0 ) ? x - a_h : x;
+						y = ( y >= b_h / 2.0 ) ? y - b_h : y;
+
+						double r = sqrt(x * x + y * y);
+			
+						if(r > radius) continue;
+						r = (r < 1e-20) ? 1e-20 : r;
+						double dR1 = 6.2831853071796 * r; // 2 * PI * r;
+
+						imageval += ( 
+									FParamsDevice[(numberAtom) * 12 + 0 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 0 * 2 + 1]))
+								+	FParamsDevice[(numberAtom) * 12 + 1 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 1]))
+								+	FParamsDevice[(numberAtom) * 12 + 2 * 2 + 0] * bessk0(dR1 * sqrt(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 1])) 
+								) * 300.73079394295
+								+ (
+								(	FParamsDevice[(numberAtom) * 12 + 0 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 0 * 2 + 7])
+								+	(FParamsDevice[(numberAtom) * 12 + 1 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 1 * 2 + 7])
+								+	(FParamsDevice[(numberAtom) * 12 + 2 * 2 + 6] / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7]) * exp(-(6.2831853071796 * r * r) / FParamsDevice[(numberAtom) * 12 + 2 * 2 + 7])
+								) * 150.36539697148;
+		
+					}
+					potential[ nx * iy + ix ] = imageval; 
+				}				
+			}
+	}
+
 
 	/*-------------------- bessk0() ---------------*/
 	/*
