@@ -124,7 +124,7 @@ namespace PotentialBuilder {
 
 						double r = sqrt(x * x + y * y);
 			
-						//if(r > radius) continue;
+						if(r > radius) continue;
 						r = (r < 1e-20) ? 1e-20 : r;
 						double dR1 = 6.2831853071796 * r; // 2 * PI * r;
 
@@ -140,7 +140,7 @@ namespace PotentialBuilder {
 								) * 150.36539697148;
 		
 					}
-					potentialSlice[ nx * ny * iy + ix ] = imageval; 
+					potentialSlice[ nx * iy + ix ] = imageval; 
 				}				
 			}
 
