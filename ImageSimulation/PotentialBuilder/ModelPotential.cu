@@ -159,13 +159,14 @@ namespace PotentialBuilder {
 			fclose(pFile);
 
 			slice.clear();
-			free(potentialSlice);
+			
 		}
 
 		cudaEventRecord(stop_total,0);
 		cudaEventSynchronize(stop_total);
 		cudaEventElapsedTime(&time_total, start_total, stop_total);
 
+		free(potentialSlice);
 		pAtoms = nullptr;
 
 		std::cout << std::endl;
