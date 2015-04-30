@@ -243,7 +243,7 @@ int Dispatcher::Run(const char* fileNameXML) {
 		std::unique_ptr<PotentialBuilder::ModelPotential> modelPotential(new PotentialBuilder::ModelPotential(model.get(), command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory));
 		if(modelPotential->calculatePotentialGrid() == -1) 
 			return -1;
-		modelPotential->savePotentialStack(command.fileNameOutput, command.potentialDirectory);
+		//modelPotential->savePotentialStack(command.fileNameOutput, command.potentialDirectory);
 	} else {
 		if( model->readhead(command.fileNameInput) == -1 ) {
 			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
