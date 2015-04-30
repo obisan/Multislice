@@ -11,7 +11,7 @@
        <dpa>10.0</dpa>        <!--- dots per angstrem --->
     </image>
     <slicing>
-        <radius>10.0</radius>			<!--- Angstrom, max = 20A --->
+        <radius>20.0</radius>			<!--- Angstrom, max = 20A --->
         <bindim>15.0</bindim> 			<!--- Angstrom, min = 10A --->
         <numberslices>2</numberslices>
     </slicing>

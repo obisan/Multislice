@@ -1,6 +1,7 @@
 import subprocess
 import datetime
 import os
+import shutil
 
 progPath    = 'D:\\github\\Multislice\\statistics\\bin\\'
 programName = 'LMultiSlice.exe'
@@ -50,9 +51,9 @@ extantion = ".xml"
 curdate = datetime.date.today()
 
 for elementArchitecture in architectures:
-    for elementVersions in versions[-2:-1]:
-        for elementPixels in pixels[:1]:
-            for elementModel in models[:1]:
+    for elementVersions in versions[0:1]:
+        for elementPixels in pixels:
+            for elementModel in models:
                 try:
                     startprocess = datetime.datetime.now()
                     if not os.path.exists('result\\' + str(curdate)):
@@ -75,6 +76,8 @@ for elementArchitecture in architectures:
                     #     [ fullPathProgram, filenamexml ],
                     #     stdout=file
                     # )
+
+                    shutil.rmtree('result\\' + elementModel + "_" + elementPixels)
 
                     print("Process finished with exit code ", process)
 
