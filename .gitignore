@@ -18,6 +18,8 @@
 
 docs/
 samples/
+statistics/
+statistics/.idea/
 statistics/config/
 statistics/model/
 statistics/result/
