@@ -14,6 +14,12 @@ namespace PotentialBuilder {
 		this->radius = radius;
 		this->bindim = bindim;
 
+		this->a = model->getA();
+		this->b = model->getB();
+		this->c = model->getC();
+
+		this->nAtoms = model->getNumberAtoms();
+
 		strcpy(this->fileNameOutput, fileNameOutput);
 	}
 
@@ -38,51 +44,62 @@ namespace PotentialBuilder {
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		const size_t nAtoms = model->getNumberAtoms();
-		const double a_h = model->getA();
-		const double b_h = model->getB();
-		const double c_h = model->getC();
-		const double dx = a_h / this->nx;
-		const double dy = b_h / this->ny;
-		const double dz = c_h / this->nz;
+		std::sort(model->getTableCell(), model->getTableCell() + nAtoms);
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		 unsigned int start_time =  clock(); // начальное время
 		
-		double *potentialSlice;
-		potentialSlice = (double*) malloc(nx * ny * sizeof(double));
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////	Preparing slices /////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+		std::vector<std::thread> threads;
+		for(size_t kz = 0; kz < nz; kz++) {
+			sdata data( fileNameOutput, a, b, c, nx, ny, nz, model->getTableCell(), nAtoms );
+			threads.push_back( std::thread(&ModelPotential::calculatePotentialGridGPU, ModelPotential(), kz, data) );
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////	Run				//////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////
+		for(size_t i = 0; i < threads.size(); i++) {
+			threads[i].join();
+		}
+
+		unsigned int end_time = clock(); // конечное время
+		unsigned int total_time = end_time - start_time; // искомое время
+
+		std::cout << std::endl;
+		std::cout << "Kernel time calculating potential grid: " << total_time / CLOCKS_PER_SEC * 100 << "ms." << std::endl;
+		std::cout << "Total  time calculating potential grid: " << total_time / CLOCKS_PER_SEC * 100 << "ms." << std::endl << std::endl;
+
+		return 0;
+	}
+
+	int ModelPotential::calculatePotentialGridGPU(unsigned int kz, sdata data) {
+		std::cout << "kz = " << kz << " started" << std::endl;
+
+		char fileNameOutput[256];
+		strcpy(fileNameOutput, data.fileNameOutput);
+		const double a = data.a;
+		const double b = data.b;
+		const double c = data.c;
+		const int nx = data.nx;
+		const int ny = data.ny;
+		const int nz = data.nz;
+		AModel::Cortege *pAtoms = data.pAtoms;
+		const double dx = a / nx;
+		const double dy = b / ny;
+		const double dz = c / nz;
+		const unsigned int nAtoms = data.nAtoms;
+		std::vector<atom> slice;
+
+		double *potentialSlice = (double*) malloc(nx * ny * sizeof(double));
 		memset(potentialSlice, 0, nx * ny * sizeof(double));
 		
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		AModel::Cortege *pAtoms = model->getTableCell();
-		std::sort(pAtoms, pAtoms + nAtoms);
-
-		std::vector<atom> slice;
-		
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		float time_kernel = 0.0f;
-		float time_total = 0.0f;
-		cudaEvent_t start_total,stop_total;
-		cudaEventCreate(&start_total);
-		cudaEventCreate(&stop_total);
-		cudaEventRecord(start_total,0);
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		for(size_t kz = 0; kz < nz; kz++) {
-			//////////////////////////////////////////////////////////////////////////////////////////////////////
-			//////////////	Divide on slices /////////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-			for(size_t i = 0; i < nAtoms; i++) {
-				if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c_h && pAtoms[i].element.xsCoordinate.z * c_h <= (kz + 1) * dz ) {
+		for(size_t i = 0; i < nAtoms; i++) {
+				if( kz * dz <= pAtoms[i].element.xsCoordinate.z * c && pAtoms[i].element.xsCoordinate.z * c <= (kz + 1) * dz ) {
 					atom buff;
 					buff.id = i + 1;
 					//buff.num = model->getNumberByName(pAtoms[i].element.Atom) - 1;
@@ -94,52 +111,6 @@ namespace PotentialBuilder {
 				}
 			}
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////
-			//////////////	atoms			//////////////////////////////////////////////////////////////////////
-			//////////////////////////////////////////////////////////////////////////////////////////////////////
-			
-			cudaEvent_t start,stop;
-			float ctime = 0.0f;
-			cudaEventCreate(&start);
-			cudaEventCreate(&stop);
-			cudaEventRecord(start,0);
-			
-			calculatePotentialGridGPU(potentialSlice, slice, nx, ny, dx, dy, a_h, b_h, radius);
-
-			cudaEventRecord(stop,0);
-			cudaEventSynchronize(stop);
-			cudaEventElapsedTime(&ctime, start, stop);
-			time_kernel += ctime;
-
-			std::cout << "slice: " << kz << std::endl << "calculated atoms: " << slice.size() << std::endl;
-			
-			char slicename[256];
-			sprintf(slicename, "%s/slice%003u.slc", fileNameOutput, kz);
-			FILE *pFile;
-			pFile = fopen(slicename, "wb");
-			fwrite(potentialSlice, sizeof(double), nx * ny, pFile);
-			fclose(pFile);
-
-			slice.clear();
-			
-		}
-
-		cudaEventRecord(stop_total,0);
-		cudaEventSynchronize(stop_total);
-		cudaEventElapsedTime(&time_total, start_total, stop_total);
-
-		free(potentialSlice);
-		pAtoms = nullptr;
-
-		std::cout << std::endl;
-		std::cout << "Kernel time calculating potential grid: " << time_kernel	<< "ms." << std::endl;
-		std::cout << "Total  time calculating potential grid: " << time_total	<< "ms." << std::endl << std::endl;
-
-
-		return 0;
-	}
-
-	void calculatePotentialGridGPU(double *potential, std::vector<atom> slice, unsigned int nx, unsigned int ny, double dx, double dy, double a_h, double b_h, double radius) {
 		std::vector<atom> &atoms = slice;
 
 		for(size_t iy = 0; iy < ny; iy++) {
@@ -152,11 +123,11 @@ namespace PotentialBuilder {
 
 					for(unsigned int i = 0; i < slice.size(); i++) {
 						int numberAtom = atoms[i].num;
-						double x = fabs(atoms[i].x * a_h - latticex);
-						double y = fabs(atoms[i].y * b_h - latticey);
+						double x = fabs(atoms[i].x * a - latticex);
+						double y = fabs(atoms[i].y * b - latticey);
 
-						x = ( x >= a_h / 2.0 ) ? x - a_h : x;
-						y = ( y >= b_h / 2.0 ) ? y - b_h : y;
+						x = ( x >= a / 2.0 ) ? x - a : x;
+						y = ( y >= b / 2.0 ) ? y - b : y;
 
 						double r = sqrt(x * x + y * y);
 			
@@ -176,9 +147,22 @@ namespace PotentialBuilder {
 								) * 150.36539697148;
 		
 					}
-					potential[ nx * iy + ix ] = imageval; 
-				}				
+					potentialSlice[ nx * iy + ix ] = imageval; 
+				}	
 			}
+
+		std::cout << "slice: " << kz << std::endl << "calculated atoms: " << slice.size() << std::endl;
+
+		char slicename[256];
+		sprintf(slicename, "%s/slice%003u.slc", fileNameOutput, kz);
+		FILE *pFile;
+		pFile = fopen(slicename, "wb");
+		fwrite(potentialSlice, sizeof(double), nx * ny, pFile);
+		fclose(pFile);
+
+		free(potentialSlice);
+
+		return 0;
 	}
 
 
@@ -196,9 +180,9 @@ namespace PotentialBuilder {
     
 		12-feb-1997 E. Kirkland
 	 */
-	double bessk0( double x )
+	double ModelPotential::bessk0( double x )
 	{
-		double bessi0(double);
+		//double bessi0(double);
 	
 		int i;
 		double ax, x2, sum;
@@ -235,7 +219,7 @@ namespace PotentialBuilder {
 
 		12-feb-1997 E. Kirkland
 	 */
-	 double bessi0( double x )	 {
+	 double ModelPotential::bessi0( double x )	 {
  		int i;
  		double ax, sum, t;
  	

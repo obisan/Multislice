@@ -229,6 +229,46 @@ int Dispatcher::Run(const char* fileNameXML) {
 
 	std::shared_ptr<AModel::Model> model(getModelType(command.fileNameInput));
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	if(isDirectoryExist(command.potentialDirectory)) {
+		WIN32_FIND_DATA FindFileData;
+		HANDLE hf;
+		std::vector<std::string> files_in_dir;
+		wchar_t wzfileNameFirst[256];
+		char dir[256];
+		strcpy(dir, command.potentialDirectory);
+		strcat(dir, "\\*");
+		mbstowcs(wzfileNameFirst, dir, 256);	
+		
+		hf = FindFirstFile(wzfileNameFirst, &FindFileData);
+		if (hf != INVALID_HANDLE_VALUE) {
+			 do {
+				char filename[256];
+				wcstombs(filename, FindFileData.cFileName, 256);
+				if( !(strcmp(".", filename) == 0  || strcmp("..", filename) == 0) ) {
+					std::cout << filename << std::endl;
+					files_in_dir.push_back(std::string(filename));
+				}
+			} while (FindNextFile(hf,&FindFileData)!=0);
+			FindClose(hf);
+
+			if(files_in_dir.size() != command.numberSlices) {
+				std::cout << "Not enought files of slices in directory [" << command.potentialDirectory << "]." << std::endl;
+
+				for(int i = 0; i < files_in_dir.size(); i++) {
+					std::remove( (std::string(command.potentialDirectory) + "\\" + files_in_dir[i]).c_str() );
+				}
+
+				wchar_t wzRemovingDirectory[256];
+				mbstowcs(wzRemovingDirectory, command.potentialDirectory, 256);	
+				RemoveDirectory(wzRemovingDirectory);
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	if(!isDirectoryExist(command.potentialDirectory)) {
 		if( model->read(command.fileNameInput) == -1 ) {
 			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;

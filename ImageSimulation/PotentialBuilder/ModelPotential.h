@@ -33,13 +33,8 @@ namespace PotentialBuilder {
 		float y;
 	};
 
-	void calculatePotentialGridGPU(double *potential, std::vector<atom> slice, unsigned int nx, unsigned int ny, double dx, double dy, double a_h, double b_h, double radius);
-	double	bessk0( double x );
-	double	bessi0( double x );
-	void	swap2(double& a, double& b);
-
-
 	class POTENTIALBUILDER_API ModelPotential {
+		struct sdata;
 	public:
 		ModelPotential(void);
 		ModelPotential(AModel::Model *model, size_t nx, size_t ny, size_t nz, double radius, double bindim, const char* fileNameOutput);
@@ -50,6 +45,11 @@ namespace PotentialBuilder {
 		int		savePotentialStack(const char* filename, const char* stackDirectory);
 
 		AModel::Model*		getModel();
+		
+		int			calculatePotentialGridGPU(unsigned int kz, sdata data);
+		double		bessk0( double x );
+		double		bessi0( double x );
+		void		swap2(double& a, double& b);
 
 	private:
 		AModel::Model		*model;
@@ -57,10 +57,43 @@ namespace PotentialBuilder {
 		int					ny;
 		int 				nz;
 
+		double				a;
+		double				b;
+		double				c;
+
+		unsigned int		nAtoms;					
+
 		double				radius;
 		double				bindim;
 
 		char				fileNameOutput[256];
+
+		struct sdata {
+			sdata(const char* fileNameOutput,
+				double a, double b, double c,
+				int nx, int ny, int nz,
+				AModel::Cortege *pAtoms, unsigned int nAtoms) {
+					strcpy(this->fileNameOutput, fileNameOutput);
+					this->a = a;
+					this->b = b;
+					this->c = c;
+					this->nx = nx;
+					this->ny = ny;
+					this->nz = nz;
+					this->pAtoms = pAtoms;
+					this->nAtoms = nAtoms;
+			}
+			char fileNameOutput[256];
+			double a;
+			double b;
+			double c;
+			int nx;
+			int ny;
+			int nz;
+			AModel::Cortege *pAtoms;
+			unsigned int nAtoms;
+		};
+
 	};
 
 	//////////////////////////////////////////////////////////////////////////
