@@ -23,6 +23,7 @@
 #include <iterator>
 #include <complex>
 #include <sys/stat.h>
+#include <windows.h>
 
 #include <time.h> 
 

@@ -227,8 +227,48 @@ int Dispatcher::Run(const char* fileNameXML) {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	AModel::Model *model = getModelType(command.fileNameInput);
-	
+	std::shared_ptr<AModel::Model> model(getModelType(command.fileNameInput));
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	if(isDirectoryExist(command.potentialDirectory)) {
+		WIN32_FIND_DATA FindFileData;
+		HANDLE hf;
+		std::vector<std::string> files_in_dir;
+		wchar_t wzfileNameFirst[256];
+		char dir[256];
+		strcpy(dir, command.potentialDirectory);
+		strcat(dir, "\\*");
+		mbstowcs(wzfileNameFirst, dir, 256);	
+		
+		hf = FindFirstFile(wzfileNameFirst, &FindFileData);
+		if (hf != INVALID_HANDLE_VALUE) {
+			 do {
+				char filename[256];
+				wcstombs(filename, FindFileData.cFileName, 256);
+				if( !(strcmp(".", filename) == 0  || strcmp("..", filename) == 0) ) {
+					std::cout << filename << std::endl;
+					files_in_dir.push_back(std::string(filename));
+				}
+			} while (FindNextFile(hf,&FindFileData)!=0);
+			FindClose(hf);
+
+			if(files_in_dir.size() != command.numberSlices) {
+				std::cout << "Not enought files of slices in directory [" << command.potentialDirectory << "]." << std::endl;
+
+				for(int i = 0; i < files_in_dir.size(); i++) {
+					std::remove( (std::string(command.potentialDirectory) + "\\" + files_in_dir[i]).c_str() );
+				}
+
+				wchar_t wzRemovingDirectory[256];
+				mbstowcs(wzRemovingDirectory, command.potentialDirectory, 256);	
+				RemoveDirectory(wzRemovingDirectory);
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	if(!isDirectoryExist(command.potentialDirectory)) {
 		if( model->read(command.fileNameInput) == -1 ) {
 			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
@@ -240,11 +280,10 @@ int Dispatcher::Run(const char* fileNameXML) {
 		//////////////////////////////////////////////////////////////////////////
 		// Calculating map potentials	//////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////
-		PotentialBuilder::ModelPotential *modelPotential = new PotentialBuilder::ModelPotential(model, command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory);
+		std::unique_ptr<PotentialBuilder::ModelPotential> modelPotential(new PotentialBuilder::ModelPotential(model.get(), command.nx, command.ny, command.numberSlices, command.radius, command.bindim, command.potentialDirectory));
 		if(modelPotential->calculatePotentialGrid() == -1) 
 			return -1;
 		modelPotential->savePotentialStack(command.fileNameOutput, command.potentialDirectory);
-		delete modelPotential;
 	} else {
 		if( model->readhead(command.fileNameInput) == -1 ) {
 			std::cout << "Can not read file [" << command.fileNameInput << "] !!!" << std::endl;
@@ -254,6 +293,10 @@ int Dispatcher::Run(const char* fileNameXML) {
 		} 
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	
 	std::cout << std::endl;
 	std::cout << "Image size		= " << command.nx << "x" << command.ny << std::endl;
 	std::cout << "Number of slices	= " << command.numberSlices << std::endl;
@@ -261,27 +304,18 @@ int Dispatcher::Run(const char* fileNameXML) {
 	std::cout << "Dots per atom		= " << command.dpa << std::endl;
 	
 
-	ModelSimulated *modelSimulated = new ModelSimulated(command.potentialDirectory, model, command.nx, command.ny, command.numberSlices, command.dpa);
-	Microscope *microscope = new Microscope(command.keV, command.cs, command.aperture, command.defocus);
-	Image *result = new Image(command.nx, command.ny, 1, sizeof(double), 2);
+	std::shared_ptr<ModelSimulated> modelSimulated(new ModelSimulated(command.potentialDirectory, model.get(), command.nx, command.ny, command.numberSlices, command.dpa));
+	std::unique_ptr<Microscope> microscope(new Microscope(command.keV, command.cs, command.aperture, command.defocus));
+	std::shared_ptr<Image> result(new Image(command.nx, command.ny, 1, sizeof(double), 2));
 	
-	modelSimulated->imageCalculation(result, microscope);
-	Image *result_module = result->getModule();
-	result_module->saveMRC(command.fileNameOutput, model, command.nx, command.ny, 1, mrc_FLOAT);
-
-	delete result_module;
-	delete result;
-	delete microscope;
-	delete modelSimulated;
-
+	modelSimulated->imageCalculation(result.get(), microscope.get());
+	std::unique_ptr<Image> result_module(result->getModule());
+	result_module->saveMRC(command.fileNameOutput, model.get(), command.nx, command.ny, 1, mrc_FLOAT);
 	
 	
-
-	delete model;
-
-	/************************************************************************/
-	/************************************************************************/
-	/************************************************************************/
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
 	cudaDeviceReset();
 
 	std::cout	<< "Calculation for [" << fileNameXML <<  "] finished successful." << std::endl << std::endl;
