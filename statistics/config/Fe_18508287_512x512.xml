@@ -3,6 +3,7 @@
     <io>
         <fileNameInput>model/Fe_18508287.coo</fileNameInput>
         <fileNameOutput>result/Fe_18508287_512x512</fileNameOutput>
+        <PotentialDirectory>result/Fe_18508287_512x512</PotentialDirectory>
     </io>
     <image>
         <nx>512</nx>
@@ -10,8 +11,9 @@
        <dpa>10.0</dpa>        <!--- dots per angstrem --->
     </image>
     <slicing>
-        <radiuc>20.0</radiuc>
-        <numberslices>1</numberslices>
+        <radius>10.0</radius>			<!--- Angstrom, max = 20A --->
+        <bindim>15.0</bindim> 			<!--- Angstrom, min = 10A --->
+        <numberslices>418</numberslices>
     </slicing>
     <microscope>
         <aperture>10.37</aperture>
