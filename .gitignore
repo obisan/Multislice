@@ -19,7 +19,9 @@
 docs/
 samples/
 statistics/
-statistics\.idea\*
+statistics/.idea/*
+statistics/.idea/workspace.xml
+statistics/.idea/tasks.xml
 statistics/config/
 statistics/model/
 statistics/result/
