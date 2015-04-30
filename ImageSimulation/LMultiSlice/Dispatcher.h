@@ -5,10 +5,12 @@ private:
 	typedef struct Command {
 		char fileNameInput[256];
 		char fileNameOutput[256];
+		char potentialDirectory[256];
 		int nx;
 		int ny;
 		int numberSlices;
-		float radiuc;
+		float bindim;
+		float radius;
 		float dpa;
 
 		float aperture;
@@ -17,7 +19,8 @@ private:
 		float keV;
 	};
 
-	bool	CheckFileExist(const char *fname);
+	bool	isFileExist(const char *fname);
+	bool	isDirectoryExist(const char *dirname);
 	int		parseCommand(const char* fileNameXML, Command& command);
 
 protected:

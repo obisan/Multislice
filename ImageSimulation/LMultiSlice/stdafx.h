@@ -22,6 +22,8 @@
 #include <string>
 #include <iterator>
 #include <complex>
+#include <windows.h>
+#include <sys/stat.h>
 
 #include <time.h> 
 
